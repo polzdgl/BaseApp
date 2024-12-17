@@ -9,6 +9,7 @@ namespace BaseApp.API.Settings
         {
             operation.Parameters ??= new List<OpenApiParameter>();
 
+            // Add custom filter
             operation.Parameters.Add(new OpenApiParameter()
             {
                 Name = "X-Filter",

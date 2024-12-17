@@ -27,19 +27,16 @@ namespace BaseApp.Data.User.Models
 
         public bool PhoneNumberConfirmed { get; set; }
 
-        public static User FromDto(UserDto userDto)
+        public static User FromDto(UserRequestDto userRequestDto)
         {
             return new User
             {
-                Id = userDto.Id,
-                UserName = userDto.UserName,
-                Email = userDto.Email,
-                PhoneNumber = userDto.PhoneNumber,
-                FirstName = userDto.FirstName,
-                LastName = userDto.LastName,
-                DateOfBirth = userDto.DateOfBirth,
-                EmailConfirmed = userDto.EmailConfirmed,
-                PhoneNumberConfirmed = userDto.PhoneNumberConfirmed
+                UserName = userRequestDto.UserName,
+                Email = userRequestDto.Email,
+                PhoneNumber = userRequestDto.PhoneNumber,
+                FirstName = userRequestDto.FirstName,
+                LastName = userRequestDto.LastName,
+                DateOfBirth = userRequestDto.DateOfBirth,
             };
         }
     }

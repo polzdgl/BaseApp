@@ -100,9 +100,16 @@ app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
 // Serilog Logging
 app.UseSerilogRequestLogging();
 
-// Configure the HTTP request pipeline.
+// Only for development environment
 if (app.Environment.IsDevelopment())
 {
+    // Apply Database changes
+    await using (var serviceScope = app.Services.CreateAsyncScope())
+    await using (var dbContext = serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>())
+    {
+        await dbContext.Database.EnsureCreatedAsync();
+    }
+
     app.MapOpenApi();
     app.UseSwagger();
     app.UseSwaggerUI(c =>

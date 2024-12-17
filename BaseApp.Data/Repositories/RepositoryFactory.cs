@@ -2,11 +2,6 @@
 using BaseApp.Data.Repositories.Interfaces;
 using BaseApp.Data.User.Interfaces;
 using BaseApp.Data.User.Repository;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BaseApp.Data.Repositories
 {

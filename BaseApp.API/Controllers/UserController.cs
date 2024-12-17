@@ -29,8 +29,7 @@ namespace BaseApp.API.Controllers
             {
                 IEnumerable<UserDto> users = await _userService.GetAllUserAsync();
 
-                return users is not null ? Ok(users) :
-                    Problem(detail: $"No users were found!", statusCode: StatusCodes.Status404NotFound);
+                return Ok(users);
             }
             catch (Exception ex)
             {
@@ -53,8 +52,7 @@ namespace BaseApp.API.Controllers
 
                 UserDto user = await _userService.GetUserByIdAsync(id);
 
-                return user is not null ? Ok(user) :
-                    Problem(detail: $"No UserId: {id} was found!", statusCode: StatusCodes.Status404NotFound);
+                return Ok(user);
             }
             catch (Exception ex)
             {
@@ -65,39 +63,38 @@ namespace BaseApp.API.Controllers
 
         [HttpPost(Name = "AddUserAsync")]
         [ProducesResponseType(typeof(bool), StatusCodes.Status201Created)]
-        public async Task<IActionResult> AddUserAsync(UserDto userRequest)
+        public async Task<IActionResult> AddUserAsync(UserRequestDto userRequestDto)
         {
             try
             {
                 // Validate input data using InputValidation methods
-                if (!_inputValidation.ValidateModel(userRequest, out var validationResults))
+                if (!_inputValidation.ValidateModel(userRequestDto, out var validationResults))
                 {
                     var validationErrors = _inputValidation.GetValidationErrors(validationResults);
                     _logger.LogWarning("UserProfile model is invalid. Error: {validationErrors}", validationErrors);
-                    return Problem(detail: $"Invalid model: {userRequest}. Errors: {validationErrors}", statusCode: StatusCodes.Status400BadRequest);
+                    return Problem(detail: $"Invalid model: {userRequestDto}. Errors: {validationErrors}", statusCode: StatusCodes.Status400BadRequest);
                 }
 
-                if (!_inputValidation.ValidateEmailAddress(userRequest.Email, out var emailErrorMessage))
+                if (!_inputValidation.ValidateEmailAddress(userRequestDto.Email, out var emailErrorMessage))
                 {
                     _logger.LogWarning("Invalid Email Address: {errorMessage}", emailErrorMessage);
-                    return Problem(detail: $"Invalid Email: {userRequest.Email}. Errors: {emailErrorMessage}", statusCode: StatusCodes.Status400BadRequest);
+                    return Problem(detail: $"Invalid Email: {userRequestDto.Email}. Errors: {emailErrorMessage}", statusCode: StatusCodes.Status400BadRequest);
                 }
 
-                bool isUserCreated = await _userService.AddUserAsync(userRequest);
+                bool isUserCreated = await _userService.AddUserAsync(userRequestDto);
 
-                return isUserCreated ? this.Created() :
-                    Problem(detail: $"Failed to create UserName: {userRequest.UserName}!", statusCode: StatusCodes.Status400BadRequest);
+                return this.Created();
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"An unexpected error occurred while creating UserName: {userRequest.UserName}");
-                return Problem(detail: $"An unexpected error occurred while creating UserName: {userRequest.UserName}", statusCode: StatusCodes.Status500InternalServerError);
+                _logger.LogError(ex, $"An unexpected error occurred while creating UserName: {userRequestDto.UserName}");
+                return Problem(detail: $"An unexpected error occurred while creating UserName: {userRequestDto.UserName}", statusCode: StatusCodes.Status500InternalServerError);
             }
         }
 
         [HttpPut("{id}", Name = "UpdateUserAsync")]
         [ProducesResponseType(typeof(User), StatusCodes.Status200OK)]
-        public async Task<IActionResult> UpdateUserAsync(int id, [FromBody] UserDto userRequest)
+        public async Task<IActionResult> UpdateUserAsync(int id, [FromBody] UserRequestDto userRequestDto)
         {
             try
             {
@@ -109,22 +106,21 @@ namespace BaseApp.API.Controllers
                 }
 
                 // Validate model
-                if (!_inputValidation.ValidateModel(userRequest, out var validationResults))
+                if (!_inputValidation.ValidateModel(userRequestDto, out var validationResults))
                 {
                     var validationErrors = _inputValidation.GetValidationErrors(validationResults);
                     _logger.LogWarning("UserProfile model is invalid. Errors: {validationErrors}", validationErrors);
                     return Problem(detail: $"Invalid Id: {id}. Errors: {validationErrors}", statusCode: StatusCodes.Status400BadRequest);
                 }
 
-                bool updatedUser = await _userService.UpdateUserAsync(id, userRequest);
+                bool updatedUser = await _userService.UpdateUserAsync(id, userRequestDto);
 
-                return updatedUser ? this.Ok() :
-                  Problem(detail: $"Failed to update UserId: {userRequest.Id}!", statusCode: StatusCodes.Status400BadRequest);
+                return this.Ok();
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"An unexpected error occurred while updating UserId: {userRequest.Id}");
-                return Problem(detail: $"An unexpected error occurred while updating User: {userRequest.Id}", statusCode: StatusCodes.Status500InternalServerError);
+                _logger.LogError(ex, $"An unexpected error occurred while updating UserId: {id}");
+                return Problem(detail: $"An unexpected error occurred while updating User: {id}", statusCode: StatusCodes.Status500InternalServerError);
             }
         }
 
@@ -143,8 +139,7 @@ namespace BaseApp.API.Controllers
 
                 bool deletedUser = await _userService.DeleteUserAsync(id);
 
-                return deletedUser ? this.Ok() :
-                 Problem(detail: $"Failed to delete UserId: {id}!", statusCode: StatusCodes.Status400BadRequest);
+                return this.Ok();
             }
             catch (Exception ex)
             {

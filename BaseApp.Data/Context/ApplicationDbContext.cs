@@ -13,15 +13,6 @@ namespace BaseApp.Data.Context
         // Parameterless constructor for EF Core tools
         public ApplicationDbContext() { }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            if (!optionsBuilder.IsConfigured)
-            {
-                // Provide a fallback connection string
-                optionsBuilder.UseSqlServer("Data Source=localhost,1433;Initial Catalog=OneKleren;User Id=sa;Password=@100BlueReaperWork;Encrypt=False;MultipleActiveResultSets=True");
-            }
-        }
-
         //public DbSet<UserAccounts> UserAccounts { get; set; }
         public DbSet<User.Models.User> User { get; set; }
         public DbSet<Log> Logs { get; set; }

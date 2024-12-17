@@ -8,7 +8,7 @@ namespace BaseApp.API.Settings
         public MSSqlServerSinkOptions MSSqlSinkOptions = new MSSqlServerSinkOptions()
         {
             SchemaName = "App",
-            TableName = "Logs",
+            TableName = "Log",
             AutoCreateSqlTable = false,
             BatchPostingLimit = 50,
             BatchPeriod = TimeSpan.FromSeconds(5),

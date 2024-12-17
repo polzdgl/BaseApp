@@ -3,7 +3,6 @@ using BaseApp.Data.Repositories.Interfaces;
 using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Microsoft.EntityFrameworkCore.Metadata;
 using System.Linq.Expressions;
 
 namespace BaseApp.Data.Repositories
@@ -111,7 +110,6 @@ namespace BaseApp.Data.Repositories
         {
             return await BulkUpdateAllAsync(entityList, bulkConfig);
         }
-
         public virtual bool Delete(T entity, bool saveChanges = true)
         {
             this._dbContext.Set<T>().Remove(entity);
@@ -316,7 +314,6 @@ namespace BaseApp.Data.Repositories
         {
             return await this._dbContext.SaveChangesAsync();
         }
-
 
         public virtual void RollBack()
         {
