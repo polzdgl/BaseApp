@@ -1,6 +1,6 @@
 var builder = DistributedApplication.CreateBuilder(args);
 
-var apiService = builder.AddProject<Projects.BaseApp_ApiService>("apiservice");
+var apiService = builder.AddProject<Projects.BaseApp_API>("apiservice");
 
 builder.AddProject<Projects.BaseApp_Web>("webfrontend")
     .WithExternalHttpEndpoints()
