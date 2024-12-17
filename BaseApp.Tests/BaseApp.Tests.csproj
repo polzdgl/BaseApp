@@ -32,4 +32,10 @@
     <Using Include="Xunit" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="API.Tests\" />
+    <Folder Include="Data.Tests\" />
+    <Folder Include="Services.Tests\" />
+  </ItemGroup>
+
 </Project>

@@ -10,4 +10,9 @@
     <ProjectReference Include="..\BaseApp.ServiceDefaults\BaseApp.ServiceDefaults.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Clients\" />
+    <Folder Include="Pages\" />
+  </ItemGroup>
+
 </Project>
