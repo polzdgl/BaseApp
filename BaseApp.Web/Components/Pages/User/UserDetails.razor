@@ -1,0 +1,68 @@
+﻿@page "/users/details/{id:int}"
+@attribute [StreamRendering(true)]
+<PageTitle>User Details</PageTitle>
+
+<h1>Update User</h1>
+
+<p>This component demonstrates editing user details and saving them back to the database.</p>
+
+@if (User == null)
+{
+    <p><em>Loading...</em></p>
+}
+else if (HasError)
+{
+    <div class="alert alert-danger">
+        <h4 class="alert-heading">Error</h4>
+        <p>Failed to load user profile. Please try again later.</p>
+        @if (!string.IsNullOrEmpty(ErrorMessage))
+        {
+            <hr>
+            <p class="mb-0">@ErrorMessage</p>
+        }
+    </div>
+}
+else
+{
+    <div class="row">
+        <div class="col-md-4">
+            <EditForm Model="@User" FormName="EditUserProfile" OnValidSubmit="UpdateUserAsync">
+                <input type="hidden" />
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+
+                <div class="mb-3">
+                    <label for="username" class="form-label">User Name:</label>
+                    <InputText id="username" @bind-Value="User.UserName" class="form-control" />
+                </div>
+                <div class="mb-3">
+                    <label for="firstname" class="form-label">First Name:</label>
+                    <InputText id="firstname" @bind-Value="User.FirstName" class="form-control" />
+                </div>
+                <div class="mb-3">
+                    <label for="lastname" class="form-label">Last Name:</label>
+                    <InputText id="lastname" @bind-Value="User.LastName" class="form-control" />
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email:</label>
+                    <InputText id="email" @bind-Value="User.Email" class="form-control" />
+                </div>
+                <div class="mb-3">
+                    <label for="phonenumber" class="form-label">Phone Number:</label>
+                    <InputText id="phonenumber" @bind-Value="User.PhoneNumber" class="form-control" />
+                </div>
+                <div class="mb-3">
+                    <label for="dateofbirth" class="form-label">Date of Birth:</label>
+                    <InputDate id="dateofbirth" @bind-Value="User.DateOfBirth" class="form-control" />
+                </div>
+                <button type="submit" class="btn btn-primary d-block w-100 mb-2" disabled="@IsSaving"> @(IsSaving ? "Saving.." : "Save") </button>
+            </EditForm>
+
+            <a class="btn btn-danger d-block w-100 mt-2 mb-2" role="button" href="/users">Cancel</a> 
+            @if (Id > 0)
+            {
+                <a class="btn btn-primary d-block w-100" role="button" href="/users/delete/@User.Id?userName=@User.UserName">Delete</a>
+            }
+        </div>
+    </div>
+}
