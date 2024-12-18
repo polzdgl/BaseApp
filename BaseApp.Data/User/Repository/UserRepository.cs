@@ -15,5 +15,10 @@ namespace BaseApp.Data.User.Repository
         {
             return await this.AnyAsync(u => u.UserName == userName);
         }
+
+        public async Task<bool> IsUserNameTaken(int id, string? userName)
+        {
+            return await this.AnyAsync(u => u.UserName == userName && u.Id != id);
+        }
     }
 }

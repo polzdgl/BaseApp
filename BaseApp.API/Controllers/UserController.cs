@@ -40,11 +40,13 @@ namespace BaseApp.API.Controllers
 
         [HttpGet("{id}", Name = "GetUserByIdAsync")]
         [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetUserByIdAsync(int id)
         {
             try
             {
-                if (!_inputValidation.ValidateNumber(id, out var numberValidationError))
+                if (!_inputValidation.ValidateId(id, out var numberValidationError))
                 {
                     _logger.LogWarning("Invalid Id: {id}. Errors: {erorrMessage}", id, numberValidationError);
                     return Problem(detail: $"Invalid Id: {id}. Errors: {numberValidationError}", statusCode: StatusCodes.Status400BadRequest);
@@ -52,7 +54,8 @@ namespace BaseApp.API.Controllers
 
                 UserDto user = await _userService.GetUserByIdAsync(id);
 
-                return Ok(user);
+                return user is not null ? Ok(user) :
+                    Problem(detail: $"User ID: {id} was found!", statusCode: StatusCodes.Status404NotFound);
             }
             catch (Exception ex)
             {
@@ -63,6 +66,8 @@ namespace BaseApp.API.Controllers
 
         [HttpPost(Name = "AddUserAsync")]
         [ProducesResponseType(typeof(bool), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> AddUserAsync(UserRequestDto userRequestDto)
         {
             try
@@ -81,9 +86,30 @@ namespace BaseApp.API.Controllers
                     return Problem(detail: $"Invalid Email: {userRequestDto.Email}. Errors: {emailErrorMessage}", statusCode: StatusCodes.Status400BadRequest);
                 }
 
+                // Validate the phone number only if it's not empty
+                if (!string.IsNullOrWhiteSpace(userRequestDto.PhoneNumber) &&
+                    !_inputValidation.ValidatePhoneNumber(userRequestDto.PhoneNumber, out var phoneValidationError))
+                {
+                    _logger.LogWarning("Invalid Phone: {errorMessage}", phoneValidationError);
+                    return Problem(
+                        detail: $"Invalid Phone for UserName: {userRequestDto.UserName}. Errors: {phoneValidationError}",
+                        statusCode: StatusCodes.Status400BadRequest);
+                }
+
+                // Validate the date of birth only if it's not null
+                if (userRequestDto.DateOfBirth != null &&
+                    !_inputValidation.ValidateDateOfBirth(userRequestDto.DateOfBirth, out var dateValidationError))
+                {
+                    _logger.LogWarning("Invalid Date of Birth: {errorMessage}", dateValidationError);
+                    return Problem(
+                        detail: $"Invalid Date of Birth for UserName: {userRequestDto.UserName}. Errors: {dateValidationError}",
+                        statusCode: StatusCodes.Status400BadRequest);
+                }
+
                 bool isUserCreated = await _userService.AddUserAsync(userRequestDto);
 
-                return this.Created();
+                return isUserCreated ? this.Created() :
+                    Problem(detail: $"Failed to Create Username: {userRequestDto.UserName}!", statusCode: StatusCodes.Status400BadRequest);
             }
             catch (Exception ex)
             {
@@ -93,12 +119,14 @@ namespace BaseApp.API.Controllers
         }
 
         [HttpPut("{id}", Name = "UpdateUserAsync")]
-        [ProducesResponseType(typeof(User), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> UpdateUserAsync(int id, [FromBody] UserRequestDto userRequestDto)
         {
             try
             {
-                // Validate the UserAccountId
+                // Validate the UserId
                 if (!_inputValidation.ValidateNumber(id, out var numberValidationError))
                 {
                     _logger.LogWarning("Invalid Id: {errorMessage}", numberValidationError);
@@ -110,12 +138,47 @@ namespace BaseApp.API.Controllers
                 {
                     var validationErrors = _inputValidation.GetValidationErrors(validationResults);
                     _logger.LogWarning("UserProfile model is invalid. Errors: {validationErrors}", validationErrors);
-                    return Problem(detail: $"Invalid Id: {id}. Errors: {validationErrors}", statusCode: StatusCodes.Status400BadRequest);
+                    return Problem(detail: $"Invalid Model for Id: {id}. Errors: {validationErrors}", statusCode: StatusCodes.Status400BadRequest);
+                }
+
+                // Validate UserName
+                if (!_inputValidation.ValidateUserName(userRequestDto.UserName, out var userNameValidationError))
+                {
+                    _logger.LogWarning("Invalid Email: {errorMessage}", userNameValidationError);
+                    return Problem(detail: $"Invalid UserName: {userRequestDto.UserName}. Errors: {userNameValidationError}", statusCode: StatusCodes.Status400BadRequest);
+                }
+
+                // Validate the Email
+                if (!_inputValidation.ValidateEmailAddress(userRequestDto.Email, out var emailValidationError))
+                {
+                    _logger.LogWarning("Invalid Email: {errorMessage}", emailValidationError);
+                    return Problem(detail: $"Invalid Email for Id: {id}. Errors: {emailValidationError}", statusCode: StatusCodes.Status400BadRequest);
+                }
+
+                // Validate the phone number only if it's not empty
+                if (!string.IsNullOrWhiteSpace(userRequestDto.PhoneNumber) &&
+                    !_inputValidation.ValidatePhoneNumber(userRequestDto.PhoneNumber, out var phoneValidationError))
+                {
+                    _logger.LogWarning("Invalid Phone: {errorMessage}", phoneValidationError);
+                    return Problem(
+                        detail: $"Invalid Phone for UserName: {userRequestDto.UserName}. Errors: {phoneValidationError}",
+                        statusCode: StatusCodes.Status400BadRequest);
+                }
+
+                // Validate the date of birth only if it's not null
+                if (userRequestDto.DateOfBirth != null &&
+                    !_inputValidation.ValidateDateOfBirth(userRequestDto.DateOfBirth, out var dateValidationError))
+                {
+                    _logger.LogWarning("Invalid Date of Birth: {errorMessage}", dateValidationError);
+                    return Problem(
+                        detail: $"Invalid Date of Birth for UserName: {userRequestDto.UserName}. Errors: {dateValidationError}",
+                        statusCode: StatusCodes.Status400BadRequest);
                 }
 
                 bool updatedUser = await _userService.UpdateUserAsync(id, userRequestDto);
 
-                return this.Ok();
+                return updatedUser ? Ok() :
+                 Problem(detail: $"Failed to Update UserId: {id}!", statusCode: StatusCodes.Status400BadRequest);
             }
             catch (Exception ex)
             {
@@ -125,13 +188,15 @@ namespace BaseApp.API.Controllers
         }
 
         [HttpDelete("{id}", Name = "DeleteUserAsync")]
-        [ProducesResponseType(typeof(User), StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> DeleteUserAsync(int id)
         {
             try
             {
                 // Validate the UserAccountId
-                if (!_inputValidation.ValidateNumber(id, out var numberValidationError))
+                if (!_inputValidation.ValidateId(id, out var numberValidationError))
                 {
                     _logger.LogWarning("Invalid Id: {errorMessage}", numberValidationError);
                     return Problem(detail: $"Invalid Id: {id}. Errors: {numberValidationError}", statusCode: StatusCodes.Status400BadRequest);
@@ -139,7 +204,8 @@ namespace BaseApp.API.Controllers
 
                 bool deletedUser = await _userService.DeleteUserAsync(id);
 
-                return this.Ok();
+                return deletedUser ? Ok() :
+                  Problem(detail: $"Failed to Delete UserId: {id}!", statusCode: StatusCodes.Status400BadRequest);
             }
             catch (Exception ex)
             {

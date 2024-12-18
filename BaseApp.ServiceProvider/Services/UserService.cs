@@ -71,6 +71,19 @@ namespace BaseApp.ServiceProvider.Services
                 throw new KeyNotFoundException($"User with ID {id} not found.");
             }
 
+            // Check if UserName has changed
+            if(userRequestDto.UserName != user.UserName)
+            {
+                // Check if UserName already taken
+                bool isUserNameTaken = await this.Repository.UserRepository.IsUserNameTaken(id, userRequestDto.UserName);
+
+                if (isUserNameTaken)
+                {
+                    _logger.LogWarning("UserName: {userName} is not available!", userRequestDto.UserName);
+                    throw new DuplicateNameException("UserName not available!");
+                }
+            }
+
             _logger.LogInformation("Updating User with Id: {id}", id);
 
             // Update the properties necessary

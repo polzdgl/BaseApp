@@ -5,38 +5,33 @@ namespace BaseApp.Shared.Validation
 {
     public class InputValidation
     {
-        // Method to validate the model
+        // Validate a model using Data Annotations
         public bool ValidateModel<T>(T model, out List<ValidationResult> validationResults)
         {
             validationResults = new List<ValidationResult>();
             var validationContext = new ValidationContext(model);
-            bool isValid = Validator.TryValidateObject(model, validationContext, validationResults, true);
-            return isValid;
+            return Validator.TryValidateObject(model, validationContext, validationResults, true);
         }
 
-        // Method to validate a numeric value within a specific range
+        // Validate if a number is within a specific range
         public bool ValidateNumberRange(int number, int minValue, int maxValue, out string validationErrorMessage)
         {
-            validationErrorMessage = string.Empty;
-
-            // Check if the number is within the range
-            if (number < minValue || number > maxValue)
+            if (number >= minValue && number <= maxValue)
             {
-                validationErrorMessage = $"The number must be between {minValue} and {maxValue}.";
-                return false;
+                validationErrorMessage = string.Empty;
+                return true;
             }
 
-            return true;
+            validationErrorMessage = $"The number must be between {minValue} and {maxValue}.";
+            return false;
         }
 
-        // Method to validate if a number is a valid numeric value (int or double)
+        // Validate if a value is numeric (int, float, double, decimal)
         public bool ValidateNumber(object value, out string validationErrorMessage)
         {
-            validationErrorMessage = string.Empty;
-
-            // Check if the value is a number (int or double)
-            if (value is int || value is double || value is float || value is decimal)
+            if (value is int or float or double or decimal)
             {
+                validationErrorMessage = string.Empty;
                 return true;
             }
 
@@ -44,14 +39,25 @@ namespace BaseApp.Shared.Validation
             return false;
         }
 
-        // Method to validate if a date is a valid DateTime or DateOnly
+        // Validate ID (greater than 0)
+        public bool ValidateId(int value, out string validationErrorMessage)
+        {
+            if (value > 0)
+            {
+                validationErrorMessage = string.Empty;
+                return true;
+            }
+
+            validationErrorMessage = "The ID must be greater than 0.";
+            return false;
+        }
+
+        // Validate if a value is a valid DateTime or DateOnly
         public bool ValidateDate(object value, out string validationErrorMessage)
         {
-            validationErrorMessage = string.Empty;
-
-            // Check if the value is a valid DateTime or DateOnly
-            if (value is DateTime || value is DateOnly)
+            if (value is DateTime or DateOnly)
             {
+                validationErrorMessage = string.Empty;
                 return true;
             }
 
@@ -59,15 +65,44 @@ namespace BaseApp.Shared.Validation
             return false;
         }
 
-        // Method to validate if a phone number is in a valid format (e.g., +1234567890)
-        public bool ValidatePhoneNumber(string phoneNumber, out string validationErrorMessage)
+        public bool ValidateDateOfBirth(object value, out string validationErrorMessage)
         {
             validationErrorMessage = string.Empty;
 
-            // Use regular expressions to validate the phone number pattern
-            string phonePattern = @"^(\+\d{1,3}|\d{1,4})?[-.\s]?\(?\d{1,3}\)?[-.\s]?\d{1,4}[-.\s]?\d{1,9}$";
+            // Check if the value is a valid DateTime or DateOnly
+            if (value is DateTime dateTimeValue)
+            {
+                if (dateTimeValue.Date <= DateTime.Today)
+                {
+                    return true;
+                }
+
+                validationErrorMessage = "The date of birth cannot be in the future.";
+                return false;
+            }
+            else if (value is DateOnly dateOnlyValue)
+            {
+                if (dateOnlyValue <= DateOnly.FromDateTime(DateTime.Today))
+                {
+                    return true;
+                }
+
+                validationErrorMessage = "The date of birth cannot be in the future.";
+                return false;
+            }
+
+            validationErrorMessage = "The value must be a valid date.";
+            return false;
+        }
+
+
+        // Validate a phone number
+        public bool ValidatePhoneNumber(string phoneNumber, out string validationErrorMessage)
+        {
+            string phonePattern = @"^(\+?\d{1,3})?[-.\s]?\(?\d{1,4}\)?[-.\s]?\d{1,4}[-.\s]?\d{1,9}$";
             if (Regex.IsMatch(phoneNumber, phonePattern))
             {
+                validationErrorMessage = string.Empty;
                 return true;
             }
 
@@ -75,15 +110,13 @@ namespace BaseApp.Shared.Validation
             return false;
         }
 
-        // Method to validate if an email address is in a valid format
+        // Validate an email address
         public bool ValidateEmailAddress(string email, out string validationErrorMessage)
         {
-            validationErrorMessage = string.Empty;
-
-            // Use regular expressions to validate the email address pattern
-            string emailPattern = @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
+            string emailPattern = @"^[^\s@]+@[^\s@]+\.[^\s@]+$";
             if (Regex.IsMatch(email, emailPattern))
             {
+                validationErrorMessage = string.Empty;
                 return true;
             }
 
@@ -91,11 +124,24 @@ namespace BaseApp.Shared.Validation
             return false;
         }
 
-        // Method to get validation errors as a string
+        public bool ValidateUserName(string userName, out string validationErrorMessage)
+        {
+            if (RegexHelper.IsOnlyLettersNumbers(userName))
+            {
+                validationErrorMessage = string.Empty;
+                return true;
+            }
+
+            validationErrorMessage = "The UserName is not in a valid format. Please enter letters and numbers only!";
+            return false;
+        }
+
+        // Get validation errors as a formatted string
         public string GetValidationErrors(List<ValidationResult> validationResults)
         {
-            return string.Join("\n", validationResults.Select(vr => vr.ErrorMessage));
+            return string.Join(Environment.NewLine, validationResults.Select(vr => vr.ErrorMessage));
         }
+
 
     }
 }
