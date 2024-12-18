@@ -37,7 +37,7 @@ BaseApp is a web application built using a Blazor Web frontend and an ASP.NET We
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-repo/BaseApp.git
+   git clone https://github.com/polzdgl/BaseApp.git
    ```
 2. Open the solution in your IDE of choice.
 3. Navigate to the `BaseApp.API` project and update the connection string in `appsettings.json`:
