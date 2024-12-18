@@ -1,7 +1,3 @@
-Sure! I've fixed the grammar and formatted it for a Git repository README file:
-
----
-
 # BaseApp Project
 
 ## Overview
