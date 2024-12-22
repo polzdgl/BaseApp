@@ -1,4 +1,5 @@
 ﻿using BaseApp.Data.User.Dtos;
+using BaseApp.Web.ServiceClients;
 using Microsoft.AspNetCore.Components;
 using System.Net.Http.Json;
 
@@ -6,13 +7,13 @@ namespace BaseApp.Web.Pages.User
 {
     public partial class Users : ComponentBase
     {
-        //private NavigationManager _navigationManager;
-        private readonly HttpClient _apiClient;
+        private NavigationManager _navigationManager;
+        private readonly ApiClient _apiClient;
 
-        public Users(HttpClient userClient)
+        public Users(NavigationManager navigationManager, ApiClient apiClient)
         {
-            //_navigationManager = navigationManager;
-            _apiClient = userClient;
+            _navigationManager = navigationManager;
+            _apiClient = apiClient;
         }
 
         private IEnumerable<Data.User.Dtos.UserDto> users;
@@ -29,8 +30,8 @@ namespace BaseApp.Web.Pages.User
                 ErrorMessage = string.Empty;
 
                 //users = await _userClient.GetUsersAsync();
-                users = await _apiClient.GetFromJsonAsync<IEnumerable<UserDto>>("https://localhost:7115/user");
-            
+                users = await _apiClient.GetUsersAsync();
+
             }
             catch (Exception ex)
             {
