@@ -1,8 +1,9 @@
 ﻿using BaseApp.Data.User.Dtos;
+using System.Net.Http.Json;
 
-namespace BaseApp.Web.Clients
+namespace BaseApp.Web.ServiceClients
 {
-    public class UserClient(HttpClient httpClient)
+    public class ApiClient(HttpClient httpClient)
     {
         public async Task<IEnumerable<UserDto>> GetUsersAsync(CancellationToken cancellationToken = default)
         {

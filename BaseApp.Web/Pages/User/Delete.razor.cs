@@ -1,18 +1,18 @@
-﻿using BaseApp.Web.Clients;
+﻿using BaseApp.Web.ServiceClients;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.WebUtilities;
 
-namespace BaseApp.Web.Components.Pages.User
+namespace BaseApp.Web.Pages.User
 {
     public partial class Delete
     {
         private readonly NavigationManager _navigationManager;
-        private readonly UserClient _userClient;
+        private readonly ApiClient _apiClient;
 
-        public Delete(NavigationManager navigationManager, UserClient userClient)
+        public Delete(NavigationManager navigationManager, ApiClient apiClient)
         {
             _navigationManager = navigationManager;
-            _userClient = userClient;
+            _apiClient = apiClient;
         }
 
         [Parameter]
@@ -50,7 +50,7 @@ namespace BaseApp.Web.Components.Pages.User
                 ErrorMessage = string.Empty;
                 HasError = false;
 
-                await _userClient.DeleteUserAsync(Id);
+                await _apiClient.DeleteUserAsync(Id);
             }
             catch (Exception ex)
             {

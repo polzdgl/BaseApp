@@ -1,18 +1,18 @@
 ﻿using BaseApp.Data.User.Dtos;
-using BaseApp.Web.Clients;
+using BaseApp.Web.ServiceClients;
 using Microsoft.AspNetCore.Components;
 
-namespace BaseApp.Web.Components.Pages.User
+namespace BaseApp.Web.Pages.User
 {
     public partial class UserDetails
     {
         private readonly NavigationManager _navigationManager;
-        private readonly UserClient _userClient;
+        private readonly ApiClient _apiClient;
 
-        public UserDetails(NavigationManager navigationManager, UserClient userClient)
+        public UserDetails(NavigationManager navigationManager, ApiClient apiClient)
         {
             _navigationManager = navigationManager;
-            _userClient = userClient;
+            _apiClient = apiClient;
         }
 
         [Parameter]
@@ -44,7 +44,7 @@ namespace BaseApp.Web.Components.Pages.User
 
                 if (User == null)
                 {
-                    User = await _userClient.GetUserAsync(Id);
+                    User = await _apiClient.GetUserAsync(Id);
                 }
             }
             catch (Exception ex)
@@ -78,7 +78,7 @@ namespace BaseApp.Web.Components.Pages.User
                         DateOfBirth = User.DateOfBirth,
                     };
 
-                    await _userClient.UpdateUserAsync(Id, userRequestDto);
+                    await _apiClient.UpdateUserAsync(Id, userRequestDto);
                 }
             }
             catch (Exception ex)

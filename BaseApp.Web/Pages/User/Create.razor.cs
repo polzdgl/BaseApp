@@ -1,18 +1,18 @@
 ﻿using BaseApp.Data.User.Dtos;
-using BaseApp.Web.Clients;
+using BaseApp.Web.ServiceClients;
 using Microsoft.AspNetCore.Components;
 
-namespace BaseApp.Web.Components.Pages.User
+namespace BaseApp.Web.Pages.User
 {
     public partial class Create
     {
         private NavigationManager _navigationManager;
-        private readonly UserClient _userClient;
+        private readonly ApiClient _apiClient;
 
-        public Create(NavigationManager navigationManager, UserClient userClient)
+        public Create(NavigationManager navigationManager, ApiClient apiClient)
         {
             _navigationManager = navigationManager;
-            _userClient = userClient;
+            _apiClient = apiClient;
         }
 
         private bool IsLoading = true;
@@ -39,7 +39,7 @@ namespace BaseApp.Web.Components.Pages.User
 
             try
             {
-                await _userClient.CreateUserAsync(UserRequestDto);
+                await _apiClient.CreateUserAsync(UserRequestDto);
             }
             catch (Exception ex)
             {

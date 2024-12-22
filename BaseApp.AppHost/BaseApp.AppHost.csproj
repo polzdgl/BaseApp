@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BaseApp.API\BaseApp.API.csproj" />
+    <ProjectReference Include="..\BaseApp.WebUI\BaseApp.WebUI.csproj" />
     <ProjectReference Include="..\BaseApp.Web\BaseApp.Web.csproj" />
   </ItemGroup>
 

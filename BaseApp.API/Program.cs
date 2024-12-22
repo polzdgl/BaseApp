@@ -13,6 +13,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Serilog Configuration
 string connectionString = builder.Configuration.GetConnectionString("OneKlerenContext");
 string loggingFileLocation = builder.Configuration.GetSection("LogginFileLocation").Value;
+// Load CORS settings from appsettings.json
+var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>();
 
 SerilogSettings serilogSettings = new SerilogSettings();
 var loggerConfiguration = new LoggerConfiguration()
@@ -76,6 +78,17 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+// Add CORS services
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("ConfiguredCorsPolicy", policy =>
+    {
+        policy.WithOrigins(allowedOrigins)
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
+
 // Inject App Services
 builder.Services.AddApplicationServices();
 
@@ -93,6 +106,9 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+// Use the configured CORS policy
+app.UseCors("ConfiguredCorsPolicy");
 
 // Use the global exception handler middleware
 app.UseMiddleware<GlobalExceptionHandlerMiddleware>();

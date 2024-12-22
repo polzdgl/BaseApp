@@ -8,10 +8,20 @@
     <IsTestProject>true</IsTestProject>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="Data.Tests\**" />
+    <Compile Remove="Services.Tests\**" />
+    <EmbeddedResource Remove="Data.Tests\**" />
+    <EmbeddedResource Remove="Services.Tests\**" />
+    <None Remove="Data.Tests\**" />
+    <None Remove="Services.Tests\**" />
+  </ItemGroup>
+
 
   <ItemGroup>
     <PackageReference Include="Aspire.Hosting.Testing" Version="9.0.0" />
     <PackageReference Include="coverlet.collector" Version="6.0.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="9.0.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
     <PackageReference Include="NSubstitute" Version="5.3.0" />
     <PackageReference Include="xunit" Version="2.9.2" />
@@ -23,9 +33,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BaseApp.API\BaseApp.API.csproj" />
-    <ProjectReference Include="..\BaseApp.AppHost\BaseApp.AppHost.csproj" />
     <ProjectReference Include="..\BaseApp.ServiceProvider\BaseApp.ServiceProvider.csproj" />
-    <ProjectReference Include="..\BaseApp.Web\BaseApp.Web.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -34,11 +42,6 @@
     <Using Include="Aspire.Hosting.ApplicationModel" />
     <Using Include="Aspire.Hosting.Testing" />
     <Using Include="Xunit" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Data.Tests\" />
-    <Folder Include="Services.Tests\" />
   </ItemGroup>
 
 </Project>
