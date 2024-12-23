@@ -47,7 +47,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options =>
     {
         options.CommandTimeout(300); // 5 mins in seconds
-    }).UseQueryTrackingBehavior(QueryTrackingBehavior.TrackAll), ServiceLifetime.Scoped);
+    }).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTrackingWithIdentityResolution), ServiceLifetime.Scoped);
 
 // Set default Culture for all new threads
 CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("en-US");

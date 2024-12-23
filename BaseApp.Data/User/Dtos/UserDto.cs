@@ -20,6 +20,8 @@
 
         public bool PhoneNumberConfirmed { get; set; }
 
+        public bool IsActive { get; set; }
+
         public static UserDto FromModel(Models.User user)
         {
             return new UserDto

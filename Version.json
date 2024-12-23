@@ -1,0 +1,27 @@
+{
+  "Version": "1.0",
+  "releaseDate": "2024-12-22",
+  "codeDetails": [
+    {
+      "orm": [
+        {
+          "Framework": "EfCore",
+          "Version": "9",
+          "Deisgn Approch": "Code First",
+          "Database": "MSSQL Server - Docker",
+          "Extentions": [
+            {
+              "Bulk": "EFCoreBulk Extention"
+            }
+          ]
+        }
+      ],
+      "openAPI": "Swagger",
+      "frontUI": "Blazor WASM",
+      "backendApi": ".Net 9 ASP.NET MVC",
+      "logging": "Serilog",
+      "docker": "true",
+      "DotNetAspire": "false"
+    }
+  ]
+}

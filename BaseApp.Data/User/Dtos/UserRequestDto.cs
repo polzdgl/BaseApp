@@ -1,4 +1,6 @@
-﻿namespace BaseApp.Data.User.Dtos
+﻿using System.ComponentModel;
+
+namespace BaseApp.Data.User.Dtos
 {
     public record UserRequestDto
     {        
@@ -13,5 +15,7 @@
         public DateTime? DateOfBirth { get; set; }
 
         public string? PhoneNumber { get; set; }
+
+        public bool IsActive { get; set; }
     }
 }

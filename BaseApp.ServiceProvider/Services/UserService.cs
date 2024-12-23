@@ -93,6 +93,7 @@ namespace BaseApp.ServiceProvider.Services
             user.LastName = userRequestDto.LastName;
             user.PhoneNumber = userRequestDto.PhoneNumber;
             user.DateOfBirth = userRequestDto.DateOfBirth;
+            user.IsActive = userRequestDto.IsActive;
 
             return await this.Repository.UserRepository.UpdateAsync(user);
         }
@@ -109,6 +110,9 @@ namespace BaseApp.ServiceProvider.Services
             }
 
             _logger.LogInformation("Creating new User for UserName: {userName}, Email: {email}", userRequestDto.UserName, userRequestDto.Email);
+
+            // Set User IsActive = 1 by default
+            userRequestDto.IsActive = true;
 
             return await this.Repository.UserRepository.CreateAsync(User.FromDto(userRequestDto));
         }

@@ -114,6 +114,18 @@ namespace BaseApp.Data.Context
                 entity.ToTable("User", schema: "App");
 
                 entity.Property(e => e.Id).ValueGeneratedOnAdd();
+
+                entity.Property(e => e.Email)
+                .IsRequired()
+                .IsUnicode(true);
+
+                entity.Property(e => e.IsActive)             
+                .HasDefaultValue(true)
+                .IsRequired();
+
+                entity.HasIndex(e => e.Email)
+                .HasDatabaseName("XI_User_Email")
+                .IsUnique(true);
             });
         }
     }

@@ -76,6 +76,7 @@ namespace BaseApp.Web.Pages.User
                         Email = User.Email,
                         PhoneNumber = User.PhoneNumber,
                         DateOfBirth = User.DateOfBirth,
+                        IsActive = User.IsActive,
                     };
 
                     await _apiClient.UpdateUserAsync(Id, userRequestDto);

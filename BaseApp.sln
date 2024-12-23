@@ -14,6 +14,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BaseApp.Shared", "BaseApp.S
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BaseApp.Web", "BaseApp.Web\BaseApp.Web.csproj", "{8AA56136-7376-4511-A919-EA36C1FA6EDA}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionFiles", "SolutionFiles", "{40C2B3E9-0ECD-4DF0-8DAE-F93839A5C40F}"
+	ProjectSection(SolutionItems) = preProject
+		Readme.md = Readme.md
+		Version.json = Version.json
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

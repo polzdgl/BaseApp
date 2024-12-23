@@ -55,6 +55,15 @@ else
                     <label for="dateofbirth" class="form-label">Date of Birth:</label>
                     <InputDate id="dateofbirth" @bind-Value="User.DateOfBirth" class="form-control" />
                 </div>
+                <div class="mb-3">
+                    <label for="isactive" class="form-label">IsActive</label>
+                    <div class="col-md-8">
+                        <InputSelect class="form-select form-control" @bind-Value="User.IsActive">
+                            <option value="true">True</option>
+                            <option value="false">False</option>
+                        </InputSelect>
+                    </div>
+                </div>
                 <button type="submit" class="btn btn-primary d-block w-100 mb-2" disabled="@IsSaving"> @(IsSaving ? "Saving.." : "Save") </button>
             </EditForm>
 

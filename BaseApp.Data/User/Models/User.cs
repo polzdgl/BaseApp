@@ -1,6 +1,8 @@
 ﻿using BaseApp.Data.User.Dtos;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -27,6 +29,9 @@ namespace BaseApp.Data.User.Models
 
         public bool PhoneNumberConfirmed { get; set; }
 
+        [DefaultValue(true)]
+        public bool IsActive { get; set; }
+
         public static User FromDto(UserRequestDto userRequestDto)
         {
             return new User
@@ -37,6 +42,7 @@ namespace BaseApp.Data.User.Models
                 FirstName = userRequestDto.FirstName,
                 LastName = userRequestDto.LastName,
                 DateOfBirth = userRequestDto.DateOfBirth,
+                IsActive = userRequestDto.IsActive,
             };
         }
     }

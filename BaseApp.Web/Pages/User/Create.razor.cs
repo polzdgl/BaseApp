@@ -21,14 +21,10 @@ namespace BaseApp.Web.Pages.User
         private string? ErrorMessage { get; set; }
 
         [SupplyParameterFromForm]
-        private UserRequestDto? UserRequestDto { get; set; }
+        private UserRequestDto? UserRequestDto { get; set; } = new UserRequestDto();
 
         protected override async Task OnInitializedAsync()
         {
-            if (UserRequestDto == null)
-            {
-                UserRequestDto = new UserRequestDto();
-            }
         }
 
         private async Task CreateUserAsync()
