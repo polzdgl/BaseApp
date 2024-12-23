@@ -4,12 +4,12 @@ using Microsoft.AspNetCore.Components;
 
 namespace BaseApp.Web.Pages.User
 {
-    public partial class UserDetails
+    public partial class Edit
     {
         private readonly NavigationManager _navigationManager;
         private readonly ApiClient _apiClient;
 
-        public UserDetails(NavigationManager navigationManager, ApiClient apiClient)
+        public Edit(NavigationManager navigationManager, ApiClient apiClient)
         {
             _navigationManager = navigationManager;
             _apiClient = apiClient;
@@ -90,6 +90,11 @@ namespace BaseApp.Web.Pages.User
             finally
             {
                 IsSaving = false;
+
+                if (!HasError)
+                {
+                    _navigationManager.NavigateTo("users");
+                }
             }
         }
     }

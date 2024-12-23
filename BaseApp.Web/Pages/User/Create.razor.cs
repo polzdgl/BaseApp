@@ -45,6 +45,11 @@ namespace BaseApp.Web.Pages.User
             finally
             {
                 IsSaving = false;
+
+                if (!HasError) 
+                { 
+                    _navigationManager.NavigateTo("users"); 
+                }         
             }
         }
     }

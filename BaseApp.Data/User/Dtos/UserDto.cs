@@ -35,6 +35,7 @@
                 DateOfBirth = user.DateOfBirth,
                 EmailConfirmed = user.EmailConfirmed,
                 PhoneNumberConfirmed = user.PhoneNumberConfirmed,
+                IsActive = user.IsActive,
             };
         }
 

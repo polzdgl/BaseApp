@@ -60,6 +60,11 @@ namespace BaseApp.Web.Pages.User
             finally
             {
                 IsDeleted = false;
+
+                if (!HasError)
+                {
+                    _navigationManager.NavigateTo("users");
+                }
             }
         }
     }

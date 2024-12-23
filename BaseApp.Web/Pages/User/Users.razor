@@ -33,13 +33,13 @@ else
                 <tr>
                     <td>@user.Id</td>
                     <td>@user.UserName</td>
-                    <td>@user.FirstName + " " + @user.LastName</td>
+                    <td>@user.FirstName @user.LastName</td>
                     <td>@user.Email</td>
                     <td>@user.PhoneNumber</td>           
                     <td>@user.DateOfBirth?.ToShortDateString()</td>                    
                     <th>@user.Age</th>
                     <td style="white-space:nowrap">
-                        <a class="btn btn-primary btn-sm" href="/users/details/@user.Id">Edit</a>
+                        <a class="btn btn-primary btn-sm" href="/users/edit/@user.Id">Edit</a>
                         <a class="btn btn-primary btn-sm" href="/users/delete/@user.Id?userName=@user.UserName">Delete</a>
                     </td>
                 </tr>
