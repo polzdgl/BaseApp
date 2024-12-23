@@ -6,51 +6,38 @@ namespace BaseApp.Web.Pages.User
 {
     public partial class Edit
     {
-        private readonly NavigationManager _navigationManager;
-        private readonly ApiClient _apiClient;
-
-        public Edit(NavigationManager navigationManager, ApiClient apiClient)
-        {
-            _navigationManager = navigationManager;
-            _apiClient = apiClient;
-        }
-
         [Parameter]
-        public int Id { get; set; } // User Id from url
-
-        [SupplyParameterFromForm]
-        private UserDto? User { get; set; }
-
-        private bool IsLoading = true;
-        private bool HasError = false;
-        private bool IsSaving = false;
+        public int Id { get; set; } // User ID from the URL
+        [Inject] private ApiClient ApiClient { get; set; } = default!;
+        [Inject] private NavigationManager NavigationManager { get; set; } = default!;
+        private UserDto? User { get; set; } = new(); // Initialize with an empty object
+        private bool IsLoading { get; set; } = true;
+        private bool IsSaving { get; set; } = false;
+        private bool HasError { get; set; } = false;
         private string? ErrorMessage { get; set; }
 
         protected override async Task OnInitializedAsync()
         {
             if (Id > 0)
             {
-                await GetUserAsync();
+                await LoadUserAsync();
+            }
+            else
+            {
+                IsLoading = false;
             }
         }
 
-        private async Task GetUserAsync()
+        private async Task LoadUserAsync()
         {
             try
             {
-                IsLoading = true;
-                HasError = false;
-                ErrorMessage = string.Empty;
-
-                if (User == null)
-                {
-                    User = await _apiClient.GetUserAsync(Id);
-                }
+                ResetErrorState();
+                User = await ApiClient.GetUserAsync(Id);
             }
             catch (Exception ex)
             {
-                HasError = true;
-                ErrorMessage = ex.Message;
+                HandleError(ex);
             }
             finally
             {
@@ -58,44 +45,59 @@ namespace BaseApp.Web.Pages.User
             }
         }
 
-        private async Task UpdateUserAsync()
+        private async Task SaveUserAsync()
         {
             IsSaving = true;
-            ErrorMessage = string.Empty;
-            HasError = false;
+            ResetErrorState();
 
             try
             {
-                if (Id > 0)
+                if (Id > 0) // Update user
                 {
-                    UserRequestDto userRequestDto = new UserRequestDto
-                    {
-                        UserName = User.UserName,
-                        FirstName = User.FirstName,
-                        LastName = User.LastName,
-                        Email = User.Email,
-                        PhoneNumber = User.PhoneNumber,
-                        DateOfBirth = User.DateOfBirth,
-                        IsActive = User.IsActive,
-                    };
-
-                    await _apiClient.UpdateUserAsync(Id, userRequestDto);
+                    var userRequest = MapToRequestDto(User);
+                    await ApiClient.UpdateUserAsync(Id, userRequest);
                 }
+                NavigationManager.NavigateTo("/users");
             }
             catch (Exception ex)
             {
-                HasError = true;
-                ErrorMessage = ex.Message;
+                HandleError(ex);
             }
             finally
             {
                 IsSaving = false;
-
-                if (!HasError)
-                {
-                    _navigationManager.NavigateTo("users");
-                }
             }
+        }
+
+        private static UserRequestDto MapToRequestDto(UserDto? user)
+        {
+            if (user == null) 
+            { 
+                throw new ArgumentNullException(nameof(user)); 
+            }
+
+            return new UserRequestDto
+            {
+                UserName = user.UserName,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email,
+                PhoneNumber = user.PhoneNumber,
+                DateOfBirth = user.DateOfBirth,
+                IsActive = user.IsActive
+            };
+        }
+
+        private void ResetErrorState()
+        {
+            HasError = false;
+            ErrorMessage = null;
+        }
+
+        private void HandleError(Exception ex)
+        {
+            HasError = true;
+            ErrorMessage = ex.Message;
         }
     }
 }

@@ -6,7 +6,7 @@
 
 <p>This component demonstrates editing user details and saving them back to the database.</p>
 
-@if (User == null)
+@if (IsLoading)
 {
     <p><em>Loading...</em></p>
 }
@@ -17,7 +17,7 @@ else if (HasError)
         <p>Failed to load user profile. Please try again later.</p>
         @if (!string.IsNullOrEmpty(ErrorMessage))
         {
-            <hr>
+            <hr />
             <p class="mb-0">@ErrorMessage</p>
         }
     </div>
@@ -26,8 +26,7 @@ else
 {
     <div class="row">
         <div class="col-md-4">
-            <EditForm Model="@User" FormName="EditUserProfile" OnValidSubmit="UpdateUserAsync">
-                <input type="hidden" />
+            <EditForm Model="@User" FormName="EditUserProfile" OnValidSubmit="SaveUserAsync">
                 <DataAnnotationsValidator />
                 <ValidationSummary />
 
@@ -56,21 +55,22 @@ else
                     <InputDate id="dateofbirth" @bind-Value="User.DateOfBirth" class="form-control" />
                 </div>
                 <div class="mb-3">
-                    <label for="isactive" class="form-label">IsActive</label>
-                    <div class="col-md-8">
-                        <InputSelect class="form-select form-control" @bind-Value="User.IsActive">
-                            <option value="true">True</option>
-                            <option value="false">False</option>
-                        </InputSelect>
-                    </div>
+                    <label for="isactive" class="form-label">Is Active:</label>
+                    <InputSelect id="isactive" class="form-select" @bind-Value="User.IsActive">
+                        <option value="true">True</option>
+                        <option value="false">False</option>
+                    </InputSelect>
                 </div>
-                <button type="submit" class="btn btn-primary d-block w-100 mb-2" disabled="@IsSaving"> @(IsSaving ? "Saving.." : "Save") </button>
+
+                <button type="submit" class="btn btn-primary d-block w-100 mb-2" disabled="@IsSaving">
+                    @(IsSaving ? "Saving..." : "Save")
+                </button>
             </EditForm>
 
-            <a class="btn btn-danger d-block w-100 mt-2 mb-2" role="button" href="/users">Cancel</a> 
+            <a class="btn btn-danger d-block w-100 mt-2 mb-2" href="/users">Cancel</a>
             @if (Id > 0)
             {
-                <a class="btn btn-primary d-block w-100" role="button" href="/users/delete/@User.Id?userName=@User.UserName">Delete</a>
+                <a class="btn btn-primary d-block w-100" href="/users/delete/@Id?userName=@User.UserName">Delete</a>
             }
         </div>
     </div>

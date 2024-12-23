@@ -29,9 +29,7 @@ namespace BaseApp.Web.Pages.User
                 IsLoading = true;
                 ErrorMessage = string.Empty;
 
-                //users = await _userClient.GetUsersAsync();
                 users = await _apiClient.GetUsersAsync();
-
             }
             catch (Exception ex)
             {
