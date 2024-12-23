@@ -3,12 +3,13 @@
 
 <PageTitle>Delete User</PageTitle>
 
-<h3>Delete Confirmation</h3>
+<h3>Are you sure you want to Delete @UserName?</h3>
 
-<p>Are you sure you want to delete user profile @UserName?</p>
-
-
-@if (HasError)
+@if (IsDeleted)
+{
+    <p><em>Deleting...</em></p>
+}
+else if (HasError)
 {
     <div class="alert alert-danger">
         <h4 class="alert-heading">Error</h4>

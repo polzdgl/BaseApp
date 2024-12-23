@@ -1,4 +1,5 @@
-﻿using BaseApp.Web.ServiceClients;
+﻿using BaseApp.Web.ErrorHandling;
+using BaseApp.Web.ServiceClients;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.WebUtilities;
 
@@ -6,14 +7,8 @@ namespace BaseApp.Web.Pages.User
 {
     public partial class Delete
     {
-        private readonly NavigationManager _navigationManager;
-        private readonly ApiClient _apiClient;
-
-        public Delete(NavigationManager navigationManager, ApiClient apiClient)
-        {
-            _navigationManager = navigationManager;
-            _apiClient = apiClient;
-        }
+        [Inject] private ApiClient ApiClient { get; set; } = default!;
+        [Inject] private NavigationManager NavigationManager { get; set; } = default!;
 
         [Parameter]
         public int Id { get; set; }
@@ -22,18 +17,25 @@ namespace BaseApp.Web.Pages.User
         public string? UserName { get; set; }
 
         internal bool IsDeleted = false;
+        private bool IsLoading = true;
         private bool HasError = false;
-        private string? ErrorMessage { get; set; }
+        private string? ErrorMessage = string.Empty;
 
         protected override async Task OnInitializedAsync()
         {
+            await GetQueryParameters();
+        }
+
+        private async Task GetQueryParameters()
+        {
             try
             {
-                var uri = _navigationManager.ToAbsoluteUri(_navigationManager.Uri);
+                var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
                 if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("userName", out var userName))
                 {
                     UserName = userName;
                 }
+                await Task.CompletedTask;
             }
             catch (Exception ex)
             {
@@ -47,25 +49,29 @@ namespace BaseApp.Web.Pages.User
             try
             {
                 IsDeleted = true;
-                ErrorMessage = string.Empty;
-                HasError = false;
+                ResetErrorState();
 
-                await _apiClient.DeleteUserAsync(Id);
+                await ApiClient.DeleteUserAsync(Id);
+                NavigationManager.NavigateTo("users");
             }
             catch (Exception ex)
             {
-                HasError = true;
-                ErrorMessage = ex.Message;
+                HandleError(ex);
             }
             finally
             {
                 IsDeleted = false;
-
-                if (!HasError)
-                {
-                    _navigationManager.NavigateTo("users");
-                }
             }
+        }
+
+        private void ResetErrorState()
+        {
+            ErrorHandler.ResetErrorState(ref HasError, ref ErrorMessage);
+        }
+
+        private void HandleError(Exception ex)
+        {
+            ErrorHandler.HandleError(ex, ref HasError, ref ErrorMessage);
         }
     }
 }

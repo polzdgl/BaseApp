@@ -127,7 +127,7 @@ namespace BaseApp.API.Controllers
             try
             {
                 // Validate the UserId
-                if (!_inputValidation.ValidateNumber(id, out var numberValidationError))
+                if (!_inputValidation.ValidateId(id, out var numberValidationError))
                 {
                     _logger.LogWarning("Invalid Id: {errorMessage}", numberValidationError);
                     return Problem(detail: $"Invalid Id: {id}. Errors: {numberValidationError}", statusCode: StatusCodes.Status400BadRequest);

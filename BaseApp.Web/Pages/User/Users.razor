@@ -4,9 +4,21 @@
 
 <h3>User List</h3>
 
-@if (users == null)
+@if (IsLoading)
 {
     <p>Loading...</p>
+}
+else if (HasError)
+{
+    <div class="alert alert-danger">
+        <h4 class="alert-heading">Error</h4>
+        <p>Failed to load user list. Please try again later..</p>
+        @if (!string.IsNullOrEmpty(ErrorMessage))
+        {
+            <hr />
+            <p class="mb-0">@ErrorMessage</p>
+        }
+    </div>
 }
 else if (!users.Any())
 {

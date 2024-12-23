@@ -1,4 +1,5 @@
 ﻿using BaseApp.Data.User.Dtos;
+using BaseApp.Web.ErrorHandling;
 using BaseApp.Web.ServiceClients;
 using Microsoft.AspNetCore.Components;
 
@@ -6,41 +7,36 @@ namespace BaseApp.Web.Pages.User
 {
     public partial class Create
     {
-        private NavigationManager _navigationManager;
-        private readonly ApiClient _apiClient;
-
-        public Create(NavigationManager navigationManager, ApiClient apiClient)
-        {
-            _navigationManager = navigationManager;
-            _apiClient = apiClient;
-        }
+        [Inject] private ApiClient ApiClient { get; set; } = default!;
+        [Inject] private NavigationManager NavigationManager { get; set; } = default!;
 
         private bool IsLoading = true;
-        private bool HasError = false;
         private bool IsSaving = false;
-        private string? ErrorMessage { get; set; }
+        private bool HasError = false;
+        private string? ErrorMessage = string.Empty;
+
+        private string? _errorMessage;
 
         [SupplyParameterFromForm]
         private UserRequestDto? UserRequestDto { get; set; } = new UserRequestDto();
 
         protected override async Task OnInitializedAsync()
         {
+            IsLoading = false;
         }
 
         private async Task CreateUserAsync()
         {
             IsSaving = true;
-            HasError = false;
-            ErrorMessage = string.Empty;
+            ResetErrorState();
 
             try
             {
-                await _apiClient.CreateUserAsync(UserRequestDto);
+                await ApiClient.CreateUserAsync(UserRequestDto);
             }
             catch (Exception ex)
             {
-                HasError = true;
-                ErrorMessage = ex.Message;
+                HandleError(ex);
             }
             finally
             {
@@ -48,9 +44,19 @@ namespace BaseApp.Web.Pages.User
 
                 if (!HasError) 
                 { 
-                    _navigationManager.NavigateTo("users"); 
+                    NavigationManager.NavigateTo("users"); 
                 }         
             }
+        }
+
+        private void ResetErrorState()
+        {
+            ErrorHandler.ResetErrorState(ref HasError, ref ErrorMessage);
+        }
+
+        private void HandleError(Exception ex)
+        {
+            ErrorHandler.HandleError(ex, ref HasError, ref ErrorMessage);
         }
     }
 }

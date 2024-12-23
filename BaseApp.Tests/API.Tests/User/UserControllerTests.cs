@@ -31,8 +31,8 @@ namespace BaseApp.Tests.API.Tests.User
             // Arrange
             var users = new List<UserDto>
             {
-                new UserDto { Id = 1, FirstName = "John", LastName = "Doe" },
-                new UserDto { Id = 2, FirstName = "Jane", LastName = "Smith" }
+                new UserDto { Id = 1, UserName = "User1", FirstName = "John", LastName = "Doe", Email = "johndoe@company.com" },
+                new UserDto { Id = 2, UserName = "User2",  FirstName = "Jane", LastName = "Smith", Email = "janesmith@company.com"}
             };
 
             _mockUserService.GetAllUserAsync().Returns(users);
@@ -51,7 +51,7 @@ namespace BaseApp.Tests.API.Tests.User
         {
             // Arrange
             var userId = 1;
-            var user = new UserDto { Id = userId, FirstName = "John", LastName = "Doe" };
+            var user = new UserDto { Id = 1, UserName = "User1", FirstName = "John", LastName = "Doe", Email = "johndoe@company.com" };
 
             _mockUserService.GetUserByIdAsync(userId).Returns(user);
 
@@ -105,6 +105,8 @@ namespace BaseApp.Tests.API.Tests.User
             // Arrange
             var userRequest = new UserRequestDto
             {
+                FirstName = "InvalidFirstName",
+                LastName = "InvalidLastName",
                 UserName = "invalidUser",
                 Email = "invalidemail"
             };

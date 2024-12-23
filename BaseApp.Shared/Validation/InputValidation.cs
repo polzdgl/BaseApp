@@ -9,8 +9,8 @@ namespace BaseApp.Shared.Validation
         public bool ValidateModel<T>(T model, out List<ValidationResult> validationResults)
         {
             validationResults = new List<ValidationResult>();
-            var validationContext = new ValidationContext(model);
-            return Validator.TryValidateObject(model, validationContext, validationResults, true);
+            var validationContext = new ValidationContext(model, serviceProvider: null, items: null);
+            return Validator.TryValidateObject(model, validationContext, validationResults, validateAllProperties: true);
         }
 
         // Validate if a number is within a specific range

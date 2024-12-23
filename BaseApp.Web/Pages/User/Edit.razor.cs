@@ -1,4 +1,5 @@
 ﻿using BaseApp.Data.User.Dtos;
+using BaseApp.Web.ErrorHandling;
 using BaseApp.Web.ServiceClients;
 using Microsoft.AspNetCore.Components;
 
@@ -8,31 +9,33 @@ namespace BaseApp.Web.Pages.User
     {
         [Parameter]
         public int Id { get; set; } // User ID from the URL
+
         [Inject] private ApiClient ApiClient { get; set; } = default!;
         [Inject] private NavigationManager NavigationManager { get; set; } = default!;
-        private UserDto? User { get; set; } = new(); // Initialize with an empty object
-        private bool IsLoading { get; set; } = true;
-        private bool IsSaving { get; set; } = false;
-        private bool HasError { get; set; } = false;
-        private string? ErrorMessage { get; set; }
+
+        private UserDto? User { get; set; }
+        private bool IsLoading = true;
+        private bool IsSaving = false;
+        private bool HasError = false;
+        private string? ErrorMessage = string.Empty;
 
         protected override async Task OnInitializedAsync()
         {
-            if (Id > 0)
-            {
-                await LoadUserAsync();
-            }
-            else
-            {
-                IsLoading = false;
-            }
+            await LoadUserAsync();
         }
 
         private async Task LoadUserAsync()
         {
+            if (Id <= 0)
+            {
+                IsLoading = false;
+                return;
+            }
+
             try
             {
                 ResetErrorState();
+                IsLoading = true;
                 User = await ApiClient.GetUserAsync(Id);
             }
             catch (Exception ex)
@@ -55,9 +58,9 @@ namespace BaseApp.Web.Pages.User
                 if (Id > 0) // Update user
                 {
                     var userRequest = MapToRequestDto(User);
-                    await ApiClient.UpdateUserAsync(Id, userRequest);
+                    var response = await ApiClient.UpdateUserAsync(Id, userRequest);
+                    NavigationManager.NavigateTo("/users");
                 }
-                NavigationManager.NavigateTo("/users");
             }
             catch (Exception ex)
             {
@@ -71,9 +74,9 @@ namespace BaseApp.Web.Pages.User
 
         private static UserRequestDto MapToRequestDto(UserDto? user)
         {
-            if (user == null) 
-            { 
-                throw new ArgumentNullException(nameof(user)); 
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
             }
 
             return new UserRequestDto
@@ -90,14 +93,12 @@ namespace BaseApp.Web.Pages.User
 
         private void ResetErrorState()
         {
-            HasError = false;
-            ErrorMessage = null;
+            ErrorHandler.ResetErrorState(ref HasError, ref ErrorMessage);
         }
 
         private void HandleError(Exception ex)
         {
-            HasError = true;
-            ErrorMessage = ex.Message;
+            ErrorHandler.HandleError(ex, ref HasError, ref ErrorMessage);
         }
     }
 }
