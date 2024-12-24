@@ -11,7 +11,8 @@ namespace BaseApp.Web.Pages.User
         [Inject] private ApiClient ApiClient { get; set; } = default!;
         [Inject] private NavigationManager NavigationManager { get; set; } = default!;
 
-        private IEnumerable<Data.User.Dtos.UserDto> users;
+        private IEnumerable<UserDto> users;
+        private DeleteConfirmation DeleteConfirmationPopup { get; set; } = default!;
 
         private bool IsLoading = true;
         private bool HasError = false;
@@ -39,6 +40,16 @@ namespace BaseApp.Web.Pages.User
             {
                 IsLoading = false;
             }
+        }
+
+        private void ShowDeletePopup(string userId, string userName)
+        {
+            DeleteConfirmationPopup.OpenPopup(userId, userName);
+        }
+
+        private async Task RefreshUserList()
+        {
+            await OnInitializedAsync(); // Reload the list after deletion.
         }
 
         private void ResetErrorState()
