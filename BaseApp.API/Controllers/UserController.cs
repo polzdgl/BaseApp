@@ -21,7 +21,7 @@ namespace BaseApp.API.Controllers
             _inputValidation = inputValidation;
         }
 
-        [HttpGet(Name = "GetUsersAsync")]
+        [HttpGet("users", Name = "GetUsersAsync")]
         [ProducesResponseType(typeof(IEnumerable<UserDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetUsersAsync()
         {
@@ -42,7 +42,7 @@ namespace BaseApp.API.Controllers
         [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetUserByIdAsync(int id)
+        public async Task<IActionResult> GetUserByIdAsync(string id)
         {
             try
             {
@@ -122,7 +122,7 @@ namespace BaseApp.API.Controllers
         [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> UpdateUserAsync(int id, [FromBody] UserRequestDto userRequestDto)
+        public async Task<IActionResult> UpdateUserAsync(string id, [FromBody] UserRequestDto userRequestDto)
         {
             try
             {
@@ -191,7 +191,7 @@ namespace BaseApp.API.Controllers
         [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> DeleteUserAsync(int id)
+        public async Task<IActionResult> DeleteUserAsync(string id)
         {
             try
             {

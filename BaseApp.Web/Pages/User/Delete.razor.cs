@@ -5,13 +5,13 @@ using Microsoft.AspNetCore.WebUtilities;
 
 namespace BaseApp.Web.Pages.User
 {
-    public partial class Delete
+    public partial class Delete : ComponentBase
     {
         [Inject] private ApiClient ApiClient { get; set; } = default!;
         [Inject] private NavigationManager NavigationManager { get; set; } = default!;
 
         [Parameter]
-        public int Id { get; set; }
+        public string Id { get; set; }
 
         [Parameter]
         public string? UserName { get; set; }

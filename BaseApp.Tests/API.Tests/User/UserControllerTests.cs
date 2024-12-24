@@ -31,8 +31,8 @@ namespace BaseApp.Tests.API.Tests.User
             // Arrange
             var users = new List<UserDto>
             {
-                new UserDto { Id = 1, UserName = "User1", FirstName = "John", LastName = "Doe", Email = "johndoe@company.com" },
-                new UserDto { Id = 2, UserName = "User2",  FirstName = "Jane", LastName = "Smith", Email = "janesmith@company.com"}
+                new UserDto { Id = "1", UserName = "User1", FirstName = "John", LastName = "Doe", Email = "johndoe@company.com" },
+                new UserDto { Id = "2", UserName = "User2",  FirstName = "Jane", LastName = "Smith", Email = "janesmith@company.com"}
             };
 
             _mockUserService.GetAllUserAsync().Returns(users);
@@ -50,8 +50,8 @@ namespace BaseApp.Tests.API.Tests.User
         public async Task GetUserByIdAsync_ReturnsOkResult_WhenUserIsFound()
         {
             // Arrange
-            var userId = 1;
-            var user = new UserDto { Id = 1, UserName = "User1", FirstName = "John", LastName = "Doe", Email = "johndoe@company.com" };
+            var userId = new Guid().ToString();
+            var user = new UserDto { Id = userId, UserName = "User1", FirstName = "John", LastName = "Doe", Email = "johndoe@company.com" };
 
             _mockUserService.GetUserByIdAsync(userId).Returns(user);
 
@@ -68,7 +68,7 @@ namespace BaseApp.Tests.API.Tests.User
         public async Task GetUserByIdAsync_ReturnsBadRequest_WhenIdIsInvalid()
         {
             // Arrange
-            var invalidUserId = -1;
+            var invalidUserId = "-1";
 
             // Act
             var result = await _controller.GetUserByIdAsync(invalidUserId);
@@ -123,7 +123,7 @@ namespace BaseApp.Tests.API.Tests.User
         public async Task UpdateUserAsync_ReturnsOkResult_WhenUpdateIsSuccessful()
         {
             // Arrange
-            var userId = 1;
+            var userId = new Guid().ToString();
             var userRequest = new UserRequestDto
             {
                 UserName = "updated.john",
@@ -145,7 +145,7 @@ namespace BaseApp.Tests.API.Tests.User
         public async Task DeleteUserAsync_ReturnsOkResult_WhenDeleteIsSuccessful()
         {
             // Arrange
-            var userId = 1;
+            var userId = new Guid().ToString();
 
             _mockUserService.DeleteUserAsync(userId).Returns(true);
 
@@ -160,7 +160,7 @@ namespace BaseApp.Tests.API.Tests.User
         public async Task DeleteUserAsync_ReturnsBadRequest_WhenIdIsInvalid()
         {
             // Arrange
-            var invalidUserId = -1;;
+            var invalidUserId = "-1";;
 
             // Act
             var result = await _controller.DeleteUserAsync(invalidUserId);

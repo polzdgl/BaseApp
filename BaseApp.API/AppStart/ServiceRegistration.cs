@@ -12,8 +12,6 @@ namespace BaseApp.API.AppStart
     {
         public static IServiceCollection AddApplicationServices(this IServiceCollection services)
         {
-            services.AddLogging(loggingBuilder  => loggingBuilder.AddSerilog());
-
             //Add Validator
             services.AddSingleton<InputValidation>();
 
@@ -21,7 +19,6 @@ namespace BaseApp.API.AppStart
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IRepositoryFactory, RepositoryFactory>();
 
-            services.AddLogging(logBuilder => logBuilder.AddSerilog());
 
             return services;
         }

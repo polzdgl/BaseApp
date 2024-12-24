@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Components;
 
 namespace BaseApp.Web.Pages.User
 {
-    public partial class Create
+    public partial class Create : ComponentBase
     {
         [Inject] private ApiClient ApiClient { get; set; } = default!;
         [Inject] private NavigationManager NavigationManager { get; set; } = default!;

@@ -4,7 +4,7 @@ namespace BaseApp.Data.User.Dtos
 {
     public record UserDto
     {
-        public int Id { get; set; }
+        public string Id { get; set; }
 
         [Required(ErrorMessage = "User Name is required!")]
         public required string UserName { get; set; }

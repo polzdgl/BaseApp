@@ -5,10 +5,10 @@ using Microsoft.AspNetCore.Components;
 
 namespace BaseApp.Web.Pages.User
 {
-    public partial class Edit
+    public partial class Edit : ComponentBase
     {
         [Parameter]
-        public int Id { get; set; } // User ID from the URL
+        public string Id { get; set; } // User ID from the URL
 
         [Inject] private ApiClient ApiClient { get; set; } = default!;
         [Inject] private NavigationManager NavigationManager { get; set; } = default!;
@@ -26,9 +26,10 @@ namespace BaseApp.Web.Pages.User
 
         private async Task LoadUserAsync()
         {
-            if (Id <= 0)
+            if (string.IsNullOrEmpty(Id))
             {
                 IsLoading = false;
+                HandleError(new ArgumentException("User ID cannot be null or empty."));
                 return;
             }
 
@@ -55,7 +56,7 @@ namespace BaseApp.Web.Pages.User
 
             try
             {
-                if (Id > 0) // Update user
+                if (!string.IsNullOrEmpty(Id)) // Update user
                 {
                     var userRequest = MapToRequestDto(User);
                     var response = await ApiClient.UpdateUserAsync(Id, userRequest);

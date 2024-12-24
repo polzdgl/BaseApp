@@ -46,11 +46,11 @@ namespace BaseApp.ServiceProvider.Services
             return users.Select(u => UserDto.FromModel(u));
         }
 
-        public async Task<UserDto> GetUserByIdAsync(int id)
+        public async Task<UserDto> GetUserByIdAsync(string id)
         {
             _logger.LogInformation("Getting User with Id: {id}", id);
 
-            var user = await this.Repository.UserRepository.FindAsync(id);
+            var user = await this.Repository.UserRepository.GetUserAsync(id);
 
             if (user == null)
             {
@@ -61,9 +61,9 @@ namespace BaseApp.ServiceProvider.Services
             return UserDto.FromModel(user);
         }
 
-        public async Task<bool> UpdateUserAsync(int id, UserRequestDto userRequestDto)
+        public async Task<bool> UpdateUserAsync(string id, UserRequestDto userRequestDto)
         {
-            var user = await this.Repository.UserRepository.FindAsync(id);
+            var user = await this.Repository.UserRepository.GetUserAsync(id);
 
             if (user == null)
             {
@@ -72,7 +72,7 @@ namespace BaseApp.ServiceProvider.Services
             }
 
             // Check if UserName has changed
-            if(userRequestDto.UserName != user.UserName)
+            if (userRequestDto.UserName != user.UserName)
             {
                 // Check if UserName already taken
                 bool isUserNameTaken = await this.Repository.UserRepository.IsUserNameTaken(id, userRequestDto.UserName);
@@ -117,11 +117,11 @@ namespace BaseApp.ServiceProvider.Services
             return await this.Repository.UserRepository.CreateAsync(User.FromDto(userRequestDto));
         }
 
-        public async Task<bool> DeleteUserAsync(int id)
+        public async Task<bool> DeleteUserAsync(string id)
         {
             _logger.LogInformation("Deleting User with Id: {id}", id);
 
-            var user = await this.Repository.UserRepository.FindAsync(id);
+            var user = await this.Repository.UserRepository.GetUserAsync(id);
 
             if (user == null)
             {

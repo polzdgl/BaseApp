@@ -1,9 +1,9 @@
-﻿@page "/users/delete/{id:int}"
+﻿@page "/users/delete/{id}"
 @attribute [StreamRendering(true)]
 
 <PageTitle>Delete User</PageTitle>
 
-<h3>Are you sure you want to Delete @UserName?</h3>
+<h3>Are you sure you want to Delete UserName: @UserName?</h3>
 
 @if (IsDeleted)
 {
