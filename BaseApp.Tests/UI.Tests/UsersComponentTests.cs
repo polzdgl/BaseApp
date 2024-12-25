@@ -10,11 +10,11 @@ namespace BaseApp.Tests.UI.Tests.User
 {
     public class UsersComponentTests : TestContext
     {
-        private readonly IApiClient _mockApiClient;
+        private readonly IUserApiClient _mockApiClient;
 
         public UsersComponentTests()
         {
-            _mockApiClient = Substitute.For<IApiClient>();
+            _mockApiClient = Substitute.For<IUserApiClient>();
             Services.AddSingleton(_mockApiClient);
         }
 

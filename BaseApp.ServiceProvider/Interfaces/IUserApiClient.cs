@@ -3,7 +3,7 @@ using BaseApp.Shared.Dtos;
 
 namespace BaseApp.ServiceProvider.Interfaces
 {
-    public interface IApiClient
+    public interface IUserApiClient
     {
         Task<PaginatedResult<UserDto>> GetUsersAsync(int page, int pageSize, CancellationToken cancellationToken = default);
         Task<UserDto> GetUserAsync(string id, CancellationToken cancellationToken = default);

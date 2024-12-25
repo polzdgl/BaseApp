@@ -1,5 +1,5 @@
 ﻿using BaseApp.Data.User.Dtos;
-using BaseApp.Web.ServiceClients;
+using BaseApp.ServiceProvider.Interfaces;
 using BaseApp.Web.Shared;
 using Microsoft.AspNetCore.Components;
 
@@ -7,7 +7,7 @@ namespace BaseApp.Web.Pages.User
 {
     public partial class Create : ComponentBase
     {
-        [Inject] private ApiClient ApiClient { get; set; } = default!;
+        [Inject] private IUserApiClient ApiClient { get; set; } = default!;
         [Inject] private NavigationManager NavigationManager { get; set; } = default!;
 
         private bool IsLoading = true;
