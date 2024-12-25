@@ -1,10 +1,19 @@
 ﻿using BaseApp.Data.LogTable.Models;
+using BaseApp.Data.User.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace BaseApp.Data.Context
 {
-    public class ApplicationDbContext : IdentityDbContext<User.Models.User>
+    public class ApplicationDbContext : IdentityDbContext<
+         ApplicationUser,
+         ApplicationRole,
+         string,
+         ApplicationUserClaim,
+         ApplicationUserRole,
+         ApplicationUserLogin,
+         ApplicationRoleClaim,
+         ApplicationUserToken>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
@@ -15,7 +24,7 @@ namespace BaseApp.Data.Context
         public ApplicationDbContext() { }
 
         //public DbSet<UserAccounts> UserAccounts { get; set; }
-        public DbSet<User.Models.User> User { get; set; }
+        public DbSet<ApplicationUser> User { get; set; }
         public DbSet<Log> Logs { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -25,6 +34,7 @@ namespace BaseApp.Data.Context
             // Set the default schema for the DbContext
             modelBuilder.HasDefaultSchema("App");
 
+            #region Logs related tables
             // Set the Log table 
             modelBuilder.Entity<Log>(entity =>
             {
@@ -109,25 +119,68 @@ namespace BaseApp.Data.Context
                 entity.HasIndex(e => new { e.TimeStamp, e.Level, e.CorrelationId })
                       .HasDatabaseName("IX_Log_TimeStamp_Level_CorrelationId");
             });
+            #endregion
 
-            modelBuilder.Entity<User.Models.User>(entity =>
+            #region User Identity tables
+            modelBuilder.Entity<ApplicationUser>(entity =>
             {
-                entity.ToTable("User", schema: "App");
+                entity.ToTable("ApplicationUser", schema: "User");
 
-                entity.Property(e => e.Id).ValueGeneratedOnAdd();
+                entity.Property(e => e.FirstName).HasMaxLength(256);
 
-                entity.Property(e => e.Email)
-                .IsRequired()
-                .IsUnicode(true);
+                entity.Property(e => e.LastName).HasMaxLength(256);
 
-                entity.Property(e => e.IsActive)             
+                entity.Property(e => e.IsActive)
                 .HasDefaultValue(true)
                 .IsRequired();
 
-                entity.HasIndex(e => e.Email)
-                .HasDatabaseName("XI_User_Email")
-                .IsUnique(true);
+                //entity.HasIndex(e => e.Email)
+                //.HasDatabaseName("XI_User_Email")
+                //.IsUnique(true);
             });
+
+            modelBuilder.Entity<ApplicationRole>(entity =>
+            {
+                entity.ToTable("ApplicationRole", schema: "User");
+
+                entity.Property(e => e.Description).HasMaxLength(512);
+
+                entity.Property(e => e.Permissions).HasMaxLength(1024);
+            });
+
+            modelBuilder.Entity<ApplicationUserRole>(entity =>
+            {
+                entity.ToTable("ApplicationUserRole ", schema: "User");
+
+                entity.Property(e => e.AssignedBy).HasMaxLength(256);
+            });
+
+            modelBuilder.Entity<ApplicationUserClaim>(entity =>
+            {
+                entity.ToTable("ApplicationUserClaim ", schema: "User");
+
+                entity.Property(e => e.Source).HasMaxLength(256);
+            });
+
+            modelBuilder.Entity<ApplicationRoleClaim>(entity =>
+            {
+                entity.ToTable("ApplicationRoleClaim ", schema: "User");
+
+                entity.Property(e => e.Source).HasMaxLength(256);
+            });
+
+            modelBuilder.Entity<ApplicationUserLogin>(entity =>
+            {
+                entity.ToTable("ApplicationUserLogin ", schema: "User");
+
+                entity.Property(e => e.LoginProviderDetails).HasMaxLength(256);
+            });
+
+            modelBuilder.Entity<ApplicationUserToken>(entity =>
+            {
+                entity.ToTable("ApplicationUserToken  ", schema: "User");
+            });
+            #endregion
         }
     }
 }

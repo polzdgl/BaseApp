@@ -4,7 +4,7 @@ using System.ComponentModel;
 
 namespace BaseApp.Data.User.Models
 {
-    public class User : IdentityUser
+    public class ApplicationUser : IdentityUser
     {
         public string? FirstName { get; set; }
 
@@ -15,9 +15,9 @@ namespace BaseApp.Data.User.Models
         [DefaultValue(true)]
         public bool IsActive { get; set; }
 
-        public static User FromDto(UserRequestDto userRequestDto)
+        public static ApplicationUser FromDto(UserRequestDto userRequestDto)
         {
-            return new User
+            return new ApplicationUser
             {
                 UserName = userRequestDto.UserName,
                 Email = userRequestDto.Email,

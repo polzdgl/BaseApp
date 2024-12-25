@@ -3,7 +3,9 @@ using BaseApp.API.Middleware;
 using BaseApp.API.Settings;
 using BaseApp.Data.Context;
 using BaseApp.Data.User.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Swashbuckle.AspNetCore.Filters;
 using System.Diagnostics;
@@ -64,9 +66,18 @@ builder.Services.AddOpenApi();
 builder.Services.AddAuthorization();
 builder.Services.AddAuthentication();
 
-// Add Identity API Endpoints
-builder.Services.AddIdentityApiEndpoints<User>()
-    .AddEntityFrameworkStores<ApplicationDbContext>();
+builder.Services.AddIdentityApiEndpoints<ApplicationUser>(options =>
+{
+    // Configure Identity options 
+    options.Password.RequireDigit = true;
+    options.Password.RequiredLength = 12;
+    options.Password.RequireNonAlphanumeric = true;
+    options.Password.RequireUppercase = true;
+    options.Password.RequireLowercase = true;
+})
+    .AddRoles<ApplicationRole>()
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddDefaultTokenProviders();
 
 // For RequestHeader
 builder.Services.AddHttpContextAccessor();
@@ -124,7 +135,7 @@ app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
 app.UseSerilogRequestLogging();
 
 // Add Identity
-app.MapIdentityApi<User>();
+app.MapIdentityApi<ApplicationUser>();
 
 // Only for development environment
 if (app.Environment.IsDevelopment())

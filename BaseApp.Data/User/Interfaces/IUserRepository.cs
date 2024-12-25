@@ -1,11 +1,12 @@
 ﻿using BaseApp.Data.Repositories.Interfaces;
+using BaseApp.Data.User.Models;
 
 namespace BaseApp.Data.User.Interfaces
 {
-    public interface IUserRepository : IGenericRepository<Models.User>
+    public interface IUserRepository : IGenericRepository<ApplicationUser>
     {
         Task<bool> IsExistingUser(string? userName);
         Task<bool> IsUserNameTaken(string id, string? userName);
-        Task<Models.User> GetUserAsync(string id);
+        Task<ApplicationUser> GetUserAsync(string id);
     }
 }

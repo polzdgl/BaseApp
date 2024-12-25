@@ -114,7 +114,7 @@ namespace BaseApp.ServiceProvider.Services
             // Set User IsActive = 1 by default
             userRequestDto.IsActive = true;
 
-            return await this.Repository.UserRepository.CreateAsync(User.FromDto(userRequestDto));
+            return await this.Repository.UserRepository.CreateAsync(ApplicationUser.FromDto(userRequestDto));
         }
 
         public async Task<bool> DeleteUserAsync(string id)
