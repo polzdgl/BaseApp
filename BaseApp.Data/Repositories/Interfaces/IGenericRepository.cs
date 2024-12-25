@@ -11,6 +11,7 @@ namespace BaseApp.Data.Repositories.Interfaces
         bool Any(Expression<Func<T, bool>> expression);
         Task<bool> AnyAsync(Expression<Func<T, bool>> expression);
         IQueryable<T> FilterBy(IQueryable<T> entityList, Expression<Func<T, bool>> filterExpression);
+        Task<IList<T>> FilterByAsync(IQueryable<T> entityList, Expression<Func<T, bool>> filterExpression);
         bool Create(T entity, bool saveChanges = true);
         Task<bool> CreateAsync(T entity, bool saveChanges = true);
         bool CreateAll(IEnumerable<T> entityList, bool saveChanges = true);
@@ -33,9 +34,12 @@ namespace BaseApp.Data.Repositories.Interfaces
         Task<int> SaveChangesAsync();
         T Single(Expression<Func<T, bool>> predicate);
         Task<T> SingleAsync(Expression<Func<T, bool>> predicate);
-        T SingleOrDefault(Expression<Func<T, bool>> predicate);
-        Task<T> SingleOrDefaultAsync(Expression<Func<T, bool>> predicate);
-        Task<T> FindAsync(int id);
+        T? SingleOrDefault(Expression<Func<T, bool>> predicate);
+        Task<T?> SingleOrDefaultAsync(Expression<Func<T, bool>> predicate);
+        Task<T?> FindAsync(int id);
+        Task<T?> FindAsync(string id);
         void RollBack();
+        Task<int> CountAsync();
+        Task<IEnumerable<T>> GetPagedAsync(int page, int pageSize);
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using BaseApp.Data.User.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace BaseApp.Data.User.Dtos
 {
@@ -30,7 +31,7 @@ namespace BaseApp.Data.User.Dtos
 
         public bool IsActive { get; set; }
 
-        public static UserDto FromModel(Models.User user)
+        public static UserDto FromModel(ApplicationUser user)
         {
             return new UserDto
             {

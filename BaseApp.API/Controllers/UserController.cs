@@ -1,6 +1,7 @@
 ﻿using BaseApp.Data.User.Dtos;
 using BaseApp.Data.User.Models;
 using BaseApp.ServiceProvider.Interfaces;
+using BaseApp.Shared.Dtos;
 using BaseApp.Shared.Validation;
 using Microsoft.AspNetCore.Mvc;
 
@@ -22,12 +23,12 @@ namespace BaseApp.API.Controllers
         }
 
         [HttpGet("users", Name = "GetUsersAsync")]
-        [ProducesResponseType(typeof(IEnumerable<UserDto>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetUsersAsync()
+        [ProducesResponseType(typeof(PaginatedResult<UserDto>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetUsersAsync([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
             try
             {
-                IEnumerable<UserDto> users = await _userService.GetAllUserAsync();
+                PaginatedResult<UserDto> users = await _userService.GetUsersAsync(page, pageSize);
 
                 return Ok(users);
             }
@@ -52,7 +53,7 @@ namespace BaseApp.API.Controllers
                     return Problem(detail: $"Invalid Id: {id}. Errors: {numberValidationError}", statusCode: StatusCodes.Status400BadRequest);
                 }
 
-                UserDto user = await _userService.GetUserByIdAsync(id);
+                UserDto user = await _userService.GetUserAsync(id);
 
                 return user is not null ? Ok(user) :
                     Problem(detail: $"User ID: {id} was not found!", statusCode: StatusCodes.Status404NotFound);
@@ -106,7 +107,7 @@ namespace BaseApp.API.Controllers
                         statusCode: StatusCodes.Status400BadRequest);
                 }
 
-                bool isUserCreated = await _userService.AddUserAsync(userRequestDto);
+                bool isUserCreated = await _userService.CreateUserAsync(userRequestDto);
 
                 return isUserCreated ? this.Created() :
                     Problem(detail: $"Failed to Create Username: {userRequestDto.UserName}!", statusCode: StatusCodes.Status400BadRequest);

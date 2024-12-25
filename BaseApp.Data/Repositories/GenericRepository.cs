@@ -110,6 +110,7 @@ namespace BaseApp.Data.Repositories
         {
             return await BulkUpdateAllAsync(entityList, bulkConfig);
         }
+
         public virtual bool Delete(T entity, bool saveChanges = true)
         {
             this._dbContext.Set<T>().Remove(entity);
@@ -172,15 +173,16 @@ namespace BaseApp.Data.Repositories
             return await _dbContext.Set<T>().SingleAsync(predicate);
         }
 
-        public virtual T FirstOrDefault(Expression<Func<T, bool>> predicate)
+        public virtual T? FirstOrDefault(Expression<Func<T, bool>> predicate)
         {
             return _dbContext.Set<T>().FirstOrDefault(predicate);
         }
 
-        public async virtual Task<T> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate)
+        public async virtual Task<T?> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate)
         {
             return await _dbContext.Set<T>().FirstOrDefaultAsync(predicate);
         }
+
         public virtual T First(Expression<Func<T, bool>> predicate)
         {
             return this._dbContext.Set<T>().First(predicate);
@@ -191,17 +193,22 @@ namespace BaseApp.Data.Repositories
             return await this._dbContext.Set<T>().FirstAsync(predicate);
         }
 
-        public virtual T SingleOrDefault(Expression<Func<T, bool>> predicate)
+        public virtual T? SingleOrDefault(Expression<Func<T, bool>> predicate)
         {
             return this._dbContext.Set<T>().SingleOrDefault(predicate);
         }
 
-        public async virtual Task<T> SingleOrDefaultAsync(Expression<Func<T, bool>> predicate)
+        public async virtual Task<T?> SingleOrDefaultAsync(Expression<Func<T, bool>> predicate)
         {
             return await this._dbContext.Set<T>().SingleOrDefaultAsync(predicate);
         }
 
-        public async virtual Task<T> FindAsync(int id)
+        public async virtual Task<T?> FindAsync(int id)
+        {
+            return await this._dbContext.Set<T>().FindAsync(id);
+        }
+
+        public async virtual Task<T?> FindAsync(string id)
         {
             return await this._dbContext.Set<T>().FindAsync(id);
         }
@@ -210,6 +217,7 @@ namespace BaseApp.Data.Repositories
         {
             return this._dbContext.Set<T>();
         }
+
         public async virtual Task<IEnumerable<T>> GetAllAsync()
         {
             return await this._dbContext.Set<T>().ToListAsync();
@@ -246,11 +254,31 @@ namespace BaseApp.Data.Repositories
             return await this._dbContext.Set<T>().AnyAsync(expression);
         }
 
+        public async virtual Task<int> CountAsync()
+        {
+            return await this._dbContext.Set<T>().CountAsync();
+        }
+
+        public async Task<IEnumerable<T>> GetPagedAsync(int page, int pageSize)
+        {
+            return await this._dbContext.Set<T>()
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+        }
+
         public virtual IQueryable<T> FilterBy(IQueryable<T> entityList, Expression<Func<T, bool>> filterExpression)
         {
             var query = entityList.Where(filterExpression);
             return query;
         }
+
+        public virtual async Task<IList<T>> FilterByAsync(IQueryable<T> entityList, Expression<Func<T, bool>> filterExpression)
+        {
+            var query = entityList.Where(filterExpression);
+            return await query.ToListAsync();
+        }
+
 
         public virtual bool Update(T entity, bool saveChanges = true)
         {

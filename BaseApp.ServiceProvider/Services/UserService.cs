@@ -3,6 +3,7 @@ using BaseApp.Data.Repositories.Interfaces;
 using BaseApp.Data.User.Dtos;
 using BaseApp.Data.User.Models;
 using BaseApp.ServiceProvider.Interfaces;
+using BaseApp.Shared.Dtos;
 using Microsoft.Extensions.Logging;
 using System.Data;
 
@@ -32,25 +33,38 @@ namespace BaseApp.ServiceProvider.Services
             }
         }
 
-        public async Task<IEnumerable<UserDto>> GetAllUserAsync()
+        public async Task<PaginatedResult<UserDto>> GetUsersAsync(int page, int pageSize)
         {
-            _logger.LogInformation("Getting all Users");
+            _logger.LogInformation($"Getting Users for page {page} with page size {pageSize}");
 
-            var users = await this.Repository.UserRepository.GetAllAsync();
+            var totalUsers = await this.Repository.UserRepository.CountAsync(); // Get total user count
+            var users = await this.Repository.UserRepository.GetPagedAsync(page, pageSize); // Get paginated data
 
-            if (users == null)
+            if (users == null || !users.Any())
             {
-                return Enumerable.Empty<UserDto>();
+                return new PaginatedResult<UserDto>
+                {
+                    Items = Enumerable.Empty<UserDto>(),
+                    TotalCount = 0,
+                    Page = page,
+                    PageSize = pageSize
+                };
             }
 
-            return users.Select(u => UserDto.FromModel(u));
+            return new PaginatedResult<UserDto>
+            {
+                Items = users.Select(u => UserDto.FromModel(u)),
+                TotalCount = totalUsers,
+                Page = page,
+                PageSize = pageSize
+            };
         }
 
-        public async Task<UserDto> GetUserByIdAsync(string id)
+        public async Task<UserDto> GetUserAsync(string id)
         {
             _logger.LogInformation("Getting User with Id: {id}", id);
 
-            var user = await this.Repository.UserRepository.GetUserAsync(id);
+            var user = await this.Repository.UserRepository.FindAsync(id);
 
             if (user == null)
             {
@@ -75,7 +89,7 @@ namespace BaseApp.ServiceProvider.Services
             if (userRequestDto.UserName != user.UserName)
             {
                 // Check if UserName already taken
-                bool isUserNameTaken = await this.Repository.UserRepository.IsUserNameTaken(id, userRequestDto.UserName);
+                bool isUserNameTaken = await this.Repository.UserRepository.IsUserNameTakenAsync(id, userRequestDto.UserName);
 
                 if (isUserNameTaken)
                 {
@@ -98,10 +112,10 @@ namespace BaseApp.ServiceProvider.Services
             return await this.Repository.UserRepository.UpdateAsync(user);
         }
 
-        public async Task<bool> AddUserAsync(UserRequestDto userRequestDto)
+        public async Task<bool> CreateUserAsync(UserRequestDto userRequestDto)
         {
             // Check if UserName already exists
-            bool isExistingUserName = await this.Repository.UserRepository.IsExistingUser(userRequestDto.UserName);
+            bool isExistingUserName = await this.Repository.UserRepository.IsExistingUserAsync(userRequestDto.UserName);
 
             if (isExistingUserName)
             {
@@ -114,7 +128,7 @@ namespace BaseApp.ServiceProvider.Services
             // Set User IsActive = 1 by default
             userRequestDto.IsActive = true;
 
-            return await this.Repository.UserRepository.CreateAsync(User.FromDto(userRequestDto));
+            return await this.Repository.UserRepository.CreateAsync(ApplicationUser.FromDto(userRequestDto));
         }
 
         public async Task<bool> DeleteUserAsync(string id)

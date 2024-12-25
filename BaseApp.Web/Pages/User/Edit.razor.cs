@@ -1,6 +1,6 @@
 ﻿using BaseApp.Data.User.Dtos;
+using BaseApp.ServiceProvider.Interfaces;
 using BaseApp.Web.Shared;
-using BaseApp.Web.ServiceClients;
 using Microsoft.AspNetCore.Components;
 
 namespace BaseApp.Web.Pages.User
@@ -10,7 +10,7 @@ namespace BaseApp.Web.Pages.User
         [Parameter]
         public string Id { get; set; } // User ID from the URL
 
-        [Inject] private ApiClient ApiClient { get; set; } = default!;
+        [Inject] private IUserApiClient ApiClient { get; set; } = default!;
         [Inject] private NavigationManager NavigationManager { get; set; } = default!;
 
         private UserDto? User { get; set; }
