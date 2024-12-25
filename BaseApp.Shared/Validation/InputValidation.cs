@@ -40,15 +40,15 @@ namespace BaseApp.Shared.Validation
         }
 
         // Validate ID (greater than 0)
-        public bool ValidateId(int value, out string validationErrorMessage)
+        public bool ValidateId(string value, out string validationErrorMessage)
         {
-            if (value > 0)
+            if (Guid.TryParse(value, out _))
             {
                 validationErrorMessage = string.Empty;
                 return true;
             }
 
-            validationErrorMessage = "The ID must be greater than 0.";
+            validationErrorMessage = "The ID must be a valid GUID.";
             return false;
         }
 

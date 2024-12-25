@@ -1,5 +1,6 @@
 ﻿@page "/users"
 @using BaseApp.Data.User.Dtos
+@using BaseApp.Web.Shared
 @attribute [StreamRendering(true)]
 
 <h3>User List</h3>
@@ -47,12 +48,12 @@ else
                     <td>@user.UserName</td>
                     <td>@user.FirstName @user.LastName</td>
                     <td>@user.Email</td>
-                    <td>@user.PhoneNumber</td>           
-                    <td>@user.DateOfBirth?.ToShortDateString()</td>                    
-                    <th>@user.Age</th>
+                    <td>@user.PhoneNumber</td>
+                    <td>@user.DateOfBirth?.ToShortDateString()</td>
+                    <td>@user.Age</td>
                     <td style="white-space:nowrap">
                         <a class="btn btn-primary btn-sm" href="/users/edit/@user.Id">Edit</a>
-                        <a class="btn btn-primary btn-sm" href="/users/delete/@user.Id?userName=@user.UserName">Delete</a>
+                        <button class="btn btn-danger btn-sm" @onclick="() => ShowDeletePopup(user.Id, user.UserName)">Delete</button>
                     </td>
                 </tr>
             }
@@ -62,3 +63,8 @@ else
 <div class="figure-caption">
     <a class="btn btn-primary" role="button" href="/users/create">Create User</a>
 </div>
+
+<DeleteConfirmation @ref="DeleteConfirmationPopup"
+                    Title="Confirm User Deletion"
+                    OnConfirm="DeleteUser"
+                    OnCancel="HandleCancel" />

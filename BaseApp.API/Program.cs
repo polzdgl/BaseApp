@@ -2,6 +2,7 @@ using BaseApp.API.AppStart;
 using BaseApp.API.Middleware;
 using BaseApp.API.Settings;
 using BaseApp.Data.Context;
+using BaseApp.Data.User.Models;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Swashbuckle.AspNetCore.Filters;
@@ -41,6 +42,8 @@ if (!string.IsNullOrEmpty(loggingFileLocation))
 Log.Logger = loggerConfiguration.CreateLogger();
 builder.Host.UseSerilog(Log.Logger);
 
+builder.Services.AddLogging(logBuilder => logBuilder.AddSerilog());
+
 // Inject DB Context
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString,
@@ -60,6 +63,10 @@ builder.Services.AddOpenApi();
 
 builder.Services.AddAuthorization();
 builder.Services.AddAuthentication();
+
+// Add Identity API Endpoints
+builder.Services.AddIdentityApiEndpoints<User>()
+    .AddEntityFrameworkStores<ApplicationDbContext>();
 
 // For RequestHeader
 builder.Services.AddHttpContextAccessor();
@@ -115,6 +122,9 @@ app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
 
 // Serilog Logging
 app.UseSerilogRequestLogging();
+
+// Add Identity
+app.MapIdentityApi<User>();
 
 // Only for development environment
 if (app.Environment.IsDevelopment())

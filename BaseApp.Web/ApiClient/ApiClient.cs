@@ -7,12 +7,12 @@ namespace BaseApp.Web.ServiceClients
     {
         public async Task<IEnumerable<UserDto>> GetUsersAsync(CancellationToken cancellationToken = default)
         {
-            var userDtos = await httpClient.GetFromJsonAsync<IEnumerable<UserDto>>("/user", cancellationToken = default);
+            var userDtos = await httpClient.GetFromJsonAsync<IEnumerable<UserDto>>("/user/users", cancellationToken = default);
 
             return userDtos ?? Enumerable.Empty<UserDto>();
         }
 
-        public async Task<UserDto> GetUserAsync(int id, CancellationToken cancellationToken = default)
+        public async Task<UserDto> GetUserAsync(string id, CancellationToken cancellationToken = default)
         {
             var userDto = await httpClient.GetFromJsonAsync<UserDto>($"/user/{id}", cancellationToken);
 
@@ -28,30 +28,18 @@ namespace BaseApp.Web.ServiceClients
         public async Task<HttpResponseMessage> CreateUserAsync(UserRequestDto userRequestDto, CancellationToken cancellationToken = default)
         {
             var response = await httpClient.PostAsJsonAsync<UserRequestDto>($"/user", userRequestDto, cancellationToken);
-
-            // Check if the request was successful, or throw error
-            response.EnsureSuccessStatusCode();
-
             return response;
         }
 
-        public async Task<HttpResponseMessage> UpdateUserAsync(int id, UserRequestDto userRequestDto, CancellationToken cancellationToken = default)
+        public async Task<HttpResponseMessage> UpdateUserAsync(string id, UserRequestDto userRequestDto, CancellationToken cancellationToken = default)
         {
             var response = await httpClient.PutAsJsonAsync<UserRequestDto>($"/user/{id}", userRequestDto, cancellationToken);
-
-            // Check if the request was successful, or throw error
-            response.EnsureSuccessStatusCode();
-
             return response;
         }
 
-        public async Task<HttpResponseMessage> DeleteUserAsync(int id, CancellationToken cancellationToken = default)
+        public async Task<HttpResponseMessage> DeleteUserAsync(string id, CancellationToken cancellationToken = default)
         {
             var response = await httpClient.DeleteAsync($"/user/{id}", cancellationToken);
-
-            // Check if the request was successful, or throw error
-            response.EnsureSuccessStatusCode();
-
             return response;
         }
     }

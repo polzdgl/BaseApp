@@ -21,7 +21,7 @@ namespace BaseApp.API.Controllers
             _inputValidation = inputValidation;
         }
 
-        [HttpGet(Name = "GetUsersAsync")]
+        [HttpGet("users", Name = "GetUsersAsync")]
         [ProducesResponseType(typeof(IEnumerable<UserDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetUsersAsync()
         {
@@ -34,7 +34,7 @@ namespace BaseApp.API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"An unexpected error occurred while getting all Users list!");
-                return Problem(detail: $"An unexpected error occurred while getting all Users list!", statusCode: StatusCodes.Status500InternalServerError);
+                return Problem(detail: ex.Message.ToString(), statusCode: StatusCodes.Status500InternalServerError);
             }
         }
 
@@ -42,7 +42,7 @@ namespace BaseApp.API.Controllers
         [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetUserByIdAsync(int id)
+        public async Task<IActionResult> GetUserByIdAsync(string id)
         {
             try
             {
@@ -55,12 +55,12 @@ namespace BaseApp.API.Controllers
                 UserDto user = await _userService.GetUserByIdAsync(id);
 
                 return user is not null ? Ok(user) :
-                    Problem(detail: $"User ID: {id} was found!", statusCode: StatusCodes.Status404NotFound);
+                    Problem(detail: $"User ID: {id} was not found!", statusCode: StatusCodes.Status404NotFound);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"An unexpected error occurred while getting UserId: {id}");
-                return Problem(detail: $"An unexpected error occurred while getting UserId: {id}", statusCode: StatusCodes.Status500InternalServerError);
+                return Problem(detail: ex.Message.ToString(), statusCode: StatusCodes.Status500InternalServerError);
             }
         }
 
@@ -114,7 +114,7 @@ namespace BaseApp.API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"An unexpected error occurred while creating UserName: {userRequestDto.UserName}");
-                return Problem(detail: $"An unexpected error occurred while creating UserName: {userRequestDto.UserName}", statusCode: StatusCodes.Status500InternalServerError);
+                return Problem(detail: ex.Message.ToString(), statusCode: StatusCodes.Status500InternalServerError);
             }
         }
 
@@ -122,7 +122,7 @@ namespace BaseApp.API.Controllers
         [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> UpdateUserAsync(int id, [FromBody] UserRequestDto userRequestDto)
+        public async Task<IActionResult> UpdateUserAsync(string id, [FromBody] UserRequestDto userRequestDto)
         {
             try
             {
@@ -183,7 +183,7 @@ namespace BaseApp.API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"An unexpected error occurred while updating UserId: {id}");
-                return Problem(detail: $"An unexpected error occurred while updating User: {id}", statusCode: StatusCodes.Status500InternalServerError);
+                return Problem(detail: ex.Message.ToString(), statusCode: StatusCodes.Status500InternalServerError);
             }
         }
 
@@ -191,7 +191,7 @@ namespace BaseApp.API.Controllers
         [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> DeleteUserAsync(int id)
+        public async Task<IActionResult> DeleteUserAsync(string id)
         {
             try
             {
@@ -210,7 +210,7 @@ namespace BaseApp.API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"An unexpected error occurred while deleting a UserId: {id}");
-                return Problem(detail: $"An unexpected error occurred while deleting a UserId: {id}", statusCode: StatusCodes.Status500InternalServerError);
+                return Problem(detail: ex.Message.ToString(), statusCode: StatusCodes.Status500InternalServerError);
             }
         }
     }

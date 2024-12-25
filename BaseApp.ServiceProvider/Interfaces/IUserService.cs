@@ -5,9 +5,9 @@ namespace BaseApp.ServiceProvider.Interfaces
     public interface IUserService
     {
         Task<IEnumerable<UserDto>> GetAllUserAsync();
-        Task<UserDto> GetUserByIdAsync(int id);
+        Task<UserDto> GetUserByIdAsync(string id);
         Task<bool> AddUserAsync(UserRequestDto userRequestDto);
-        Task<bool> UpdateUserAsync(int id, UserRequestDto userRequestDto);
-        Task<bool> DeleteUserAsync(int id);
+        Task<bool> UpdateUserAsync(string id, UserRequestDto userRequestDto);
+        Task<bool> DeleteUserAsync(string id);
     }
 }

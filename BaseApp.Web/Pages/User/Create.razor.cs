@@ -1,11 +1,11 @@
 ﻿using BaseApp.Data.User.Dtos;
-using BaseApp.Web.ErrorHandling;
 using BaseApp.Web.ServiceClients;
+using BaseApp.Web.Shared;
 using Microsoft.AspNetCore.Components;
 
 namespace BaseApp.Web.Pages.User
 {
-    public partial class Create
+    public partial class Create : ComponentBase
     {
         [Inject] private ApiClient ApiClient { get; set; } = default!;
         [Inject] private NavigationManager NavigationManager { get; set; } = default!;
@@ -14,8 +14,6 @@ namespace BaseApp.Web.Pages.User
         private bool IsSaving = false;
         private bool HasError = false;
         private string? ErrorMessage = string.Empty;
-
-        private string? _errorMessage;
 
         [SupplyParameterFromForm]
         private UserRequestDto? UserRequestDto { get; set; } = new UserRequestDto();
@@ -27,12 +25,23 @@ namespace BaseApp.Web.Pages.User
 
         private async Task CreateUserAsync()
         {
-            IsSaving = true;
-            ResetErrorState();
-
             try
             {
-                await ApiClient.CreateUserAsync(UserRequestDto);
+                IsSaving = true;
+                ResetErrorState();
+
+                var response = await ApiClient.CreateUserAsync(UserRequestDto);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    // Navigate to the users list on success
+                    NavigationManager.NavigateTo("users");
+                }
+                else
+                {
+                    HasError = true;    
+                    ErrorMessage = await ErrorHandler.ExtractErrorMessageAsync(response);
+                }
             }
             catch (Exception ex)
             {
@@ -40,12 +49,7 @@ namespace BaseApp.Web.Pages.User
             }
             finally
             {
-                IsSaving = false;
-
-                if (!HasError) 
-                { 
-                    NavigationManager.NavigateTo("users"); 
-                }         
+                IsSaving = false;      
             }
         }
 
