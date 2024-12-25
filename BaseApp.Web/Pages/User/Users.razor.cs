@@ -36,7 +36,15 @@ namespace BaseApp.Web.Pages.User
 
                 // Fetch paginated users from the API
                 var result = await ApiClient.GetUsersAsync(CurrentPage, PageSize);
-                users = result.Items;
+
+                if (result == null)
+                {
+                    users = new List<UserDto>();
+                    TotalPages = 0;
+                    return;
+                }
+
+                users = result.Items ?? new List<UserDto>();
                 TotalPages = (int)Math.Ceiling((double)result.TotalCount / PageSize);
             }
             catch (Exception ex)

@@ -48,14 +48,31 @@ namespace BaseApp.Tests.UI.Tests.User
         [Fact]
         public async Task UsersComponent_Pagination_NavigatesToCorrectPage()
         {
-            // Arrange
-            var usersPage2 = new List<UserDto>
+            // Arrange: Mock data for 15-20 items
+            var allUsers = Enumerable.Range(1, 20).Select(i => new UserDto
             {
-                new UserDto { Id = "3", UserName = "User3", FirstName = "Alice", LastName = "Brown", Email= "AliceBrown@email.com"  },
-                new UserDto { Id = "4", UserName = "User4", FirstName = "Bob", LastName = "White" , Email= "BobWhite@email.com" }
-            };
+                Id = i.ToString(),
+                UserName = $"User{i}",
+                FirstName = $"FirstName{i}",
+                LastName = $"LastName{i}",
+                Email = $"User{i}@email.com"
+            }).ToList();
 
-            _mockApiClient.GetUsersAsync(2, 10, default)
+            var usersPage1 = allUsers.Take(10).ToList(); // First 10 items for page 1
+            var usersPage2 = allUsers.Skip(10).Take(10).ToList(); // Next 10 items for page 2
+
+            // Mock API response for page 1
+            _mockApiClient.GetUsersAsync(1, 10, Arg.Any<CancellationToken>())
+                .Returns(Task.FromResult(new PaginatedResult<UserDto>
+                {
+                    Items = usersPage1,
+                    TotalCount = 20,
+                    Page = 1,
+                    PageSize = 10
+                }));
+
+            // Mock API response for page 2
+            _mockApiClient.GetUsersAsync(2, 10, Arg.Any<CancellationToken>())
                 .Returns(Task.FromResult(new PaginatedResult<UserDto>
                 {
                     Items = usersPage2,
@@ -67,29 +84,47 @@ namespace BaseApp.Tests.UI.Tests.User
             var component = RenderComponent<Users>();
 
             // Act
-            var nextPageButton = component.FindAll("button.page-link").Last();
+            var nextPageButton = component.FindAll("button.page-link").Last(); // Find "Next" button
             nextPageButton.Click(); // Simulate clicking "Next"
 
             // Assert
-            Assert.Contains("User3", component.Markup);
-            Assert.Contains("User4", component.Markup);
+            Assert.Contains("User11", component.Markup);
+            Assert.Contains("User12", component.Markup);
+            Assert.Contains("User20", component.Markup);
         }
 
         [Fact]
         public async Task UsersComponent_PageSizeChange_ReloadsData()
         {
-            // Arrange
-            var users = new List<UserDto>
+            // Arrange: Mock data for 15-20 items
+            var allUsers = Enumerable.Range(1, 20).Select(i => new UserDto
             {
-                new UserDto { Id = "1", UserName = "User1", FirstName = "John", LastName = "Doe" , Email= "johndoe@email.com" },
-                new UserDto { Id = "2", UserName = "User2", FirstName = "Jane", LastName = "Smith" , Email = "johndoe@email.com"}
-            };
+                Id = i.ToString(),
+                UserName = $"User{i}",
+                FirstName = $"FirstName{i}",
+                LastName = $"LastName{i}",
+                Email = $"User{i}@email.com"
+            }).ToList();
 
-            _mockApiClient.GetUsersAsync(1, 50, default)
+            var usersPage1 = allUsers.Take(10).ToList(); // First 10 items for page 1
+            var usersPage2 = allUsers.Skip(10).Take(10).ToList(); // Next 10 items for page 2
+
+            // Mock API response for page 1
+            _mockApiClient.GetUsersAsync(1, 10, Arg.Any<CancellationToken>())
                 .Returns(Task.FromResult(new PaginatedResult<UserDto>
                 {
-                    Items = users,
-                    TotalCount = 50,
+                    Items = usersPage1,
+                    TotalCount = 20,
+                    Page = 1,
+                    PageSize = 10
+                }));
+
+            // Mock API response for page size 50
+            _mockApiClient.GetUsersAsync(1, 50, Arg.Any<CancellationToken>())
+                .Returns(Task.FromResult(new PaginatedResult<UserDto>
+                {
+                    Items = allUsers, // All users fit in one page with size 50
+                    TotalCount = 20,
                     Page = 1,
                     PageSize = 50
                 }));
@@ -97,13 +132,15 @@ namespace BaseApp.Tests.UI.Tests.User
             var component = RenderComponent<Users>();
 
             // Act
-            var pageSizeDropdown = component.Find("select#pageSize");
+            var pageSizeDropdown = component.WaitForElement("select#pageSize"); // Wait for dropdown to render
             pageSizeDropdown.Change("50"); // Simulate changing page size to 50
 
             // Assert
-            _mockApiClient.Received(1).GetUsersAsync(1, 50, default);
-            Assert.Contains("Page Size: 50", component.Markup);
+            _mockApiClient.Received(1).GetUsersAsync(1, 50, Arg.Any<CancellationToken>());
+            Assert.Contains("User1", component.Markup); // First user from the updated list
+            Assert.Contains("User20", component.Markup); // Last user from the updated list
         }
+
 
         [Fact]
         public async Task UsersComponent_NoData_ShowsNoUsersFoundMessage()
