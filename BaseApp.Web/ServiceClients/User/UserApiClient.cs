@@ -4,44 +4,38 @@ using System.Net.Http.Json;
 
 namespace BaseApp.Web.ServiceClients
 {
-    public class ApiClient(HttpClient httpClient)
+    // All end-points related to the User Domain
+    public partial class ApiClient
     {
         public async Task<PaginatedResult<UserDto>> GetUsersAsync(int page, int pageSize, CancellationToken cancellationToken = default)
         {
-            var response = await httpClient.GetFromJsonAsync<PaginatedResult<UserDto>>($"/user/users?page={page}&pageSize={pageSize}");
-
+            var response = await _httpClient.GetFromJsonAsync<PaginatedResult<UserDto>>($"/user/users?page={page}&pageSize={pageSize}", cancellationToken);
             return response ?? new PaginatedResult<UserDto>();
         }
 
         public async Task<UserDto> GetUserAsync(string id, CancellationToken cancellationToken = default)
         {
-            var userDto = await httpClient.GetFromJsonAsync<UserDto>($"/user/{id}", cancellationToken);
-
+            var userDto = await _httpClient.GetFromJsonAsync<UserDto>($"/user/{id}", cancellationToken);
             if (userDto == null)
             {
                 throw new InvalidOperationException($"User with ID {id} not found.");
             }
-
             return userDto;
         }
 
-
         public async Task<HttpResponseMessage> CreateUserAsync(UserRequestDto userRequestDto, CancellationToken cancellationToken = default)
         {
-            var response = await httpClient.PostAsJsonAsync<UserRequestDto>($"/user", userRequestDto, cancellationToken);
-            return response;
+            return await _httpClient.PostAsJsonAsync($"/user", userRequestDto, cancellationToken);
         }
 
         public async Task<HttpResponseMessage> UpdateUserAsync(string id, UserRequestDto userRequestDto, CancellationToken cancellationToken = default)
         {
-            var response = await httpClient.PutAsJsonAsync<UserRequestDto>($"/user/{id}", userRequestDto, cancellationToken);
-            return response;
+            return await _httpClient.PutAsJsonAsync($"/user/{id}", userRequestDto, cancellationToken);
         }
 
         public async Task<HttpResponseMessage> DeleteUserAsync(string id, CancellationToken cancellationToken = default)
         {
-            var response = await httpClient.DeleteAsync($"/user/{id}", cancellationToken);
-            return response;
+            return await _httpClient.DeleteAsync($"/user/{id}", cancellationToken);
         }
     }
 }
