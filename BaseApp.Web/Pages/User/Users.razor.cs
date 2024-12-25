@@ -1,4 +1,5 @@
-﻿using BaseApp.Data.User.Dtos;
+﻿using Azure;
+using BaseApp.Data.User.Dtos;
 using BaseApp.Web.ServiceClients;
 using BaseApp.Web.Shared;
 using Microsoft.AspNetCore.Components;
@@ -30,7 +31,6 @@ namespace BaseApp.Web.Pages.User
             {
                 IsLoading = true;
                 ResetErrorState();
-
                 users = await ApiClient.GetUsersAsync();
             }
             catch (Exception ex)
@@ -55,8 +55,18 @@ namespace BaseApp.Web.Pages.User
             try
             {
                 ResetErrorState();
-                await ApiClient.DeleteUserAsync(SelectedUserId);
-                await RefreshUserList();
+                var response = await ApiClient.DeleteUserAsync(SelectedUserId);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    // Refresh User List
+                    await RefreshUserList();
+                }
+                else
+                {
+                    HasError = true;
+                    ErrorMessage = await ErrorHandler.ExtractErrorMessageAsync(response);
+                }
             }
             catch (Exception ex)
             {

@@ -53,14 +53,24 @@ namespace BaseApp.Web.Pages.User
         {
             try
             {
-                IsSaving = true;
-                ResetErrorState();
-
                 if (!string.IsNullOrEmpty(Id)) // Update user
                 {
+                    IsSaving = true;
+                    ResetErrorState();
+
                     var userRequest = MapToRequestDto(User);
                     var response = await ApiClient.UpdateUserAsync(Id, userRequest);
-                    NavigationManager.NavigateTo("/users");
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        // Navigate to the users list on success
+                        NavigationManager.NavigateTo("users");
+                    }
+                    else
+                    {
+                        HasError = true;
+                        ErrorMessage = await ErrorHandler.ExtractErrorMessageAsync(response);
+                    }
                 }
             }
             catch (Exception ex)

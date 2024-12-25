@@ -1,6 +1,6 @@
 ﻿using BaseApp.Data.User.Dtos;
-using BaseApp.Web.Shared;
 using BaseApp.Web.ServiceClients;
+using BaseApp.Web.Shared;
 using Microsoft.AspNetCore.Components;
 
 namespace BaseApp.Web.Pages.User
@@ -30,7 +30,18 @@ namespace BaseApp.Web.Pages.User
                 IsSaving = true;
                 ResetErrorState();
 
-                await ApiClient.CreateUserAsync(UserRequestDto);
+                var response = await ApiClient.CreateUserAsync(UserRequestDto);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    // Navigate to the users list on success
+                    NavigationManager.NavigateTo("users");
+                }
+                else
+                {
+                    HasError = true;    
+                    ErrorMessage = await ErrorHandler.ExtractErrorMessageAsync(response);
+                }
             }
             catch (Exception ex)
             {
@@ -38,12 +49,7 @@ namespace BaseApp.Web.Pages.User
             }
             finally
             {
-                IsSaving = false;
-
-                if (!HasError) 
-                { 
-                    NavigationManager.NavigateTo("users"); 
-                }         
+                IsSaving = false;      
             }
         }
 

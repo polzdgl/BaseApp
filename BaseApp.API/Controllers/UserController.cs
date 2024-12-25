@@ -34,7 +34,7 @@ namespace BaseApp.API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"An unexpected error occurred while getting all Users list!");
-                return Problem(detail: $"An unexpected error occurred while getting all Users list!", statusCode: StatusCodes.Status500InternalServerError);
+                return Problem(detail: ex.Message.ToString(), statusCode: StatusCodes.Status500InternalServerError);
             }
         }
 
@@ -55,12 +55,12 @@ namespace BaseApp.API.Controllers
                 UserDto user = await _userService.GetUserByIdAsync(id);
 
                 return user is not null ? Ok(user) :
-                    Problem(detail: $"User ID: {id} was found!", statusCode: StatusCodes.Status404NotFound);
+                    Problem(detail: $"User ID: {id} was not found!", statusCode: StatusCodes.Status404NotFound);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"An unexpected error occurred while getting UserId: {id}");
-                return Problem(detail: $"An unexpected error occurred while getting UserId: {id}", statusCode: StatusCodes.Status500InternalServerError);
+                return Problem(detail: ex.Message.ToString(), statusCode: StatusCodes.Status500InternalServerError);
             }
         }
 
@@ -114,7 +114,7 @@ namespace BaseApp.API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"An unexpected error occurred while creating UserName: {userRequestDto.UserName}");
-                return Problem(detail: $"An unexpected error occurred while creating UserName: {userRequestDto.UserName}", statusCode: StatusCodes.Status500InternalServerError);
+                return Problem(detail: ex.Message.ToString(), statusCode: StatusCodes.Status500InternalServerError);
             }
         }
 
@@ -183,7 +183,7 @@ namespace BaseApp.API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"An unexpected error occurred while updating UserId: {id}");
-                return Problem(detail: $"An unexpected error occurred while updating User: {id}", statusCode: StatusCodes.Status500InternalServerError);
+                return Problem(detail: ex.Message.ToString(), statusCode: StatusCodes.Status500InternalServerError);
             }
         }
 
@@ -210,7 +210,7 @@ namespace BaseApp.API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"An unexpected error occurred while deleting a UserId: {id}");
-                return Problem(detail: $"An unexpected error occurred while deleting a UserId: {id}", statusCode: StatusCodes.Status500InternalServerError);
+                return Problem(detail: ex.Message.ToString(), statusCode: StatusCodes.Status500InternalServerError);
             }
         }
     }

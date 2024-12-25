@@ -28,30 +28,18 @@ namespace BaseApp.Web.ServiceClients
         public async Task<HttpResponseMessage> CreateUserAsync(UserRequestDto userRequestDto, CancellationToken cancellationToken = default)
         {
             var response = await httpClient.PostAsJsonAsync<UserRequestDto>($"/user", userRequestDto, cancellationToken);
-
-            // Check if the request was successful, or throw error
-            response.EnsureSuccessStatusCode();
-
             return response;
         }
 
         public async Task<HttpResponseMessage> UpdateUserAsync(string id, UserRequestDto userRequestDto, CancellationToken cancellationToken = default)
         {
             var response = await httpClient.PutAsJsonAsync<UserRequestDto>($"/user/{id}", userRequestDto, cancellationToken);
-
-            // Check if the request was successful, or throw error
-            response.EnsureSuccessStatusCode();
-
             return response;
         }
 
         public async Task<HttpResponseMessage> DeleteUserAsync(string id, CancellationToken cancellationToken = default)
         {
             var response = await httpClient.DeleteAsync($"/user/{id}", cancellationToken);
-
-            // Check if the request was successful, or throw error
-            response.EnsureSuccessStatusCode();
-
             return response;
         }
     }
