@@ -1,0 +1,25 @@
+﻿<div class="modal" tabindex="-1" style="display:@(IsOpen ? "block" : "none");">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">@Title</h5>
+                <button type="button" class="btn-close" @onclick="ClosePopup"></button>
+            </div>
+            <div class="modal-body">
+                <p>@Message</p>
+                @if (HasError)
+                {
+                    <div class="alert alert-danger">
+                        <p>@ErrorMessage</p>
+                    </div>
+                }
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger" @onclick="ConfirmDeletion" disabled="@IsProcessing">
+                    @(IsProcessing ? "Processing..." : "Delete")
+                </button>
+                <button class="btn btn-secondary" @onclick="ClosePopup">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>

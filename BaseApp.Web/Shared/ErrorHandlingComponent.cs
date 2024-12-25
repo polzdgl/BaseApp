@@ -1,4 +1,4 @@
-﻿namespace BaseApp.Web.ErrorHandling
+﻿namespace BaseApp.Web.Shared
 {
     public static class ErrorHandler
     {

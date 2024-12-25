@@ -1,5 +1,5 @@
 ﻿using BaseApp.Data.User.Dtos;
-using BaseApp.Web.ErrorHandling;
+using BaseApp.Web.Shared;
 using BaseApp.Web.ServiceClients;
 using Microsoft.AspNetCore.Components;
 
@@ -51,11 +51,11 @@ namespace BaseApp.Web.Pages.User
 
         private async Task SaveUserAsync()
         {
-            IsSaving = true;
-            ResetErrorState();
-
             try
             {
+                IsSaving = true;
+                ResetErrorState();
+
                 if (!string.IsNullOrEmpty(Id)) // Update user
                 {
                     var userRequest = MapToRequestDto(User);

@@ -1,5 +1,5 @@
 ﻿using BaseApp.Data.User.Dtos;
-using BaseApp.Web.ErrorHandling;
+using BaseApp.Web.Shared;
 using BaseApp.Web.ServiceClients;
 using Microsoft.AspNetCore.Components;
 
@@ -15,8 +15,6 @@ namespace BaseApp.Web.Pages.User
         private bool HasError = false;
         private string? ErrorMessage = string.Empty;
 
-        private string? _errorMessage;
-
         [SupplyParameterFromForm]
         private UserRequestDto? UserRequestDto { get; set; } = new UserRequestDto();
 
@@ -27,11 +25,11 @@ namespace BaseApp.Web.Pages.User
 
         private async Task CreateUserAsync()
         {
-            IsSaving = true;
-            ResetErrorState();
-
             try
             {
+                IsSaving = true;
+                ResetErrorState();
+
                 await ApiClient.CreateUserAsync(UserRequestDto);
             }
             catch (Exception ex)

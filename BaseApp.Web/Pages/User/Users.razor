@@ -1,5 +1,6 @@
 ﻿@page "/users"
 @using BaseApp.Data.User.Dtos
+@using BaseApp.Web.Shared
 @attribute [StreamRendering(true)]
 
 <h3>User List</h3>
@@ -63,4 +64,7 @@ else
     <a class="btn btn-primary" role="button" href="/users/create">Create User</a>
 </div>
 
-<DeleteConfirmation @ref="DeleteConfirmationPopup" OnDeleteConfirmed="RefreshUserList" />
+<DeleteConfirmation @ref="DeleteConfirmationPopup"
+                    Title="Confirm User Deletion"
+                    OnConfirm="DeleteUser"
+                    OnCancel="HandleCancel" />
