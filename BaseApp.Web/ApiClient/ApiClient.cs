@@ -1,15 +1,16 @@
 ﻿using BaseApp.Data.User.Dtos;
+using BaseApp.Shared.Dtos;
 using System.Net.Http.Json;
 
 namespace BaseApp.Web.ServiceClients
 {
     public class ApiClient(HttpClient httpClient)
     {
-        public async Task<IEnumerable<UserDto>> GetUsersAsync(CancellationToken cancellationToken = default)
+        public async Task<PaginatedResult<UserDto>> GetUsersAsync(int page, int pageSize, CancellationToken cancellationToken = default)
         {
-            var userDtos = await httpClient.GetFromJsonAsync<IEnumerable<UserDto>>("/user/users", cancellationToken = default);
+            var response = await httpClient.GetFromJsonAsync<PaginatedResult<UserDto>>($"/user/users?page={page}&pageSize={pageSize}");
 
-            return userDtos ?? Enumerable.Empty<UserDto>();
+            return response ?? new PaginatedResult<UserDto>();
         }
 
         public async Task<UserDto> GetUserAsync(string id, CancellationToken cancellationToken = default)

@@ -1,6 +1,7 @@
 ﻿using BaseApp.API.Controllers;
 using BaseApp.Data.User.Dtos;
 using BaseApp.ServiceProvider.Interfaces;
+using BaseApp.Shared.Dtos;
 using BaseApp.Shared.Validation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -26,24 +27,44 @@ namespace BaseApp.Tests.API.Tests.User
         }
 
         [Fact]
-        public async Task GetUsersAsync_ReturnsOkResult_WithListOfUsers()
+        public async Task GetUsersAsync_ReturnsOkResult_WithPaginatedUsers()
         {
             // Arrange
+            int page = 1;
+            int pageSize = 2;
+
             var users = new List<UserDto>
             {
                 new UserDto { Id = "1", UserName = "User1", FirstName = "John", LastName = "Doe", Email = "johndoe@company.com" },
-                new UserDto { Id = "2", UserName = "User2",  FirstName = "Jane", LastName = "Smith", Email = "janesmith@company.com"}
+                new UserDto { Id = "2", UserName = "User2", FirstName = "Jane", LastName = "Smith", Email = "janesmith@company.com" }
             };
 
-            _mockUserService.GetAllUserAsync().Returns(users);
+            var paginatedResult = new PaginatedResult<UserDto>
+            {
+                Items = users,
+                TotalCount = 10,
+                Page = page,
+                PageSize = pageSize
+            };
+
+            _mockUserService.GetUsersAsync(page, pageSize).Returns(Task.FromResult(paginatedResult));
 
             // Act
-            var result = await _controller.GetUsersAsync();
+            var result = await _controller.GetUsersAsync(page, pageSize);
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var returnedUsers = Assert.IsAssignableFrom<IEnumerable<UserDto>>(okResult.Value);
-            Assert.Equal(users.Count, ((List<UserDto>)returnedUsers).Count);
+            var returnedResult = Assert.IsType<PaginatedResult<UserDto>>(okResult.Value);
+
+            // Validate pagination metadata
+            Assert.Equal(page, returnedResult.Page);
+            Assert.Equal(pageSize, returnedResult.PageSize);
+            Assert.Equal(10, returnedResult.TotalCount);
+
+            // Validate returned user data
+            Assert.Equal(users.Count, returnedResult.Items.Count());
+            Assert.Equal(users[0].Id, returnedResult.Items.First().Id);
+            Assert.Equal(users[1].Id, returnedResult.Items.Last().Id);
         }
 
         [Fact]
@@ -53,7 +74,7 @@ namespace BaseApp.Tests.API.Tests.User
             var userId = new Guid().ToString();
             var user = new UserDto { Id = userId, UserName = "User1", FirstName = "John", LastName = "Doe", Email = "johndoe@company.com" };
 
-            _mockUserService.GetUserByIdAsync(userId).Returns(user);
+            _mockUserService.GetUserAsync(userId).Returns(user);
 
             // Act
             var result = await _controller.GetUserByIdAsync(userId);
@@ -90,7 +111,7 @@ namespace BaseApp.Tests.API.Tests.User
                 LastName = "Doe"
             };
 
-            _mockUserService.AddUserAsync(userRequest).Returns(true);
+            _mockUserService.CreateUserAsync(userRequest).Returns(true);
 
             // Act
             var result = await _controller.AddUserAsync(userRequest);

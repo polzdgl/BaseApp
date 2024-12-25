@@ -5,8 +5,8 @@ namespace BaseApp.Data.User.Interfaces
 {
     public interface IUserRepository : IGenericRepository<ApplicationUser>
     {
-        Task<bool> IsExistingUser(string? userName);
-        Task<bool> IsUserNameTaken(string id, string? userName);
-        Task<ApplicationUser> GetUserAsync(string id);
+        Task<bool> IsExistingUserAsync(string? userName);
+        Task<bool> IsUserNameTakenAsync(string id, string? userName);
+        Task<ApplicationUser?> GetUserAsync(string id);
     }
 }

@@ -1,5 +1,4 @@
-﻿using Azure;
-using BaseApp.Data.User.Dtos;
+﻿using BaseApp.Data.User.Dtos;
 using BaseApp.Web.ServiceClients;
 using BaseApp.Web.Shared;
 using Microsoft.AspNetCore.Components;
@@ -19,6 +18,9 @@ namespace BaseApp.Web.Pages.User
         private string SelectedUserId = string.Empty;
 
         private IEnumerable<UserDto>? users;
+        private int CurrentPage = 1;
+        private int TotalPages = 1;
+        private int PageSize = 10; // Default page size
 
         protected override async Task OnInitializedAsync()
         {
@@ -31,7 +33,11 @@ namespace BaseApp.Web.Pages.User
             {
                 IsLoading = true;
                 ResetErrorState();
-                users = await ApiClient.GetUsersAsync();
+
+                // Fetch paginated users from the API
+                var result = await ApiClient.GetUsersAsync(CurrentPage, PageSize);
+                users = result.Items;
+                TotalPages = (int)Math.Ceiling((double)result.TotalCount / PageSize);
             }
             catch (Exception ex)
             {
@@ -71,6 +77,25 @@ namespace BaseApp.Web.Pages.User
             catch (Exception ex)
             {
                 HandleError(ex);
+            }
+        }
+
+        private async Task LoadPage(int page)
+        {
+            if (page < 1 || page > TotalPages)
+                return;
+
+            CurrentPage = page;
+            await GetUserList();
+        }
+
+        private async Task UpdatePageSize(ChangeEventArgs e)
+        {
+            if (int.TryParse(e.Value?.ToString(), out int newPageSize) && newPageSize > 0)
+            {
+                PageSize = newPageSize;
+                CurrentPage = 1; // Reset to the first page
+                await GetUserList();
             }
         }
 

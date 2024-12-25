@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BaseApp.Data\BaseApp.Data.csproj" />
+    <ProjectReference Include="..\BaseApp.ServiceProvider\BaseApp.ServiceProvider.csproj" />
   </ItemGroup>
 
   <ItemGroup>

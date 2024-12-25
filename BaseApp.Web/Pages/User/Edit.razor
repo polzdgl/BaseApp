@@ -1,5 +1,5 @@
 ﻿@page "/users/edit/{id}"
-@attribute [StreamRendering(true)]
+
 <PageTitle>Edit User Information</PageTitle>
 
 <h1>Update User</h1>
@@ -70,10 +70,6 @@ else
                 <button type="submit" class="btn btn-primary d-block w-100 mb-2" disabled="@IsSaving">@(IsSaving ? "Saving.." : "Save")</button>
             </EditForm>
             <a class="btn btn-danger d-block w-100 mt-2 mb-2" href="/users">Cancel</a>
-            @if (!string.IsNullOrEmpty(Id))
-            {
-                <a class="btn btn-primary d-block w-100" href="/users/delete/@Id?userName=@User.UserName">Delete</a>
-            }
         </div>
     </div>
 }

@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <PackageReference Include="Aspire.Hosting.Testing" Version="9.0.0" />
+    <PackageReference Include="bunit" Version="1.37.7" />
     <PackageReference Include="coverlet.collector" Version="6.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="9.0.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
@@ -35,6 +36,7 @@
   <ItemGroup>
     <ProjectReference Include="..\BaseApp.API\BaseApp.API.csproj" />
     <ProjectReference Include="..\BaseApp.ServiceProvider\BaseApp.ServiceProvider.csproj" />
+    <ProjectReference Include="..\BaseApp.Web\BaseApp.Web.csproj" />
   </ItemGroup>
 
   <ItemGroup>
