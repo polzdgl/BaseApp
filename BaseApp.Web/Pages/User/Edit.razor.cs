@@ -1,6 +1,6 @@
 ﻿using BaseApp.Data.User.Dtos;
 using BaseApp.ServiceProvider.Interfaces;
-using BaseApp.Web.Shared;
+using BaseApp.Shared.ErrorHandling;
 using Microsoft.AspNetCore.Components;
 
 namespace BaseApp.Web.Pages.User

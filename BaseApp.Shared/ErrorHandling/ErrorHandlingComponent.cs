@@ -1,7 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System.Net.Http.Json;
+﻿using System.Net.Http.Json;
 
-namespace BaseApp.Web.Shared
+namespace BaseApp.Shared.ErrorHandling
 {
     public static class ErrorHandler
     {

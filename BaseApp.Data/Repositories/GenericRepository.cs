@@ -11,10 +11,12 @@ namespace BaseApp.Data.Repositories
     {
 
         protected readonly ApplicationDbContext _dbContext;
+        private readonly BulkConfig _defaultBulkConfig;
 
         public GenericRepository(ApplicationDbContext dbContext)
         {
             this._dbContext = dbContext;
+            _defaultBulkConfig = new BulkConfig { UseTempDB = true };
         }
 
         public virtual bool Create(T entity, bool saveChanges = true)
@@ -73,7 +75,7 @@ namespace BaseApp.Data.Repositories
         {
             var type = typeof(T);
 
-            this._dbContext.BulkInsert(entityList, bulkConfig);
+            this._dbContext.BulkInsert(entityList, bulkConfig ?? _defaultBulkConfig);
 
             return true;
         }
@@ -82,33 +84,33 @@ namespace BaseApp.Data.Repositories
         {
             var type = typeof(T);
 
-            await this._dbContext.BulkInsertAsync(entityList, bulkConfig);
+            await this._dbContext.BulkInsertAsync(entityList, bulkConfig ?? _defaultBulkConfig);
 
             return true;
         }
 
         public virtual bool BulkUpdateAll(IList<T> entityList, BulkConfig? bulkConfig = null)
         {
-            this._dbContext.BulkUpdate(entityList, bulkConfig);
+            this._dbContext.BulkUpdate(entityList, bulkConfig ?? _defaultBulkConfig);
 
             return true;
         }
 
         public async virtual Task<bool> BulkUpdateAllAsync(IList<T> entityList, BulkConfig? bulkConfig = null)
         {
-            await _dbContext.BulkUpdateAsync(entityList, bulkConfig);
+            await _dbContext.BulkUpdateAsync(entityList, bulkConfig ?? _defaultBulkConfig);
 
             return true;
         }
 
         public virtual bool BulkDeleteAll(IList<T> entityList, BulkConfig? bulkConfig = null)
         {
-            return this.BulkUpdateAll(entityList, bulkConfig);
+            return this.BulkUpdateAll(entityList, bulkConfig ?? _defaultBulkConfig);
         }
 
         public async virtual Task<bool> BulkDeleteAllAsync(IList<T> entityList, BulkConfig? bulkConfig = null)
         {
-            return await BulkUpdateAllAsync(entityList, bulkConfig);
+            return await BulkUpdateAllAsync(entityList, bulkConfig ?? _defaultBulkConfig);
         }
 
         public virtual bool Delete(T entity, bool saveChanges = true)

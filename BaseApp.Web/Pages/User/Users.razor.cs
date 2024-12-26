@@ -1,5 +1,6 @@
 ﻿using BaseApp.Data.User.Dtos;
 using BaseApp.ServiceProvider.Interfaces;
+using BaseApp.Shared.ErrorHandling;
 using BaseApp.Web.Shared;
 using Microsoft.AspNetCore.Components;
 
