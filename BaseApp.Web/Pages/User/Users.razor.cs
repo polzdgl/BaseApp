@@ -19,6 +19,8 @@ namespace BaseApp.Web.Pages.User
         private string SelectedUserId = string.Empty;
 
         private IEnumerable<UserDto>? users;
+        private IList<UserDto>? selectedUsers;
+
         private int CurrentPage = 1;
         private int TotalPages = 1;
         private int PageSize = 10; // Default page size
@@ -47,6 +49,9 @@ namespace BaseApp.Web.Pages.User
 
                 users = result.Items ?? new List<UserDto>();
                 TotalPages = (int)Math.Ceiling((double)result.TotalCount / PageSize);
+
+                //selectedUsers = new List<UserDto>() { users.FirstOrDefault() };
+
             }
             catch (Exception ex)
             {
@@ -96,6 +101,11 @@ namespace BaseApp.Web.Pages.User
 
             CurrentPage = page;
             await GetUserList();
+        }
+
+        private void NavigateToEdit(string userId)
+        {
+            NavigationManager.NavigateTo($"/users/edit/{userId}");
         }
 
         private async Task UpdatePageSize(ChangeEventArgs e)
