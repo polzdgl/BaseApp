@@ -14,7 +14,6 @@ namespace BaseApp.Web.Pages.User
 
         private DeleteConfirmation DeleteConfirmationPopup { get; set; } = default!;
 
-        private bool IsLoading = true;
         private bool HasError = false;
         private string? ErrorMessage = string.Empty;
         private string SelectedUserId = string.Empty;
@@ -34,7 +33,6 @@ namespace BaseApp.Web.Pages.User
         {
             try
             {
-                IsLoading = true;
                 ResetErrorState();
 
                 // Calculate page index based on Radzen's `Skip` and `Top` properties
@@ -58,10 +56,6 @@ namespace BaseApp.Web.Pages.User
             catch (Exception ex)
             {
                 HandleError(ex);
-            }
-            finally
-            {
-                IsLoading = false;
             }
         }
 
