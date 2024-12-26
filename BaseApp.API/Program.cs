@@ -3,9 +3,10 @@ using BaseApp.API.Middleware;
 using BaseApp.API.Settings;
 using BaseApp.Data.Context;
 using BaseApp.Data.User.Models;
+using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Serilog;
 using Swashbuckle.AspNetCore.Filters;
 using System.Diagnostics;
@@ -57,6 +58,15 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 // Set default Culture for all new threads
 CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("en-US");
 CultureInfo.DefaultThreadCurrentUICulture = new CultureInfo("en-US");
+
+// Add Health Check
+builder.Services.AddHealthChecks()
+    .AddSqlServer(
+            connectionString: connectionString,
+            healthQuery: "SELECT 1;",
+            name: "sql",
+            failureStatus: HealthStatus.Degraded,
+            tags: ["db", "sql", "sqlserver"]);
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -120,6 +130,13 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseHttpsRedirection();
+
+// Health Check middleware
+app.MapHealthChecks("/health", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
+{
+    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+    
+}).RequireHost();
 
 app.UseAuthorization();
 

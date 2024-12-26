@@ -19,7 +19,6 @@ namespace BaseApp.API.AppStart
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IRepositoryFactory, RepositoryFactory>();
 
-
             return services;
         }
     }
