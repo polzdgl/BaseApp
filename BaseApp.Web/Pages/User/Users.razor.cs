@@ -3,6 +3,7 @@ using BaseApp.ServiceProvider.Interfaces;
 using BaseApp.Shared.ErrorHandling;
 using BaseApp.Web.Shared;
 using Microsoft.AspNetCore.Components;
+using Radzen;
 
 namespace BaseApp.Web.Pages.User
 {
@@ -18,40 +19,41 @@ namespace BaseApp.Web.Pages.User
         private string? ErrorMessage = string.Empty;
         private string SelectedUserId = string.Empty;
 
-        private IEnumerable<UserDto>? users;
+        private IEnumerable<UserDto>? users = new List<UserDto>();
         private IList<UserDto>? selectedUsers;
 
-        private int CurrentPage = 1;
-        private int TotalPages = 1;
-        private int PageSize = 10; // Default page size
+        private int TotalRecords = 0;
+        private int PageSize = 5;
 
         protected override async Task OnInitializedAsync()
         {
-            await GetUserList();
+            await GetUserList(new LoadDataArgs { Skip = 0, Top = PageSize });
         }
 
-        private async Task GetUserList()
+        private async Task GetUserList(LoadDataArgs args)
         {
             try
             {
                 IsLoading = true;
                 ResetErrorState();
 
-                // Fetch paginated users from the API
-                var result = await ApiClient.GetUsersAsync(CurrentPage, PageSize);
+                // Calculate page index based on Radzen's `Skip` and `Top` properties
+                var pageIndex = args.Skip / args.Top + 1;
+                var pageSize = args.Top;
 
-                if (result == null)
+                // Fetch paginated users from the API
+                var result = await ApiClient.GetUsersAsync((int)pageIndex, (int)pageSize);
+
+                if (result != null)
+                {
+                    users = result.Items ?? new List<UserDto>();
+                    TotalRecords = result.TotalCount;
+                }
+                else
                 {
                     users = new List<UserDto>();
-                    TotalPages = 0;
-                    return;
+                    TotalRecords = 0;
                 }
-
-                users = result.Items ?? new List<UserDto>();
-                TotalPages = (int)Math.Ceiling((double)result.TotalCount / PageSize);
-
-                //selectedUsers = new List<UserDto>() { users.FirstOrDefault() };
-
             }
             catch (Exception ex)
             {
@@ -94,28 +96,9 @@ namespace BaseApp.Web.Pages.User
             }
         }
 
-        private async Task LoadPage(int page)
-        {
-            if (page < 1 || page > TotalPages)
-                return;
-
-            CurrentPage = page;
-            await GetUserList();
-        }
-
         private void NavigateToEdit(string userId)
         {
             NavigationManager.NavigateTo($"/users/edit/{userId}");
-        }
-
-        private async Task UpdatePageSize(ChangeEventArgs e)
-        {
-            if (int.TryParse(e.Value?.ToString(), out int newPageSize) && newPageSize > 0)
-            {
-                PageSize = newPageSize;
-                CurrentPage = 1; // Reset to the first page
-                await GetUserList();
-            }
         }
 
         private async Task RefreshUserList()
