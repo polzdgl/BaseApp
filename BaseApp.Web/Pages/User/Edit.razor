@@ -2,74 +2,70 @@
 
 <PageTitle>Edit User Information</PageTitle>
 
-<h1>Update User</h1>
+<div style="display: flex; justify-content: center; margin-top: 2rem;">
+    <RadzenCard Class="rz-p-4 rz-border" Style="width: 500px;">
+        <RadzenStack Orientation="Orientation.Vertical" Gap="1.5rem">
+            <RadzenText TextStyle="TextStyle.H5" Class="rz-mb-3">Edit User Information</RadzenText>
 
-@if (IsLoading)
-{
-    <p><em>Loading...</em></p>
-}
-else if (HasError)
-{
-    <div class="alert alert-danger">
-        <h4 class="alert-heading">Error</h4>
-        <p>Failed to load user profile. Please try again later..</p>
-        @if (!string.IsNullOrEmpty(ErrorMessage))
-        {
-            <hr />
-            <p class="mb-0">@ErrorMessage</p>
-        }
-    </div>
-}
-else
-{
-    <div class="row">
-        <div class="col-md-4">
-            <EditForm Model="@User" OnValidSubmit="SaveUserAsync">
-                <DataAnnotationsValidator />
-                <ValidationSummary />
-                <div class="mb-3">
-                    <label for="username" class="form-label">User Name:</label>
-                    <InputText id="username" @bind-Value="User.UserName" class="form-control" />
+            @if (IsLoading)
+            {
+                <RadzenProgressBar Mode="ProgressBarMode.Indeterminate" Style="width: 100%;" />
+            }
+            else if (HasError)
+            {
+                <RadzenAlert Severity="AlertSeverity.Error" Summary="Error" Detail="Failed to load user profile. Please try again later." />
+                @if (!string.IsNullOrEmpty(ErrorMessage))
+                {
+                    <RadzenText TextStyle="TextStyle.Body1">@ErrorMessage</RadzenText>
+                }
+            }
+            else
+            {
+                <EditForm Model="@User" OnValidSubmit="SaveUserAsync">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary />
+
+                    <!-- User Name -->
+                    <RadzenText TextStyle="TextStyle.Body1" Class="rz-mb-1">User Name</RadzenText>
+                    <RadzenTextBox @bind-Value="User.UserName" Style="width: 100%;" Placeholder="Enter user name" />
                     <ValidationMessage For="@(() => User.UserName)" />
-                </div>
 
-                <div class="mb-3">
-                    <label for="firstname" class="form-label">First Name:</label>
-                    <InputText id="firstname" @bind-Value="User.FirstName" class="form-control" />
+                    <!-- First Name -->
+                    <RadzenText TextStyle="TextStyle.Body1" Class="rz-mb-1">First Name</RadzenText>
+                    <RadzenTextBox @bind-Value="User.FirstName" Style="width: 100%;" Placeholder="Enter first name" />
                     <ValidationMessage For="@(() => User.FirstName)" />
-                </div>
 
-                <div class="mb-3">
-                    <label for="lastname" class="form-label">Last Name:</label>
-                    <InputText id="lastname" @bind-Value="User.LastName" class="form-control" />
+                    <!-- Last Name -->
+                    <RadzenText TextStyle="TextStyle.Body1" Class="rz-mb-1">Last Name</RadzenText>
+                    <RadzenTextBox @bind-Value="User.LastName" Style="width: 100%;" Placeholder="Enter last name" />
                     <ValidationMessage For="@(() => User.LastName)" />
-                </div>
 
-                <div class="mb-3">
-                    <label for="email" class="form-label">Email Address:</label>
-                    <InputText id="email" @bind-Value="User.Email" class="form-control" />
+                    <!-- Email -->
+                    <RadzenText TextStyle="TextStyle.Body1" Class="rz-mb-1">Email Address</RadzenText>
+                    <RadzenTextBox @bind-Value="User.Email" Style="width: 100%;" Placeholder="Enter email" />
                     <ValidationMessage For="@(() => User.Email)" />
-                </div>
 
-                <div class="mb-3">
-                    <label for="dateofbirth" class="form-label">Date of Birth:</label>
-                    <InputDate id="dateofbirth" @bind-Value="User.DateOfBirth" class="form-control" />
-                    <ValidationMessage For="@(() => User.DateOfBirth)" />
-                </div>
-
-                <div class="mb-3">
-                    <label for="phonenumber" class="form-label">Phone Number:</label>
-                    <InputText id="phonenumber" @bind-Value="User.PhoneNumber" class="form-control" />
+                    <!-- Phone Number -->
+                    <RadzenText TextStyle="TextStyle.Body1" Class="rz-mb-1">Phone Number</RadzenText>
+                    <RadzenTextBox @bind-Value="User.PhoneNumber" Style="width: 100%;" Placeholder="Enter phone number" />
                     <ValidationMessage For="@(() => User.PhoneNumber)" />
-                </div>
 
-                <div class="mb-3">
-                    <label for="isactive" class="form-label">Is Active:</label>
-                    <InputCheckbox id="isactive" @bind-Value="User.IsActive" />
-                </div>
-                <button type="submit" class="btn btn-primary d-block w-100 mb-2" disabled="@IsSaving">@(IsSaving ? "Saving.." : "Save")</button>
-            </EditForm>
-            <a class="btn btn-danger d-block w-100 mt-2 mb-2" href="/users">Cancel</a>
-        </div>
-    </div>
-}
+                    <!-- Date of Birth -->
+                    <RadzenText TextStyle="TextStyle.Body1" Class="rz-mb-1">Date of Birth</RadzenText>
+                    <RadzenDatePicker @bind-Value="User.DateOfBirth" DateFormat="MM/dd/yyyy" Style="width: 100%;" Placeholder="Select date of birth" />
+                    <ValidationMessage For="@(() => User.DateOfBirth)" />
+
+                    <!-- Is Active -->
+                    <RadzenText TextStyle="TextStyle.Body1" Class="rz-mb-1">Is Active</RadzenText>
+                    <RadzenCheckBox @bind-Value="User.IsActive" />
+
+                    <!-- Action Buttons -->
+                    <RadzenStack Orientation="Orientation.Horizontal" Gap="1rem" JustifyContent="JustifyContent.End" Style="margin-top: 2rem;">
+                        <RadzenButton ButtonStyle="ButtonStyle.Primary" Icon="save" Disabled="@IsSaving" Text="@(IsSaving ? "Saving..." : "Save")" Type="Submit" Style="min-width: 120px;" />
+                        <RadzenButton ButtonStyle="ButtonStyle.Secondary" Icon="cancel" Text="Cancel" Click="@(() => NavigationManager.NavigateTo("/users"))" Style="min-width: 120px;" />
+                    </RadzenStack>
+                </EditForm>
+            }
+        </RadzenStack>
+    </RadzenCard>
+</div>
