@@ -3,11 +3,11 @@
 <div class="main-layout">
     <!-- Top Navigation Bar -->
     <header class="top-bar">
-        <span class="navbar-brand">BaseApp.Web</span>
+        <!-- Title as a Home Button -->
+        <RadzenButton Icon="home" Text="BaseApp.Web" Click="NavigateToHome" Class="navbar-title-button" />
 
-        <!-- Navigation Buttons -->
+        <!-- Navigation Buttons on the Right -->
         <div class="nav-buttons">
-            <RadzenButton Text="Home" Click="NavigateToHome" />
             <RadzenButton Text="Users" Click="NavigateToUsers" />
 
             <!-- Dropdown Menu Example -->
@@ -19,10 +19,9 @@
                     }
                 </ChildContent>
             </RadzenSplitButton>
-        </div>
 
-        <!-- Login Button -->
-        <RadzenButton Icon="person" Text="Login" Click="NavigateToLogin" Class="login-button" />
+            <RadzenButton Icon="person" Text="Login" Click="NavigateToLogin" Class="login-button" />
+        </div>
     </header>
 
     <!-- Main Content Area -->

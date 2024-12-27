@@ -1,28 +1,26 @@
 ﻿<RadzenPanel Style="@PanelStyle" Class="rz-dialog">
-    <RadzenCard>
-        <RadzenStack Orientation="Orientation.Vertical" Gap="1rem">
-            <!-- Header -->
-            <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.SpaceBetween">
-                <RadzenText TextStyle="TextStyle.H5">@Title</RadzenText>
-                <RadzenButton Icon="close" ButtonStyle="ButtonStyle.Light" Click="ClosePopup" />
-            </RadzenStack>
-
-            <!-- Body -->
-            <RadzenStack Orientation="Orientation.Vertical" Gap="0.5rem">
-                <RadzenText TextStyle="TextStyle.Body1">@Message</RadzenText>
-                @if (HasError)
-                {
-                    <RadzenAlert Severity="AlertSeverity.Error" Summary="Error" Detail="@ErrorMessage" />
-                }
-            </RadzenStack>
-
-            <!-- Footer -->
-            <RadzenStack Orientation="Orientation.Horizontal" Gap="1rem" JustifyContent="JustifyContent.End">
-                <RadzenButton ButtonStyle="ButtonStyle.Danger" Click="ConfirmDeletion" Disabled="@IsProcessing">
-                    @(IsProcessing ? "Processing..." : "Delete")
-                </RadzenButton>
-                <RadzenButton ButtonStyle="ButtonStyle.Secondary" Click="ClosePopup">Cancel</RadzenButton>
-            </RadzenStack>
+    <RadzenStack Orientation="Orientation.Vertical" Gap="1rem">
+        <!-- Header -->
+        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.SpaceBetween">
+            <RadzenText TextStyle="TextStyle.H5">@Title</RadzenText>
+            <RadzenButton Icon="close" ButtonStyle="ButtonStyle.Light" Click="ClosePopup" />
         </RadzenStack>
-    </RadzenCard>
+
+        <!-- Body -->
+        <RadzenStack Orientation="Orientation.Vertical" Gap="0.5rem">
+            <RadzenText TextStyle="TextStyle.Body1">@Message</RadzenText>
+            @if (HasError)
+            {
+                <RadzenAlert Severity="AlertSeverity.Error" Summary="Error" Detail="@ErrorMessage" />
+            }
+        </RadzenStack>
+
+        <!-- Footer -->
+        <RadzenStack Orientation="Orientation.Horizontal" Gap="1rem" JustifyContent="JustifyContent.End">
+            <RadzenButton ButtonStyle="ButtonStyle.Danger" Click="ConfirmDeletion" Disabled="@IsProcessing">
+                @(IsProcessing ? "Processing..." : "Delete")
+            </RadzenButton>
+            <RadzenButton ButtonStyle="ButtonStyle.Secondary" Click="ClosePopup">Cancel</RadzenButton>
+        </RadzenStack>
+    </RadzenStack>
 </RadzenPanel>
