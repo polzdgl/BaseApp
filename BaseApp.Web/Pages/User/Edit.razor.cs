@@ -59,7 +59,7 @@ namespace BaseApp.Web.Pages.User
                     ResetErrorState();
 
                     var userRequest = MapToRequestDto(User);
-                    var response = await ApiClient.UpdateUserAsync(Id, userRequest);
+                    var response = await ApiClient.EditUserAsync(Id, userRequest);
 
                     if (response.IsSuccessStatusCode)
                     {

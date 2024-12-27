@@ -29,7 +29,7 @@ namespace BaseApp.Web.ServiceClients
             return await httpClient.PostAsJsonAsync($"/user", userRequestDto, cancellationToken);
         }
 
-        public async Task<HttpResponseMessage> UpdateUserAsync(string id, UserRequestDto userRequestDto, CancellationToken cancellationToken = default)
+        public async Task<HttpResponseMessage> EditUserAsync(string id, UserRequestDto userRequestDto, CancellationToken cancellationToken = default)
         {
             return await httpClient.PutAsJsonAsync($"/user/{id}", userRequestDto, cancellationToken);
         }

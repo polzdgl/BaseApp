@@ -65,11 +65,11 @@ namespace BaseApp.API.Controllers
             }
         }
 
-        [HttpPost(Name = "AddUserAsync")]
+        [HttpPost(Name = "CreateUserAsync")]
         [ProducesResponseType(typeof(bool), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> AddUserAsync(UserRequestDto userRequestDto)
+        public async Task<IActionResult> CreateUserAsync(UserRequestDto userRequestDto)
         {
             try
             {
@@ -119,11 +119,11 @@ namespace BaseApp.API.Controllers
             }
         }
 
-        [HttpPut("{id}", Name = "UpdateUserAsync")]
+        [HttpPut("{id}", Name = "EditUserAsync")]
         [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> UpdateUserAsync(string id, [FromBody] UserRequestDto userRequestDto)
+        public async Task<IActionResult> EditUserAsync(string id, [FromBody] UserRequestDto userRequestDto)
         {
             try
             {

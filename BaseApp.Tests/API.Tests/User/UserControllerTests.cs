@@ -114,7 +114,7 @@ namespace BaseApp.Tests.API.Tests.User
             _mockUserService.CreateUserAsync(userRequest).Returns(true);
 
             // Act
-            var result = await _controller.AddUserAsync(userRequest);
+            var result = await _controller.CreateUserAsync(userRequest);
 
             // Assert
             Assert.IsType<CreatedResult>(result);
@@ -133,7 +133,7 @@ namespace BaseApp.Tests.API.Tests.User
             };
 
             // Act
-            var result = await _controller.AddUserAsync(userRequest);
+            var result = await _controller.CreateUserAsync(userRequest);
 
             // Assert
             var badRequestResult = Assert.IsType<ObjectResult>(result);
@@ -156,7 +156,7 @@ namespace BaseApp.Tests.API.Tests.User
             _mockUserService.UpdateUserAsync(userId, userRequest).Returns(true);
 
             // Act
-            var result = await _controller.UpdateUserAsync(userId, userRequest);
+            var result = await _controller.EditUserAsync(userId, userRequest);
 
             // Assert
             Assert.IsType<OkResult>(result);
