@@ -17,7 +17,7 @@
             </RadzenStack>
 
             <!-- Footer -->
-            <RadzenStack Orientation="Orientation.Horizontal" Gap="1rem" JustifyContent="JustifyContent.SpaceAround">
+            <RadzenStack Orientation="Orientation.Horizontal" Gap="1rem" JustifyContent="JustifyContent.End">
                 <RadzenButton ButtonStyle="ButtonStyle.Danger" Click="ConfirmDeletion" Disabled="@IsProcessing">
                     @(IsProcessing ? "Processing..." : "Delete")
                 </RadzenButton>
