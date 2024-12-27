@@ -5,8 +5,8 @@
 
 <h3>User List</h3>
 
-<RadzenDataGrid AllowFiltering="true" AllowColumnResize="true" AllowAlternatingRows="false"
-                FilterMode="FilterMode.Advanced" AllowSorting="true" PageSize="@PageSize" AllowPaging="true"
+<RadzenDataGrid AllowFiltering="false" AllowColumnResize="true" AllowAlternatingRows="false"
+                FilterMode="FilterMode.Advanced" AllowSorting="false" PageSize="@PageSize" AllowPaging="true"
                 PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
                 Data="@users" LogicalFilterOperator="LogicalFilterOperator.Or"
                 TItem="UserDto" Count="@TotalRecords" LoadData="GetUserList" SelectionMode="DataGridSelectionMode.Single"
