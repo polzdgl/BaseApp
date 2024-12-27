@@ -9,6 +9,8 @@ namespace BaseApp.Web.Shared
         [Parameter] public EventCallback OnConfirm { get; set; }
         [Parameter] public EventCallback OnCancel { get; set; }
 
+        private string PanelStyle => IsOpen ? "display: block; width: 100%; max-width: 500px; margin: auto;" : "display: none;";
+
         private bool IsOpen { get; set; }
         private bool IsProcessing { get; set; }
         private bool HasError { get; set; }
