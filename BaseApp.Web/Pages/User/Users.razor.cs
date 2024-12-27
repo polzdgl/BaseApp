@@ -95,6 +95,11 @@ namespace BaseApp.Web.Pages.User
             NavigationManager.NavigateTo($"/users/edit/{userId}");
         }
 
+        private void NavigateToCreateUser()
+        {
+            NavigationManager.NavigateTo($"/users/create");
+        }
+
         private async Task RefreshUserList()
         {
             await OnInitializedAsync(); // Reload the list after deletion.
