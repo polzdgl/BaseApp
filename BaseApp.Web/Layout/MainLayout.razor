@@ -1,18 +1,20 @@
 ﻿@inherits LayoutComponentBase
 
 <div class="main-layout">
+    <!-- Top Bar -->
     <header class="top-bar">
         <RadzenButton Icon="menu" Click="ToggleNavMenu" Class="navbar-toggler" />
         <span class="navbar-brand">BaseApp.Web</span>
-        <a href="https://learn.microsoft.com/aspnet/core/" target="_blank" class="about-link">About</a>
+        <RadzenButton Icon="person" Text="Login" Click="NavigateToLogin" Class="login-button" />
     </header>
 
-    <div class="layout-content">
-        <RadzenSidebar Expanded="@isSidebarExpanded" Style="width: 250px;">
+    <!-- Layout Content -->
+    <div class="layout-body">
+        <RadzenSidebar Expanded="@isSidebarExpanded" Class="radzen-sidebar">
             <NavMenu />
         </RadzenSidebar>
 
-        <RadzenBody>
+        <RadzenBody Class="content-body">
             <article class="content">
                 @Body
             </article>
@@ -29,9 +31,15 @@
 
 @code {
     private bool isSidebarExpanded = true;
+    [Inject] NavigationManager NavigationManager { get; set; } = default!;
 
     private void ToggleNavMenu()
     {
         isSidebarExpanded = !isSidebarExpanded;
+    }
+
+    private void NavigateToLogin()
+    {
+        NavigationManager.NavigateTo("/login");
     }
 }
