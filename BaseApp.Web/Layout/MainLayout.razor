@@ -10,17 +10,22 @@
         <div class="nav-buttons">
             <RadzenButton Text="Users" Click="NavigateToUsers" />
 
-            <!-- Dropdown Menu Example -->
-            <RadzenSplitButton Text="Options" Data="@dropdownItems" Click="OnDropdownItemClick">
-                <ChildContent>
-                    @foreach (var item in dropdownItems)
-                    {
-                        <RadzenSplitButtonItem Text="@item.Text" Value="@item.Value" />
-                    }
-                </ChildContent>
-            </RadzenSplitButton>
-
-            <RadzenButton Icon="person" Text="Login" Click="NavigateToLogin" Class="login-button" />
+            @if(string.IsNullOrEmpty(UserName))
+            {
+                <RadzenButton Icon="person" Text="Login" Click="NavigateToLogin" Class="login-button" />
+            }
+            else
+            {
+                <!-- Dropdown Menu Example -->
+                <RadzenSplitButton Icon="person" Text="@UserName" Data="@dropdownItems" Click="OnDropdownItemClick">
+                    <ChildContent>
+                        @foreach (var item in dropdownItems)
+                        {
+                            <RadzenSplitButtonItem Text="@item.Text" Value="@item.Value" />
+                        }
+                    </ChildContent>
+                </RadzenSplitButton>
+            }
         </div>
     </header>
 
@@ -42,8 +47,8 @@
 
     private List<DropdownItem> dropdownItems = new()
     {
+        new DropdownItem { Text = "Profile", Value = "profile" },        
         new DropdownItem { Text = "Settings", Value = "settings" },
-        new DropdownItem { Text = "Profile", Value = "profile" },
         new DropdownItem { Text = "Logout", Value = "logout" }
     };
 
@@ -83,4 +88,6 @@
         public string Text { get; set; }
         public string Value { get; set; }
     }
+
+    private string UserName { get; set; } = "User1";
 }
