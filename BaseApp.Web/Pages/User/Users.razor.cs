@@ -11,18 +11,16 @@ namespace BaseApp.Web.Pages.User
     {
         [Inject] private IUserApiClient ApiClient { get; set; } = default!;
         [Inject] private NavigationManager NavigationManager { get; set; } = default!;
+        [Inject] private NotificationService NotificationService { get; set; } = default!;
 
         private DeleteConfirmation DeleteConfirmationPopup { get; set; } = default!;
-
-        private bool HasError = false;
-        private string? ErrorMessage = string.Empty;
-        private string SelectedUserId = string.Empty;
 
         private IEnumerable<UserDto>? users = new List<UserDto>();
         private IList<UserDto>? selectedUsers;
 
         private int TotalRecords = 0;
         private int PageSize = 5;
+        private string SelectedUserId = string.Empty;
 
         protected override async Task OnInitializedAsync()
         {
@@ -33,13 +31,10 @@ namespace BaseApp.Web.Pages.User
         {
             try
             {
-                ResetErrorState();
-
                 // Calculate page index based on Radzen's `Skip` and `Top` properties
                 var pageIndex = args.Skip / args.Top + 1;
                 var pageSize = args.Top;
 
-                // Fetch paginated users from the API
                 var result = await ApiClient.GetUsersAsync((int)pageIndex, (int)pageSize);
 
                 if (result != null)
@@ -55,7 +50,7 @@ namespace BaseApp.Web.Pages.User
             }
             catch (Exception ex)
             {
-                HandleError(ex);
+                ShowNotification("Error", ex.Message, NotificationSeverity.Error);
             }
         }
 
@@ -70,23 +65,22 @@ namespace BaseApp.Web.Pages.User
         {
             try
             {
-                ResetErrorState();
                 var response = await ApiClient.DeleteUserAsync(SelectedUserId);
 
                 if (response.IsSuccessStatusCode)
                 {
-                    // Refresh User List
+                    ShowNotification("Success", "User deleted successfully.", NotificationSeverity.Success);
                     await RefreshUserList();
                 }
                 else
                 {
-                    HasError = true;
-                    ErrorMessage = await ErrorHandler.ExtractErrorMessageAsync(response);
+                    var errorMessage = await ErrorHandler.ExtractErrorMessageAsync(response);
+                    ShowNotification("Error", errorMessage, NotificationSeverity.Error);
                 }
             }
             catch (Exception ex)
             {
-                HandleError(ex);
+                ShowNotification("Error", ex.Message, NotificationSeverity.Error);
             }
         }
 
@@ -97,27 +91,28 @@ namespace BaseApp.Web.Pages.User
 
         private void NavigateToCreateUser()
         {
-            NavigationManager.NavigateTo($"/users/create");
+            NavigationManager.NavigateTo("/users/create");
         }
 
         private async Task RefreshUserList()
         {
-            await OnInitializedAsync(); // Reload the list after deletion.
+            await GetUserList(new LoadDataArgs { Skip = 0, Top = PageSize });
         }
 
         private void HandleCancel()
         {
-            SelectedUserId = string.Empty; // Reset the selection
+            SelectedUserId = string.Empty;
         }
 
-        private void ResetErrorState()
+        private void ShowNotification(string summary, string detail, NotificationSeverity severity)
         {
-            ErrorHandler.ResetErrorState(ref HasError, ref ErrorMessage);
-        }
-
-        private void HandleError(Exception ex)
-        {
-            ErrorHandler.HandleError(ex, ref HasError, ref ErrorMessage);
+            NotificationService.Notify(new NotificationMessage
+            {
+                Severity = severity,
+                Summary = summary,
+                Detail = detail,
+                Duration = 4000
+            });
         }
     }
 }

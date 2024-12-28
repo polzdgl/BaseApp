@@ -10,8 +10,15 @@ namespace BaseApp.Web.ServiceClients
     {
         public async Task<PaginatedResult<UserDto>> GetUsersAsync(int page, int pageSize, CancellationToken cancellationToken = default)
         {
-            var response = await httpClient.GetFromJsonAsync<PaginatedResult<UserDto>>($"/user/users?page={page}&pageSize={pageSize}", cancellationToken);
-            return response ?? new PaginatedResult<UserDto>();
+            try
+            {
+                var response = await httpClient.GetFromJsonAsync<PaginatedResult<UserDto>>($"/users/users?page={page}&pageSize={pageSize}", cancellationToken);
+                return response ?? new PaginatedResult<UserDto>();
+            }
+            catch (Exception ex) 
+            {
+                throw new ApplicationException("An unexpected error occurred.", ex);
+            }
         }
 
         public async Task<UserDto> GetUserAsync(string id, CancellationToken cancellationToken = default)
