@@ -12,7 +12,7 @@ namespace BaseApp.Web.ServiceClients
         {
             try
             {
-                var response = await httpClient.GetFromJsonAsync<PaginatedResult<UserDto>>($"/users/users?page={page}&pageSize={pageSize}", cancellationToken);
+                var response = await httpClient.GetFromJsonAsync<PaginatedResult<UserDto>>($"/user/users?page={page}&pageSize={pageSize}", cancellationToken);
                 return response ?? new PaginatedResult<UserDto>();
             }
             catch (Exception ex) 
