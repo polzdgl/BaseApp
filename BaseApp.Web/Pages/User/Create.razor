@@ -2,6 +2,7 @@
 
 <PageTitle>Create New User</PageTitle>
 
+<RadzenNotification />
 <div style="display: flex; justify-content: center; margin-top: 2rem;">
     <RadzenCard Class="rz-p-4 rz-border" Style="width: 500px;">
         <RadzenStack Orientation="Orientation.Vertical" Gap="1.5rem">
@@ -10,14 +11,6 @@
             @if (IsLoading)
             {
                 <RadzenProgressBar Mode="ProgressBarMode.Indeterminate" Style="width: 100%;" />
-            }
-            else if (HasError)
-            {
-                <RadzenAlert Severity="AlertSeverity.Error" Summary="Error" Detail="Failed to load user profile. Please try again later." />
-                @if (!string.IsNullOrEmpty(ErrorMessage))
-                {
-                    <RadzenText TextStyle="TextStyle.Body1">@ErrorMessage</RadzenText>
-                }
             }
             else
             {
