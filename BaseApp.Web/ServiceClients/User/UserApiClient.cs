@@ -1,7 +1,6 @@
 ﻿using BaseApp.Data.User.Dtos;
 using BaseApp.ServiceProvider.Interfaces;
 using BaseApp.Shared.Dtos;
-using System.Net.Http;
 using System.Net.Http.Json;
 
 namespace BaseApp.Web.ServiceClients
