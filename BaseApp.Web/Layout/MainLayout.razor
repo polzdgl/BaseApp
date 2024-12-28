@@ -10,7 +10,7 @@
         <div class="nav-buttons">
             <RadzenButton Text="Users" Click="NavigateToUsers" />
 
-            @if(string.IsNullOrEmpty(UserName))
+            @if (string.IsNullOrEmpty(UserName))
             {
                 <RadzenButton Icon="person" Text="Login" Click="NavigateToLogin" Class="login-button" />
             }
@@ -47,7 +47,7 @@
 
     private List<DropdownItem> dropdownItems = new()
     {
-        new DropdownItem { Text = "Profile", Value = "profile" },        
+        new DropdownItem { Text = "Profile", Value = "profile" },
         new DropdownItem { Text = "Settings", Value = "settings" },
         new DropdownItem { Text = "Logout", Value = "logout" }
     };
@@ -69,6 +69,14 @@
 
     private void OnDropdownItemClick(RadzenSplitButtonItem args)
     {
+        // Handle null args or null Value
+        if (args?.Value == null)
+        {
+            // Default action for null value is Profile
+            NavigationManager.NavigateTo("/profile");
+            return;
+        }
+
         switch (args.Value?.ToString())
         {
             case "settings":
@@ -80,6 +88,10 @@
             case "logout":
                 // Handle logout logic here
                 break;
+            default:
+                NavigationManager.NavigateTo("/profile");
+                break;
+
         }
     }
 
