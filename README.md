@@ -19,7 +19,7 @@ BaseApp is a web application built using a Blazor Web Assembly and an ASP.NET We
 
 ## Technologies Used
 
-- **Frontend**: Blazor Web Assembly
+- **Frontend**: Blazor Web Assembly with Radzen Coponents
 - **Backend**: ASP.NET Web API (with Controllers)
 - **Database**: Microsoft SQL Server
 - **ORM**: Entity Framework Core (with Repository Pattern)
@@ -56,7 +56,7 @@ BaseApp is a web application built using a Blazor Web Assembly and an ASP.NET We
 
    Replace `Your-SQL-Server-Connection-String` with your actual connection string.
 
-4. Set the `BaseApp.API` and `BaseApp.Web` projects as the startup projects.
+4. Set the `BaseApp.Server` project as the startup project.
 5. Run the application in Development mode. The database and required tables will be created automatically.
 6. Open the Swagger UI for API documentation:
    ```
@@ -80,14 +80,12 @@ Unit tests are implemented using xUnit with mocking provided by NSubstitute. To 
 
 ## Folder Structure
 
-- **BaseApp.API**: The ASP.NET Web API project.
-- **BaseApp.AppHost**: The main project responsible for hosting and running the application.
+- **BaseApp.Server**: The ASP.NET Web API project with Controllers. 
+- **BaseApp.Web**: The presentation layer with the Blazor Web Assembly UI with Radzen Components.
 - **BaseApp.Shared**: Contains shared utilities, validation classes, and DTOs.
 - **BaseApp.Tests**: Unit test project using xUnit and NSubstitute.
 - **BaseApp.Data**: The data layer project responsible for managing all data-related operations.
 - **BaseApp.ServiceProvider**: The business layer project with all the application logic.
-- **BaseApp.Web**: The presentation layer with the Blazor Web Assembly UI.
-
 ---
 
 ## Additional Notes
@@ -102,10 +100,10 @@ Unit tests are implemented using xUnit with mocking provided by NSubstitute. To 
 
 - **Run this command to create new Migration**:
 ```bash
-dotnet ef migrations add InitialData --project BaseApp.Data --startup-project BaseApp.API`
+dotnet ef migrations add InitialData --project BaseApp.Data --startup-project BaseApp.Server`
 ```
 - **Run this command to run EF Core Migration**:
  ```bash
-dotnet ef database update --project BaseApp.Data --startup-project BaseApp.API
+dotnet ef database update --project BaseApp.Data --startup-project BaseApp.Server
 ```
 ---
