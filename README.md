@@ -8,7 +8,8 @@ BaseApp is a web application built using a Blazor Web Assembly and an ASP.NET We
 
 ## Features
 
-- **User Management**: Add, retrieve, and manage user data.
+- **User Management**: Add new User (without Identity Registration), retrieve, and manage user data.
+- **User Authentication**: Register and Login to Authenticate users using ASP.Net Identity Provider 
 - **Data Validation**: Includes custom validation logic for phone numbers, email addresses, and dates of birth.
 - **Logging**: Integrated with Serilog for structured and detailed logging.
 - **API Documentation**: Interactive API documentation available via Swagger UI.
@@ -44,7 +45,7 @@ BaseApp is a web application built using a Blazor Web Assembly and an ASP.NET We
    git clone hhttps://github.com/polzdgl/BaseApp.git
    ```
 2. Open the solution in your IDE of choice.
-3. Navigate to the `BaseApp.API` project and update the connection string in `appsettings.json`:
+3. Navigate to the `BaseApp.Server` project and update the connection string in `appsettings.json`:
 
    ```json
    {
@@ -81,7 +82,7 @@ Unit tests are implemented using xUnit with mocking provided by NSubstitute. To 
 ## Folder Structure
 
 - **BaseApp.Server**: The ASP.NET Web API project with Controllers. 
-- **BaseApp.Web**: The presentation layer with the Blazor Web Assembly UI with Radzen Components.
+- **BaseApp.Client**: The presentation layer with the Blazor Web Assembly UI with Radzen Components.
 - **BaseApp.Shared**: Contains shared utilities, validation classes, and DTOs.
 - **BaseApp.Tests**: Unit test project using xUnit and NSubstitute.
 - **BaseApp.Data**: The data layer project responsible for managing all data-related operations.

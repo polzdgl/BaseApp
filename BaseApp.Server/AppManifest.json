@@ -1,0 +1,41 @@
+﻿{
+  "ApplicationId": "22e95f89-e77b-44b8-8228-a315ebdec83f",
+  "Version": "1.0",
+  "releaseDate": "2024-12-22",
+  "Roles": [
+    "Admin",
+    {
+      "Name": "Admin",
+      "Description": "Admin role",
+      "Permissions": [
+        "CreateUser",
+        "DeleteUser",
+        "UpdateUser",
+        "CreateModerator",
+        "DeleteModerator",
+        "UpdateModerator",
+        "CreateAdmin",
+        "DeleteAdmin",
+        "UpdateAdmin"
+      ]
+    },
+    "User",
+    {
+      "Name": "User",
+      "Description": "User role",
+      "Permissions": [
+        "Read Only",
+        "Add To Favorite"
+      ]
+    },
+    "Moderator"
+    {
+      "Name": "Moderator",
+      "Description": "Moderator role",
+      "Permissions": [
+        "View Profile",
+        "Edit Profile"
+      ]
+    }
+  ]
+}

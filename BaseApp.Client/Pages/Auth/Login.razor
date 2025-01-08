@@ -1,0 +1,64 @@
+@page "/auth/login"
+@using BaseApp.Data.User.Dtos
+
+<PageTitle>Login</PageTitle>
+
+<RadzenRow Gap="0" class="rz-my-12 rz-mx-auto rz-border-radius-6 rz-shadow-10" style="width: 100%; max-width: 800px; overflow: hidden;">
+    <!-- Welcome Section -->
+    <RadzenColumn Size="12" SizeMD="6">
+        <RadzenCard class="rz-shadow-0 rz-border-radius-0 rz-text-align-center rz-p-12"
+                    style="height: 100%; background: var(--rz-primary-light) no-repeat 100% 70% fixed url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0i...');">
+            <RadzenText TextStyle="TextStyle.DisplayH3" TagName="TagName.H2" class="rz-color-white rz-mb-6">Welcome!</RadzenText>
+            <RadzenText TextStyle="TextStyle.H6" class="rz-color-white">Login to access your Account and Features!</RadzenText>
+            <RadzenText TextStyle="TextStyle.Body2" class="rz-color-white">New? Let's get started with your <strong>30 days</strong> trial.</RadzenText>
+            <RadzenStack Orientation="Orientation.Horizontal" Gap="1rem" JustifyContent="JustifyContent.Center" Style="margin-top: 2rem;">
+                <RadzenButton ButtonStyle="ButtonStyle.Base" Text="Register" Click="@(() => NavigationManager.NavigateTo("/auth/register"))" Style="min-width: 120px;" />
+            </RadzenStack>
+        </RadzenCard>
+    </RadzenColumn>
+
+    <!-- Login Form Section -->
+    <RadzenColumn Size="12" SizeMD="6">
+        <RadzenCard class="rz-shadow-0 rz-border-radius-0 rz-p-12">
+            <RadzenText TextStyle="TextStyle.H5" TagName="TagName.H2" class="rz-mb-6">Login</RadzenText>
+            @if (IsLoading)
+            {
+                <RadzenProgressBar Mode="ProgressBarMode.Indeterminate" Style="width: 100%;" />
+            }
+            else
+            {
+                <EditForm Model="@UserLoginDto" OnValidSubmit="OnLoginAsync">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary />
+
+                    <!-- Email -->
+                    <RadzenText TextStyle="TextStyle.Body1" class="rz-mb-1">Email</RadzenText>
+                    <RadzenTextBox @bind-Value="UserLoginDto.Email" Style="width: 100%;" Placeholder="Enter email" />
+                    <ValidationMessage For="@(() => UserLoginDto.Email)" />
+
+                    <!-- Password -->
+                    <RadzenText TextStyle="TextStyle.Body1" class="rz-mb-1">Password</RadzenText>
+                    <RadzenPassword @bind-Value="UserLoginDto.Password" AutoComplete="false" Style="width: 100%;" Placeholder="Enter your password" />
+                    <ValidationMessage For="@(() => UserLoginDto.Password)" />
+
+                    <!-- Remember Me -->
+                    <RadzenStack Orientation="Orientation.Vertical" Gap="0.5rem" AlignItems="AlignItems.Start" class="rz-mb-2">
+                        <RadzenStack Orientation="Orientation.Horizontal" Gap="1rem" AlignItems="AlignItems.Center">
+                            <RadzenCheckBox TValue="bool" @bind-Value="UserLoginDto.RememberMe" Name="RememberMe" />
+                            <RadzenText TextStyle="TextStyle.Body2">Remember me</RadzenText>
+                        </RadzenStack>
+                        <RadzenText TextStyle="TextStyle.Body2" class="rz-mt-1">
+                            Forgot your password?
+                            <a class="rz-link" @onclick="@(() => NavigationManager.NavigateTo("/user/resetpassword"))">Reset here</a>
+                        </RadzenText>
+                    </RadzenStack>
+
+                    <!-- Action Buttons -->
+                    <RadzenStack Orientation="Orientation.Horizontal" Gap="1rem" JustifyContent="JustifyContent.End" Style="margin-top: 2rem;">
+                        <RadzenButton ButtonStyle="ButtonStyle.Primary" Icon="login" Disabled="@IsLoggingIn" Text="@(IsLoggingIn ? "Logging in..." : "Login")" Type="Submit" Style="min-width: 120px;" />
+                    </RadzenStack>
+                </EditForm>
+            }
+        </RadzenCard>
+    </RadzenColumn>
+</RadzenRow>

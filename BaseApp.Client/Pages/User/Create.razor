@@ -1,0 +1,53 @@
+@page "/user/create"
+@using BaseApp.Data.User.Dtos
+
+<PageTitle>Create New User Profile</PageTitle>
+
+<RadzenCard class="rz-my-12 rz-mx-auto rz-p-4 rz-p-md-12" style="max-width: 600px;">
+    <h3 class="rz-mb-4">Create</h3>
+    <RadzenStack Orientation="Orientation.Vertical" Gap="1.5rem">
+        <RadzenText TextStyle="TextStyle.Subtitle1" Class="rz-mb-3">Enter User Information</RadzenText>
+        @if (IsLoading)
+        {
+            <RadzenProgressBar Mode="ProgressBarMode.Indeterminate" Style="width: 100%;" />
+        }
+        else
+        {
+            <EditForm Model="@UserProfileDto" OnValidSubmit="CreateUserAsync">
+                <dataannotationsvalidator />
+                <validationsummary />
+
+                <!-- First Name -->
+                <RadzenText TextStyle="TextStyle.Body1" Class="rz-mb-1">First Name</RadzenText>
+                <RadzenTextBox @bind-Value="UserProfileDto.FirstName" Style="width: 100%;" Placeholder="Enter first name" />
+                <ValidationMessage For="@(() => UserProfileDto.FirstName)" />
+
+                <!-- Last Name -->
+                <RadzenText TextStyle="TextStyle.Body1" Class="rz-mb-1">Last Name</RadzenText>
+                <RadzenTextBox @bind-Value="UserProfileDto.LastName" Style="width: 100%;" Placeholder="Enter last name" />
+                <ValidationMessage For="@(() => UserProfileDto.LastName)" />
+
+                <!-- Email -->
+                <RadzenText TextStyle="TextStyle.Body1" Class="rz-mb-1">Email</RadzenText>
+                <RadzenTextBox @bind-Value="UserProfileDto.Email" Style="width: 100%;" Placeholder="Enter email" />
+                <ValidationMessage For="@(() => UserProfileDto.Email)" />
+
+                <!-- Phone Number -->
+                <RadzenText TextStyle="TextStyle.Body1" Class="rz-mb-1">Phone Number</RadzenText>
+                <RadzenTextBox @bind-Value="UserProfileDto.PhoneNumber" Style="width: 100%;" Placeholder="Enter phone number" />
+                <ValidationMessage For="@(() => UserProfileDto.PhoneNumber)" />
+
+                <!-- Date of Birth -->
+                <RadzenText TextStyle="TextStyle.Body1" Class="rz-mb-1">Date of Birth</RadzenText>
+                <RadzenDatePicker @bind-Value="@UserProfileDto.DateOfBirth" DateFormat="MM/dd/yyyy" Name="DatePickerDateOnlyType" Style="width: 100%;" Placeholder="Select date of birth" />
+                <ValidationMessage For="@(() => UserProfileDto.DateOfBirth)" />
+
+                <!-- Action Buttons -->
+                <RadzenStack Orientation="Orientation.Horizontal" Gap="1rem" JustifyContent="JustifyContent.End" Style="margin-top: 2rem;">
+                    <RadzenButton ButtonStyle="ButtonStyle.Primary" Icon="save" Disabled="@IsSaving" Text="@(IsSaving ? "Saving..." : "Save")" Type="Submit" Style="min-width: 120px;" />
+                    <RadzenButton ButtonStyle="ButtonStyle.Secondary" Icon="cancel" Text="Cancel" Click="@(() => NavigationManager.NavigateTo("/user/all"))" Style="min-width: 120px;" />
+                </RadzenStack>
+            </EditForm>
+        }
+    </RadzenStack>
+</RadzenCard>

@@ -1,13 +1,16 @@
-﻿using BaseApp.API.Controllers;
-using BaseApp.Data.User.Dtos;
-using BaseApp.ServiceProvider.Interfaces;
+﻿using BaseApp.Data.User.Dtos;
+using BaseApp.Data.User.Models;
+using BaseApp.Server.Controllers;
+using BaseApp.ServiceProvider.Interfaces.User;
 using BaseApp.Shared.Dtos;
 using BaseApp.Shared.Validation;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using NSubstitute;
-using System.ComponentModel.DataAnnotations;
+using System.Text.Json;
 
 namespace BaseApp.Tests.API.Tests.User
 {
@@ -23,13 +26,27 @@ namespace BaseApp.Tests.API.Tests.User
             _mockUserService = Substitute.For<IUserService>();
             _mockLogger = Substitute.For<ILogger<UserController>>();
             _mockInputValidation = Substitute.For<InputValidation>();
+
+            // Create substitutes for UserManager dependencies
+            var userStore = Substitute.For<IUserStore<ApplicationUser>>();
+            var options = Substitute.For<IOptions<IdentityOptions>>();
+            var passwordHasher = Substitute.For<IPasswordHasher<ApplicationUser>>();
+            var userValidators = Substitute.For<IEnumerable<IUserValidator<ApplicationUser>>>();
+            var passwordValidators = Substitute.For<IEnumerable<IPasswordValidator<ApplicationUser>>>();
+            var keyNormalizer = Substitute.For<ILookupNormalizer>();
+            var errors = Substitute.For<IdentityErrorDescriber>();
+            var services = Substitute.For<IServiceProvider>();
+            var logger = Substitute.For<ILogger<UserManager<ApplicationUser>>>();
+
+            // Initialize the controller with the mocked dependencies
             _controller = new UserController(_mockLogger, _mockUserService, _mockInputValidation);
         }
+
 
         [Fact]
         public async Task GetUsersAsync_ReturnsOkResult_WithPaginatedUsers()
         {
-            // Arrange
+            // Setup mock data
             int page = 1;
             int pageSize = 2;
 
@@ -49,14 +66,14 @@ namespace BaseApp.Tests.API.Tests.User
 
             _mockUserService.GetUsersAsync(page, pageSize).Returns(Task.FromResult(paginatedResult));
 
-            // Act
+            // Call the controller method
             var result = await _controller.GetUsersAsync(page, pageSize);
 
-            // Assert
+            // Confirm the result is an OkObjectResult
             var okResult = Assert.IsType<OkObjectResult>(result);
             var returnedResult = Assert.IsType<PaginatedResult<UserDto>>(okResult.Value);
 
-            // Validate pagination metadata
+            // Validate paginated data
             Assert.Equal(page, returnedResult.Page);
             Assert.Equal(pageSize, returnedResult.PageSize);
             Assert.Equal(10, returnedResult.TotalCount);
@@ -67,45 +84,89 @@ namespace BaseApp.Tests.API.Tests.User
             Assert.Equal(users[1].Id, returnedResult.Items.Last().Id);
         }
 
+
+        [Fact]
+        public async Task GetUsersAsync_ReturnsOkResult_WithNoUsersData()
+        {
+            // Setup mock data
+            int page = 1;
+            int pageSize = 5;
+
+            // No data
+            var users = new List<UserDto>();
+
+            var paginatedResult = new PaginatedResult<UserDto>
+            {
+                Items = users,
+                TotalCount = 0,
+                Page = page,
+                PageSize = pageSize
+            };
+
+            _mockUserService.GetUsersAsync(page, pageSize).Returns(Task.FromResult(paginatedResult));
+
+            // Call the controller method
+            var result = await _controller.GetUsersAsync(page, pageSize);
+
+            // Confirm the result is an OkObjectResult
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var returnedResult = Assert.IsType<PaginatedResult<UserDto>>(okResult.Value);
+
+            // Validate paginated data
+            Assert.Equal(page, returnedResult.Page);
+            Assert.Equal(pageSize, returnedResult.PageSize);
+            Assert.Equal(0, returnedResult.TotalCount);
+
+            // Validate returned user data
+            Assert.Equal(users.Count, returnedResult.Items.Count());
+            Assert.Empty(returnedResult.Items);
+        }
+
         [Fact]
         public async Task GetUserByIdAsync_ReturnsOkResult_WhenUserIsFound()
         {
-            // Arrange
             var userId = new Guid().ToString();
             var user = new UserDto { Id = userId, UserName = "User1", FirstName = "John", LastName = "Doe", Email = "johndoe@company.com" };
 
             _mockUserService.GetUserAsync(userId).Returns(user);
 
-            // Act
             var result = await _controller.GetUserByIdAsync(userId);
 
-            // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
             var returnedUser = Assert.IsType<UserDto>(okResult.Value);
+
             Assert.Equal(userId, returnedUser.Id);
         }
 
         [Fact]
         public async Task GetUserByIdAsync_ReturnsBadRequest_WhenIdIsInvalid()
         {
-            // Arrange
             var invalidUserId = "-1";
 
-            // Act
             var result = await _controller.GetUserByIdAsync(invalidUserId);
 
-            // Assert
             var badRequestResult = Assert.IsType<ObjectResult>(result);
+
             Assert.Equal(StatusCodes.Status400BadRequest, badRequestResult.StatusCode);
+        }
+
+        [Fact]
+        public async Task GetUserByIdAsync_ReturnsBadRequest_WhenIdIsNotFound()
+        {
+            var invalidUserId = new Guid().ToString();
+
+            var result = await _controller.GetUserByIdAsync(invalidUserId);
+
+            var notFoundResult = Assert.IsType<ObjectResult>(result);
+
+            Assert.Equal(StatusCodes.Status404NotFound, notFoundResult.StatusCode);
         }
 
         [Fact]
         public async Task AddUserAsync_ReturnsCreatedResult_WhenUserIsValid()
         {
-            // Arrange
-            var userRequest = new UserRequestDto
+            var userRequest = new UserProfileDto
             {
-                UserName = "john.doe",
                 Email = "john.doe@example.com",
                 FirstName = "John",
                 LastName = "Doe"
@@ -113,31 +174,121 @@ namespace BaseApp.Tests.API.Tests.User
 
             _mockUserService.CreateUserAsync(userRequest).Returns(true);
 
-            // Act
             var result = await _controller.CreateUserAsync(userRequest);
 
-            // Assert
             Assert.IsType<CreatedResult>(result);
         }
 
         [Fact]
-        public async Task AddUserAsync_ReturnsBadRequest_WhenModelIsInvalid()
+        public async Task AddUserAsync_ReturnsBadRequest_WhenEmailIsInvalid()
         {
-            // Arrange
-            var userRequest = new UserRequestDto
+            var userRequest = new UserProfileDto
             {
                 FirstName = "InvalidFirstName",
                 LastName = "InvalidLastName",
-                UserName = "invalidUser",
                 Email = "invalidemail"
             };
 
-            // Act
             var result = await _controller.CreateUserAsync(userRequest);
 
-            // Assert
             var badRequestResult = Assert.IsType<ObjectResult>(result);
             Assert.Equal(StatusCodes.Status400BadRequest, badRequestResult.StatusCode);
+
+            // Ensure the response contains a specific error about the invalid email
+            var responseContent = badRequestResult.Value;
+            Assert.NotNull(responseContent);
+
+            // Deserialize the response to inspect its details
+            var problemDetails = JsonSerializer.Deserialize<ProblemDetails>(JsonSerializer.Serialize(responseContent));
+
+            Assert.NotNull(problemDetails);
+            Assert.Contains("invalid email", problemDetails?.Detail ?? string.Empty, StringComparison.OrdinalIgnoreCase);
+        }
+
+        [Fact]
+        public async Task AddUserAsync_ReturnsBadRequest_WhenPhoneIsInvalid()
+        {
+            var userRequest = new UserProfileDto
+            {
+                FirstName = "InvalidFirstName",
+                LastName = "InvalidLastName",
+                Email = "john.doe@example.com",
+                PhoneNumber = "invalidphone"
+            };
+
+            var result = await _controller.CreateUserAsync(userRequest);
+
+            var badRequestResult = Assert.IsType<ObjectResult>(result);
+            Assert.Equal(StatusCodes.Status400BadRequest, badRequestResult.StatusCode);
+
+            // Ensure the response contains a specific error about the invalid email
+            var responseContent = badRequestResult.Value;
+            Assert.NotNull(responseContent);
+
+            // Deserialize the response to inspect its details
+            var problemDetails = JsonSerializer.Deserialize<ProblemDetails>(JsonSerializer.Serialize(responseContent));
+
+            Assert.NotNull(problemDetails);
+            Assert.Contains("invalid phone", problemDetails?.Detail ?? string.Empty, StringComparison.OrdinalIgnoreCase);
+        }
+
+        [Fact]
+        public async Task AddUserAsync_ReturnsBadRequest_WhenDOBIsInvalid()
+        {
+            var userRequest = new UserProfileDto
+            {
+                FirstName = "InvalidFirstName",
+                LastName = "InvalidLastName",
+                Email = "john.doe@example.com",
+                DateOfBirth = DateTime.Now.AddDays(1)
+            };
+
+            var result = await _controller.CreateUserAsync(userRequest);
+
+            var badRequestResult = Assert.IsType<ObjectResult>(result);
+            Assert.Equal(StatusCodes.Status400BadRequest, badRequestResult.StatusCode);
+
+            // Ensure the response contains a specific error about the invalid email
+            var responseContent = badRequestResult.Value;
+            Assert.NotNull(responseContent);
+
+            // Deserialize the response to inspect its details
+            var problemDetails = JsonSerializer.Deserialize<ProblemDetails>(JsonSerializer.Serialize(responseContent));
+
+            Assert.NotNull(problemDetails);
+            Assert.Contains("Invalid Date of Birth", problemDetails?.Detail ?? string.Empty, StringComparison.OrdinalIgnoreCase);
+        }
+
+        [Fact]
+        public async Task AddUserAsync_ReturnsBadRequest_WhenUserNameIsTaken()
+        {
+            var userId = new Guid().ToString();
+
+            var user = new UserDto { Id = userId, UserName = "User1", FirstName = "John", LastName = "Doe", Email = "johndoe@company.com" };
+
+            _mockUserService.GetUserAsync(userId).Returns(user);
+
+            var userRequest = new UserProfileDto
+            {
+                FirstName = "InvalidFirstName",
+                LastName = "InvalidLastName",
+                Email = "johndoe@company.com"
+            };
+
+            var result = await _controller.CreateUserAsync(userRequest);
+
+            var badRequestResult = Assert.IsType<ObjectResult>(result);
+            Assert.Equal(StatusCodes.Status400BadRequest, badRequestResult.StatusCode);
+
+            // Ensure the response contains a specific error about the invalid email
+            var responseContent = badRequestResult.Value;
+            Assert.NotNull(responseContent);
+
+            // Deserialize the response to inspect its details
+            var problemDetails = JsonSerializer.Deserialize<ProblemDetails>(JsonSerializer.Serialize(responseContent));
+
+            Assert.NotNull(problemDetails);
+            Assert.Contains("Failed to Create Username", problemDetails?.Detail ?? string.Empty, StringComparison.OrdinalIgnoreCase);
         }
 
         [Fact]
@@ -145,7 +296,7 @@ namespace BaseApp.Tests.API.Tests.User
         {
             // Arrange
             var userId = new Guid().ToString();
-            var userRequest = new UserRequestDto
+            var userRequest = new UserUpdateDto
             {
                 UserName = "updated.john",
                 Email = "updated.john@example.com",

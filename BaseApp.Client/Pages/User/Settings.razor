@@ -1,0 +1,41 @@
+@page "/user/settings"
+
+@inject ThemeService ThemeService
+@implements IDisposable
+
+<PageTitle>Settings</PageTitle>
+<RadzenRow>
+    <RadzenColumn Size="12">
+        <RadzenText Text="Settings" TextStyle="TextStyle.H3" TagName="TagName.H1" />
+    </RadzenColumn>
+</RadzenRow>
+
+<CascadingAuthenticationState>
+    <AuthorizeView>
+        <Authorized>
+            <RadzenStack class="rz-p-0 rz-p-md-6 rz-p-lg-12">
+                <RadzenCard Variant="Variant.Outlined">
+                    <RadzenStack Orientation="Orientation.Horizontal" Wrap="FlexWrap.Wrap">
+                        <RadzenStack Orientation="Orientation.Vertical" Gap="0.5rem" class="rz-p-sm-2">
+                            <RadzenLabel Text="Change the current theme" />
+                            <RadzenDropDown Name="ThemeDropDown" TValue="string"
+                                            Value="@ThemeService.Theme"
+                                            ValueChanged="@ChangeTheme"
+                                            Data="@FilteredThemes"
+                                            TextProperty=@nameof(Theme.Text)
+                                            ValueProperty=@nameof(Theme.Value)>
+                            </RadzenDropDown>
+                        </RadzenStack>
+                    </RadzenStack>
+                </RadzenCard>
+            </RadzenStack>
+        </Authorized>
+        <NotAuthorized>
+            <RadzenCard Variant="Variant.Outlined" Style="padding: 1rem; text-align: center;">
+                <RadzenText Text="You are not authorized to view this page." TextStyle="TextStyle.H6" />
+                <RadzenText Text="Please log in to access this content." />
+                <RadzenButton Text="Go to Login" Click="NavigateToLogin" Style="margin-top: 1rem;" />
+            </RadzenCard>
+        </NotAuthorized>
+    </AuthorizeView>
+</CascadingAuthenticationState>

@@ -33,10 +33,11 @@
     </PackageReference>
   </ItemGroup>
 
+
   <ItemGroup>
-    <ProjectReference Include="..\BaseApp.API\BaseApp.API.csproj" />
+    <ProjectReference Include="..\BaseApp.Client\BaseApp.Client.csproj" />
+    <ProjectReference Include="..\BaseApp.Server\BaseApp.Server.csproj" />
     <ProjectReference Include="..\BaseApp.ServiceProvider\BaseApp.ServiceProvider.csproj" />
-    <ProjectReference Include="..\BaseApp.Web\BaseApp.Web.csproj" />
   </ItemGroup>
 
   <ItemGroup>

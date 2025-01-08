@@ -1,0 +1,49 @@
+@page "/user/all"
+@using BaseApp.Data.User.Dtos
+@using BaseApp.Client.Shared
+
+<PageTitle>Users</PageTitle>
+
+<RadzenRow>
+    <RadzenColumn Size="12">
+        <RadzenText Text="Users" TextStyle="TextStyle.H3" TagName="TagName.H1" />
+    </RadzenColumn>
+</RadzenRow>
+
+<RadzenDataGrid AllowFiltering="false" AllowColumnResize="true" AllowAlternatingRows="false"
+                FilterMode="FilterMode.Advanced" AllowSorting="false" PageSize="@PageSize" AllowPaging="true"
+                PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
+                Data="@users" LogicalFilterOperator="LogicalFilterOperator.Or"
+                TItem="UserDto" Count="@TotalRecords" LoadData="GetUserList" SelectionMode="DataGridSelectionMode.Single"
+                @bind-Value="@selectedUsers">
+    <Columns>
+        <RadzenDataGridColumn TItem="UserDto" Property="@nameof(UserDto.Id)" Filterable="false" Title="ID" Frozen="true" Width="80px" TextAlign="TextAlign.Center" />
+        <RadzenDataGridColumn TItem="UserDto" Property="@nameof(UserDto.UserName)" Title="User Name" Frozen="true" Width="160px" />
+        <RadzenDataGridColumn TItem="UserDto" Property="@nameof(UserDto.FirstName)" Title="First Name" Width="160px" />
+        <RadzenDataGridColumn TItem="UserDto" Property="@nameof(UserDto.LastName)" Title="Last Name" Width="160px" />
+        <RadzenDataGridColumn TItem="UserDto" Property="@nameof(UserDto.Email)" Title="Email" Width="200px" />
+        <RadzenDataGridColumn TItem="UserDto" Property="@nameof(UserDto.PhoneNumber)" Title="Phone" Width="160px" />
+        <RadzenDataGridColumn TItem="UserDto" Property="@nameof(UserDto.Age)" Title="Age" Width="160px" />
+        <RadzenDataGridColumn TItem="UserDto" Property="@nameof(UserDto.IsActive)" Title="Is Active" Width="160px" />
+
+        <RadzenDataGridColumn Title="" Width="200px" Filterable="false" Sortable="false">
+            <Template Context="user">
+                <RadzenButton Text="Edit" ButtonStyle="ButtonStyle.Danger" Click="@(() => NavigateToEdit(user.Id))" />
+                <RadzenButton Text="Delete" ButtonStyle="ButtonStyle.Secondary" Click="@(() => ShowDeletePopup(user.Id, user.UserName))" />
+            </Template>
+        </RadzenDataGridColumn>
+
+    </Columns>
+</RadzenDataGrid>
+
+<br />
+<RadzenButton Text="Create User" ButtonStyle="ButtonStyle.Primary" Click="@(() => NavigateToCreateUser())" />
+
+<DeleteConfirmation @ref="DeleteConfirmationPopup"
+                    Title="Confirm User Deletion"
+                    OnConfirm="DeleteUser"
+                    OnCancel="HandleCancel" />
+
+<br />
+<br />
+<br />

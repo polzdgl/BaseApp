@@ -13,6 +13,22 @@ namespace BaseApp.Shared.Validation
             return Validator.TryValidateObject(model, validationContext, validationResults, validateAllProperties: true);
         }
 
+        // Validate Password with predefined rules
+        public bool ValidatePassword(string password, out List<ValidationResult> validationResults)
+        {
+            validationResults = new List<ValidationResult>();
+            var passwordRequirements = new PasswordRequirements();
+            var result = passwordRequirements.ValidatePassword(password);
+
+            if (result.Any())
+            {
+                validationResults = result;
+                return false;
+            }
+
+            return true;
+        }
+
         // Validate if a number is within a specific range
         public bool ValidateNumberRange(int number, int minValue, int maxValue, out string validationErrorMessage)
         {

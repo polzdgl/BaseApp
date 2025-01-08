@@ -37,10 +37,10 @@ namespace BaseApp.Data.User.Dtos
             {
                 Id = user.Id,
                 UserName = user.UserName,
-                Email = user.Email,
-                PhoneNumber = user.PhoneNumber,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
+                Email = user.Email,
+                PhoneNumber = user.PhoneNumber,   
                 DateOfBirth = user.DateOfBirth,
                 EmailConfirmed = user.EmailConfirmed,
                 PhoneNumberConfirmed = user.PhoneNumberConfirmed,

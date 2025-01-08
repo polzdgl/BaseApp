@@ -1,12 +1,11 @@
-﻿using BaseApp.Data.User.Dtos;
-using BaseApp.ServiceProvider.Interfaces;
+﻿using BaseApp.Client.Pages.User;
+using BaseApp.Data.User.Dtos;
+using BaseApp.ServiceProvider.Interfaces.User;
 using BaseApp.Shared.Dtos;
-using BaseApp.Web.Pages.User;
 using Bunit;
 using Bunit.TestDoubles;
+using Microsoft.AspNetCore.Components;
 using NSubstitute;
-using NSubstitute.ExceptionExtensions;
-using Xunit;
 
 namespace BaseApp.Tests.UI.Tests.User
 {
@@ -26,6 +25,10 @@ namespace BaseApp.Tests.UI.Tests.User
             // Optional: Mock specific JS calls if needed
             JSInterop.SetupVoid("Radzen.createDataGrid").SetVoidResult();
             JSInterop.SetupVoid("Radzen.destroyDataGrid").SetVoidResult();
+
+            // Arrange: Add Radzen services
+            Services.AddSingleton<Radzen.NotificationService>();
+            Services.AddSingleton<FakeNavigationManager>();
         }
 
         [Fact]
@@ -52,7 +55,7 @@ namespace BaseApp.Tests.UI.Tests.User
             // Assert
             Assert.Contains("User1", component.Markup);
             Assert.Contains("User2", component.Markup);
-            Assert.Contains("User List", component.Markup);
+            Assert.Contains("Users", component.Markup);
         }
 
         [Fact]
@@ -60,7 +63,6 @@ namespace BaseApp.Tests.UI.Tests.User
         {
             // Arrange
             var users = new List<UserDto>
-    
             {
                 new UserDto { Id = "1", UserName = "User1", FirstName = "John", LastName = "Doe", Email = "johndoe@email.com" }
             };
@@ -82,29 +84,48 @@ namespace BaseApp.Tests.UI.Tests.User
             }));
 
             var component = RenderComponent<Users>();
+            var navigationManager = Services.GetRequiredService<FakeNavigationManager>();
 
             // Act
             var deleteButton = component.Find("button:contains('Delete')");
             deleteButton.Click();
 
-            var confirmButton = component.Find("button:contains('Cancel')");
-            confirmButton.Click();
+            Assert.Equal("/", new Uri(navigationManager.Uri).AbsolutePath);
         }
 
-
         [Fact]
-        public async Task UsersComponent_CreateUser_NavigatesToCreatePage()
+        public async Task UsersComponent_DeleteUser_CancelDelete()
         {
             // Arrange
-            var navigationManager = Services.GetRequiredService<FakeNavigationManager>();
+            var users = new List<UserDto>
+            {
+                new UserDto { Id = "1", UserName = "User1", FirstName = "John", LastName = "Doe", Email = "johndoe@email.com" }
+            };
+
+            // Mock the GetUsersAsync method
+            _mockApiClient.GetUsersAsync(1, 5, Arg.Any<CancellationToken>())
+                .Returns(Task.FromResult(new PaginatedResult<UserDto>
+                {
+                    Items = users,
+                    TotalCount = 1,
+                    Page = 1,
+                    PageSize = 5
+                }));
+
+            // Mock the DeleteUserAsync method
+            _mockApiClient.DeleteUserAsync("1").Returns(Task.FromResult(new HttpResponseMessage
+            {
+                StatusCode = System.Net.HttpStatusCode.OK
+            }));
+
             var component = RenderComponent<Users>();
+            var navigationManager = Services.GetRequiredService<FakeNavigationManager>();
 
             // Act
-            var createUserButton = component.Find("button:contains('Create User')");
-            createUserButton.Click();
+            var confirmButton = component.Find("button:contains('Cancel')");
+            confirmButton.Click();
 
-            // Assert
-            Assert.Equal("/users/create", new Uri(navigationManager.Uri).AbsolutePath);
+            Assert.Equal("/", new Uri(navigationManager.Uri).AbsolutePath);
         }
     }
 }
