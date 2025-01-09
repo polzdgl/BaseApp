@@ -128,7 +128,7 @@ namespace BaseApp.Server.Controllers
                     return Problem(detail: $"Invalid Model for Id: {id}. Errors: {validationErrors}", statusCode: StatusCodes.Status400BadRequest);
                 }
 
-                bool updatedUser = await _userService.UpdateUserAsync(id, userRequestDto);
+                bool updatedUser = await _userService.UpdateUserAsync(id, userProfileDto);
 
                 return updatedUser ? Ok() :
                  Problem(detail: $"Failed to Update UserId: {id}!", statusCode: StatusCodes.Status400BadRequest);

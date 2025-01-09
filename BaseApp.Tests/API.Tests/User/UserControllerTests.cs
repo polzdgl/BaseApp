@@ -329,17 +329,17 @@ namespace BaseApp.Tests.API.Tests.User
         {
             // Arrange
             var userId = new Guid().ToString();
-            var userRequest = new UserProfileDto
+            var userProfileDto = new UserProfileDto
             {
                 Email = "updated.john@example.com",
                 FirstName = "John",
                 LastName = "Doe"
             };
 
-            _mockUserService.UpdateUserAsync(userId, userRequest).Returns(true);
+            _mockUserService.UpdateUserAsync(userId, userProfileDto).Returns(true);
 
             // Act
-            var result = await _controller.EditUserAsync(userId, userRequest);
+            var result = await _controller.EditUserAsync(userId, userProfileDto);
 
             // Assert
             Assert.IsType<OkResult>(result);
