@@ -4,6 +4,8 @@ using BaseApp.Server.Controllers;
 using BaseApp.ServiceProvider.Interfaces.User;
 using BaseApp.Shared.Dtos;
 using BaseApp.Shared.Validation;
+using FluentValidation;
+using FluentValidation.Results;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -20,12 +22,14 @@ namespace BaseApp.Tests.API.Tests.User
         private readonly ILogger<UserController> _mockLogger;
         private readonly InputValidation _mockInputValidation;
         private readonly UserController _controller;
+        private readonly IValidator<UserProfileDto> _mockUserProfileValidator;
 
         public UserControllerTests()
         {
             _mockUserService = Substitute.For<IUserService>();
             _mockLogger = Substitute.For<ILogger<UserController>>();
             _mockInputValidation = Substitute.For<InputValidation>();
+            _mockUserProfileValidator = Substitute.For<IValidator<UserProfileDto>>();
 
             // Create substitutes for UserManager dependencies
             var userStore = Substitute.For<IUserStore<ApplicationUser>>();
@@ -39,7 +43,7 @@ namespace BaseApp.Tests.API.Tests.User
             var logger = Substitute.For<ILogger<UserManager<ApplicationUser>>>();
 
             // Initialize the controller with the mocked dependencies
-            _controller = new UserController(_mockLogger, _mockUserService, _mockInputValidation);
+            _controller = new UserController(_mockLogger, _mockUserService, _mockInputValidation, _mockUserProfileValidator);
         }
 
 
@@ -172,6 +176,9 @@ namespace BaseApp.Tests.API.Tests.User
                 LastName = "Doe"
             };
 
+            var validationFailures = new List<ValidationFailure>();
+            _mockUserProfileValidator.Validate(userRequest).Returns(new ValidationResult(validationFailures));
+
             _mockUserService.CreateUserAsync(userRequest).Returns(true);
 
             var result = await _controller.CreateUserAsync(userRequest);
@@ -189,6 +196,13 @@ namespace BaseApp.Tests.API.Tests.User
                 Email = "invalidemail"
             };
 
+            var validationFailures = new List<ValidationFailure>
+            {
+                new ValidationFailure("Email", "Email is invalid"),
+            };
+
+            _mockUserProfileValidator.Validate(userRequest).Returns(new ValidationResult(validationFailures));
+
             var result = await _controller.CreateUserAsync(userRequest);
 
             var badRequestResult = Assert.IsType<ObjectResult>(result);
@@ -202,7 +216,7 @@ namespace BaseApp.Tests.API.Tests.User
             var problemDetails = JsonSerializer.Deserialize<ProblemDetails>(JsonSerializer.Serialize(responseContent));
 
             Assert.NotNull(problemDetails);
-            Assert.Contains("invalid email", problemDetails?.Detail ?? string.Empty, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("Email is invalid", problemDetails?.Detail ?? string.Empty, StringComparison.OrdinalIgnoreCase);
         }
 
         [Fact]
@@ -216,6 +230,14 @@ namespace BaseApp.Tests.API.Tests.User
                 PhoneNumber = "invalidphone"
             };
 
+            var validationFailures = new List<ValidationFailure>
+            {
+                new ValidationFailure("Phone", "Phone number is invalid"),
+            };
+
+            _mockUserProfileValidator.Validate(userRequest).Returns(new ValidationResult(validationFailures));
+
+
             var result = await _controller.CreateUserAsync(userRequest);
 
             var badRequestResult = Assert.IsType<ObjectResult>(result);
@@ -229,7 +251,7 @@ namespace BaseApp.Tests.API.Tests.User
             var problemDetails = JsonSerializer.Deserialize<ProblemDetails>(JsonSerializer.Serialize(responseContent));
 
             Assert.NotNull(problemDetails);
-            Assert.Contains("invalid phone", problemDetails?.Detail ?? string.Empty, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("Phone number is invalid", problemDetails?.Detail ?? string.Empty, StringComparison.OrdinalIgnoreCase);
         }
 
         [Fact]
@@ -243,6 +265,13 @@ namespace BaseApp.Tests.API.Tests.User
                 DateOfBirth = DateTime.Now.AddDays(1)
             };
 
+            var validationFailures = new List<ValidationFailure>
+            {
+                new ValidationFailure("DOB", "DOB is invalid"),
+            };
+
+            _mockUserProfileValidator.Validate(userRequest).Returns(new ValidationResult(validationFailures));
+
             var result = await _controller.CreateUserAsync(userRequest);
 
             var badRequestResult = Assert.IsType<ObjectResult>(result);
@@ -256,7 +285,7 @@ namespace BaseApp.Tests.API.Tests.User
             var problemDetails = JsonSerializer.Deserialize<ProblemDetails>(JsonSerializer.Serialize(responseContent));
 
             Assert.NotNull(problemDetails);
-            Assert.Contains("Invalid Date of Birth", problemDetails?.Detail ?? string.Empty, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("DOB is invalid", problemDetails?.Detail ?? string.Empty, StringComparison.OrdinalIgnoreCase);
         }
 
         [Fact]
@@ -270,10 +299,14 @@ namespace BaseApp.Tests.API.Tests.User
 
             var userRequest = new UserProfileDto
             {
-                FirstName = "InvalidFirstName",
-                LastName = "InvalidLastName",
-                Email = "johndoe@company.com"
+                FirstName = "FirstName",
+                LastName = "LastName",
+                Email = "johndoe@company.com",
             };
+
+            var validationFailures = new List<ValidationFailure>();
+
+            _mockUserProfileValidator.Validate(userRequest).Returns(new ValidationResult(validationFailures));
 
             var result = await _controller.CreateUserAsync(userRequest);
 
@@ -332,7 +365,7 @@ namespace BaseApp.Tests.API.Tests.User
         public async Task DeleteUserAsync_ReturnsBadRequest_WhenIdIsInvalid()
         {
             // Arrange
-            var invalidUserId = "-1";;
+            var invalidUserId = "-1"; ;
 
             // Act
             var result = await _controller.DeleteUserAsync(invalidUserId);

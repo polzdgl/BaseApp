@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace BaseApp.Data.User.Dtos
 {
     public record UserProfileDto
     {
-        [Required(ErrorMessage = "User Name is required!")]
         public string UserName => Email;
 
         [Required(ErrorMessage = "First Name is required!")]
@@ -22,7 +16,6 @@ namespace BaseApp.Data.User.Dtos
         [EmailAddress(ErrorMessage = "Invalid email address!")]
         public string Email { get; set; }
 
-        [Range(typeof(DateTime), "1/1/1900", "12/31/2100", ErrorMessage = "Date of Birth must be valid.")]
         public DateTime? DateOfBirth { get; set; }
 
         [Phone(ErrorMessage = "Invalid phone number!")]

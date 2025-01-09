@@ -23,27 +23,27 @@ namespace BaseApp.Client.ServiceClients.Auth
         public async Task<HttpResponseMessage> RegisterAsync(UserRegisterDto userRegisterDto, CancellationToken cancellationToken = default)
         {
             // Register User
-            var passwordValidationResults = inputValidation.ValidatePassword(userRegisterDto.Password, out var passwordValidationErrors);
+            //var passwordValidationResults = inputValidation.ValidatePassword(userRegisterDto.Password, out var passwordValidationErrors);
 
-            if (!passwordValidationResults)
-            {
-                // Create a bad request response with the validation errors
-                var errorResponse = new
-                {
-                    Message = "Password validation failed.",
-                    Errors = passwordValidationErrors.Select(vr => vr.ErrorMessage).FirstOrDefault()
-                };
+            //if (!passwordValidationResults)
+            //{
+            //    // Create a bad request response with the validation errors
+            //    var errorResponse = new
+            //    {
+            //        Message = "Password validation failed.",
+            //        Errors = passwordValidationErrors.Select(vr => vr.ErrorMessage).FirstOrDefault()
+            //    };
 
-                var errorContent = new StringContent(
-                    System.Text.Json.JsonSerializer.Serialize(passwordValidationErrors.Select(vr => vr.ErrorMessage).FirstOrDefault()),
-                    System.Text.Encoding.UTF8,
-                    "application/json");
+            //    var errorContent = new StringContent(
+            //        System.Text.Json.JsonSerializer.Serialize(passwordValidationErrors.Select(vr => vr.ErrorMessage).FirstOrDefault()),
+            //        System.Text.Encoding.UTF8,
+            //        "application/json");
 
-                return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
-                {
-                    Content = errorContent
-                };
-            }
+            //    return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
+            //    {
+            //        Content = errorContent
+            //    };
+            //}
 
             return await httpClient.PostAsJsonAsync($"/api/auth/register", userRegisterDto, cancellationToken);
         }

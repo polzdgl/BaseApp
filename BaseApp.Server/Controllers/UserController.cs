@@ -2,6 +2,7 @@
 using BaseApp.ServiceProvider.Interfaces.User;
 using BaseApp.Shared.Dtos;
 using BaseApp.Shared.Validation;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BaseApp.Server.Controllers
@@ -13,12 +14,16 @@ namespace BaseApp.Server.Controllers
         private readonly ILogger<UserController> _logger;
         private readonly IUserService _userService;
         private readonly InputValidation _inputValidation;
+        private readonly IValidator<UserProfileDto> _userProfileValidator;
 
-        public UserController(ILogger<UserController> logger, IUserService userService, InputValidation inputValidation)
+
+        public UserController(ILogger<UserController> logger, IUserService userService, InputValidation inputValidation,
+            IValidator<UserProfileDto> userProfileValidator)
         {
             _logger = logger;
             _userService = userService;
             _inputValidation = inputValidation;
+            _userProfileValidator = userProfileValidator;
         }
 
         [HttpGet("users", Name = "GetUsersAsync")]
@@ -46,10 +51,10 @@ namespace BaseApp.Server.Controllers
         {
             try
             {
-                if (!_inputValidation.ValidateId(id, out var numberValidationError))
+                if (!_inputValidation.ValidateId(id, out var guidValidationError))
                 {
-                    _logger.LogWarning("Invalid Id: {id}. Errors: {erorrMessage}", id, numberValidationError);
-                    return Problem(detail: $"Invalid Id: {id}. Errors: {numberValidationError}", statusCode: StatusCodes.Status400BadRequest);
+                    _logger.LogWarning("Invalid Id: {id}. Errors: {erorrMessage}", id, guidValidationError);
+                    return Problem(detail: $"Invalid Id: {id}. Errors: {guidValidationError}", statusCode: StatusCodes.Status400BadRequest);
                 }
 
                 UserDto user = await _userService.GetUserAsync(id);
@@ -72,37 +77,18 @@ namespace BaseApp.Server.Controllers
         {
             try
             {
-                // Validate input data using InputValidation methods
-                if (!_inputValidation.ValidateModel(userProfileDto, out var validationResults))
-                {
-                    var validationErrors = _inputValidation.GetValidationErrors(validationResults);
-                    _logger.LogWarning("UserProfile model is invalid. Error: {validationErrors}", validationErrors);
-                    return Problem(detail: $"Invalid model: {userProfileDto}. Errors: {validationErrors}", statusCode: StatusCodes.Status400BadRequest);
-                }
+                // Validate the request
+                var validationResult = _userProfileValidator.Validate(userProfileDto);
 
-                if (!_inputValidation.ValidateEmailAddress(userProfileDto.Email, out var emailErrorMessage))
+                if (!validationResult.IsValid)
                 {
-                    _logger.LogWarning("Invalid Email Address: {errorMessage}", emailErrorMessage);
-                    return Problem(detail: $"Invalid Email: {userProfileDto.Email}. Errors: {emailErrorMessage}", statusCode: StatusCodes.Status400BadRequest);
-                }
+                    // Format validation errors into a string summary
+                    var errorDetails = string.Join("; ", validationResult.Errors
+                        .Select(failure => $"{failure.PropertyName}: {failure.ErrorMessage}"));
 
-                // Validate the phone number only if it's not empty
-                if (!string.IsNullOrWhiteSpace(userProfileDto.PhoneNumber) &&
-                    !_inputValidation.ValidatePhoneNumber(userProfileDto.PhoneNumber, out var phoneValidationError))
-                {
-                    _logger.LogWarning("Invalid Phone: {errorMessage}", phoneValidationError);
                     return Problem(
-                        detail: $"Invalid Phone for UserName: {userProfileDto.UserName}. Errors: {phoneValidationError}",
-                        statusCode: StatusCodes.Status400BadRequest);
-                }
-
-                // Validate the date of birth only if it's not null
-                if (userProfileDto.DateOfBirth != null &&
-                    !_inputValidation.ValidateDateOfBirth(userProfileDto.DateOfBirth, out var dateValidationError))
-                {
-                    _logger.LogWarning("Invalid Date of Birth: {errorMessage}", dateValidationError);
-                    return Problem(
-                        detail: $"Invalid Date of Birth for UserName: {userProfileDto.UserName}. Errors: {dateValidationError}",
+                        title: "Validation failed",
+                        detail: errorDetails,
                         statusCode: StatusCodes.Status400BadRequest);
                 }
 
@@ -140,40 +126,6 @@ namespace BaseApp.Server.Controllers
                     var validationErrors = _inputValidation.GetValidationErrors(validationResults);
                     _logger.LogWarning("UserProfile model is invalid. Errors: {validationErrors}", validationErrors);
                     return Problem(detail: $"Invalid Model for Id: {id}. Errors: {validationErrors}", statusCode: StatusCodes.Status400BadRequest);
-                }
-
-                // Validate UserName
-                if (!_inputValidation.ValidateUserName(userRequestDto.UserName, out var userNameValidationError))
-                {
-                    _logger.LogWarning("Invalid Email: {errorMessage}", userNameValidationError);
-                    return Problem(detail: $"Invalid UserName: {userRequestDto.UserName}. Errors: {userNameValidationError}", statusCode: StatusCodes.Status400BadRequest);
-                }
-
-                // Validate the Email
-                if (!_inputValidation.ValidateEmailAddress(userRequestDto.Email, out var emailValidationError))
-                {
-                    _logger.LogWarning("Invalid Email: {errorMessage}", emailValidationError);
-                    return Problem(detail: $"Invalid Email for Id: {id}. Errors: {emailValidationError}", statusCode: StatusCodes.Status400BadRequest);
-                }
-
-                // Validate the phone number only if it's not empty
-                if (!string.IsNullOrWhiteSpace(userRequestDto.PhoneNumber) &&
-                    !_inputValidation.ValidatePhoneNumber(userRequestDto.PhoneNumber, out var phoneValidationError))
-                {
-                    _logger.LogWarning("Invalid Phone: {errorMessage}", phoneValidationError);
-                    return Problem(
-                        detail: $"Invalid Phone for UserName: {userRequestDto.UserName}. Errors: {phoneValidationError}",
-                        statusCode: StatusCodes.Status400BadRequest);
-                }
-
-                // Validate the date of birth only if it's not null
-                if (userRequestDto.DateOfBirth != null &&
-                    !_inputValidation.ValidateDateOfBirth(userRequestDto.DateOfBirth, out var dateValidationError))
-                {
-                    _logger.LogWarning("Invalid Date of Birth: {errorMessage}", dateValidationError);
-                    return Problem(
-                        detail: $"Invalid Date of Birth for UserName: {userRequestDto.UserName}. Errors: {dateValidationError}",
-                        statusCode: StatusCodes.Status400BadRequest);
                 }
 
                 bool updatedUser = await _userService.UpdateUserAsync(id, userRequestDto);

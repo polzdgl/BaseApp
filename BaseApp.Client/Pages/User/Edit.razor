@@ -14,12 +14,6 @@
             <EditForm Model="@User" OnValidSubmit="SaveUserAsync">
                 <DataAnnotationsValidator />
                 <ValidationSummary />
-
-                <!-- User Name -->
-                <RadzenText TextStyle="TextStyle.Body1" Class="rz-mb-1">User Name</RadzenText>
-                <RadzenTextBox @bind-Value="User.UserName" Style="width: 100%;" Placeholder="Enter user name" />
-                <ValidationMessage For="@(() => User.UserName)" />
-
                 <!-- First Name -->
                 <RadzenText TextStyle="TextStyle.Body1" Class="rz-mb-1">First Name</RadzenText>
                 <RadzenTextBox @bind-Value="User.FirstName" Style="width: 100%;" Placeholder="Enter first name" />

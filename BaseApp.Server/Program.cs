@@ -1,18 +1,18 @@
-using Radzen;
-using BaseApp.Server.Components;
-using BaseApp.Server.Settings;
-using Serilog;
 using BaseApp.Data.Context;
-using Microsoft.EntityFrameworkCore;
-using System.Globalization;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
 using BaseApp.Data.User.Models;
 using BaseApp.Server.AppStart;
-using Microsoft.AspNetCore.Identity;
-using Swashbuckle.AspNetCore.Filters;
+using BaseApp.Server.Components;
 using BaseApp.Server.Middleware;
+using BaseApp.Server.Settings;
 using HealthChecks.UI.Client;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Radzen;
+using Serilog;
+using Swashbuckle.AspNetCore.Filters;
 using System.Diagnostics;
+using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
 

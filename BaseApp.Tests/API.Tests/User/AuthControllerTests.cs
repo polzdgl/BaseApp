@@ -1,7 +1,10 @@
 ﻿using BaseApp.Data.User.Dtos;
 using BaseApp.Data.User.Models;
 using BaseApp.Server.Controllers;
+using BaseApp.Shared.Dtos;
 using BaseApp.Shared.Validation;
+using FluentValidation;
+using FluentValidation.Results;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -18,11 +21,13 @@ namespace BaseApp.Tests.API.Tests.User
         private readonly InputValidation _mockInputValidation;
         private readonly AuthController _controller;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IValidator<UserRegisterDto> _mockUserRegisterValidator;
 
         public AuthControllerTests()
         {
             _mockLogger = Substitute.For<ILogger<AuthController>>();
             _mockInputValidation = Substitute.For<InputValidation>();
+            _mockUserRegisterValidator = Substitute.For<IValidator<UserRegisterDto>>();
 
             // Create substitutes for UserManager dependencies
             var userStore = Substitute.For<IUserStore<ApplicationUser>>();
@@ -48,7 +53,41 @@ namespace BaseApp.Tests.API.Tests.User
                 logger);
 
             // Initialize the controller with the mocked dependencies
-            _controller = new AuthController(_mockLogger, _mockInputValidation, _userManager);
+            _controller = new AuthController(_mockLogger, _userManager, _mockUserRegisterValidator);
+        }
+
+
+        [Fact]
+        public async Task Register_ShouldReturnValidationErrors_WhenValidationFails()
+        {
+            // Arrange
+            var userDto = new UserRegisterDto
+            {
+                Email = "",
+                Password = "123",
+                ConfirmPassword = "456"
+            };
+
+            var validationFailures = new List<ValidationFailure>
+            {
+                new ValidationFailure("Email", "Email is required"),
+                new ValidationFailure("Password", "Password is too short"),
+                new ValidationFailure("ConfirmPassword", "Passwords must match")
+            };
+
+            _mockUserRegisterValidator.Validate(userDto).Returns(new ValidationResult(validationFailures));
+
+            // Act
+            var result = await _controller.Register(userDto);
+
+            // Assert
+            var badRequestResult = Assert.IsType<ObjectResult>(result);
+            Assert.Equal(StatusCodes.Status400BadRequest, badRequestResult.StatusCode);
+
+            var problemDetails = Assert.IsType<ProblemDetails>(badRequestResult.Value);
+            Assert.Contains("Email: Email is required", problemDetails.Detail);
+            Assert.Contains("Password: Password is too short", problemDetails.Detail);
+            Assert.Contains("ConfirmPassword: Passwords must match", problemDetails.Detail);
         }
 
         [Fact]
@@ -59,9 +98,16 @@ namespace BaseApp.Tests.API.Tests.User
                 FirstName = "InvalidFirstName",
                 LastName = "InvalidLastName",
                 Email = "invalidemail",
-                Password = "a",
-                ConfirmPassword = "b"
+                Password = "Password12345",
+                ConfirmPassword = "Password12345",
             };
+
+            var validationFailures = new List<ValidationFailure>
+            {
+                new ValidationFailure("Email", "Email is invalid"),
+            };
+
+            _mockUserRegisterValidator.Validate(userRequest).Returns(new ValidationResult(validationFailures));
 
             var result = await _controller.Register(userRequest);
 
@@ -72,11 +118,10 @@ namespace BaseApp.Tests.API.Tests.User
             var responseContent = badRequestResult.Value;
             Assert.NotNull(responseContent);
 
-            // Deserialize the response to inspect its details
-            var problemDetails = JsonSerializer.Deserialize<ProblemDetails>(JsonSerializer.Serialize(responseContent));
+            var problemDetails = Assert.IsType<ProblemDetails>(badRequestResult.Value);
 
             Assert.NotNull(problemDetails);
-            Assert.Contains("invalid email", problemDetails?.Detail ?? string.Empty, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("Email is invalid", problemDetails.Detail);
         }
 
         [Fact]
@@ -87,10 +132,17 @@ namespace BaseApp.Tests.API.Tests.User
                 FirstName = "InvalidFirstName",
                 LastName = "InvalidLastName",
                 Email = "john.doe@example.com",
-                Password = "Password123",
-                ConfirmPassword = "Password123",
+                Password = "Password12345",
+                ConfirmPassword = "Password12345",
                 PhoneNumber = "invalidphone"
             };
+
+            var validationFailures = new List<ValidationFailure>
+            {
+                new ValidationFailure("Phone", "Phone number is invalid"),
+            };
+
+            _mockUserRegisterValidator.Validate(userRequest).Returns(new ValidationResult(validationFailures));
 
             var result = await _controller.Register(userRequest);
 
@@ -101,11 +153,10 @@ namespace BaseApp.Tests.API.Tests.User
             var responseContent = badRequestResult.Value;
             Assert.NotNull(responseContent);
 
-            // Deserialize the response to inspect its details
-            var problemDetails = JsonSerializer.Deserialize<ProblemDetails>(JsonSerializer.Serialize(responseContent));
+            var problemDetails = Assert.IsType<ProblemDetails>(badRequestResult.Value);
 
             Assert.NotNull(problemDetails);
-            Assert.Contains("invalid phone", problemDetails?.Detail ?? string.Empty, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("Phone number is invalid", problemDetails.Detail);
         }
 
         [Fact]
@@ -116,10 +167,17 @@ namespace BaseApp.Tests.API.Tests.User
                 FirstName = "InvalidFirstName",
                 LastName = "InvalidLastName",
                 Email = "john.doe@example.com",
-                Password = "Password123",
-                ConfirmPassword = "Password123",
+                Password = "Password12345",
+                ConfirmPassword = "Password12345",
                 DateOfBirth = DateTime.Now.AddDays(1)
             };
+
+            var validationFailures = new List<ValidationFailure>
+            {
+                new ValidationFailure("DOB", "DOB is invalid"),
+            };
+
+            _mockUserRegisterValidator.Validate(userRequest).Returns(new ValidationResult(validationFailures));
 
             var result = await _controller.Register(userRequest);
 
@@ -131,11 +189,10 @@ namespace BaseApp.Tests.API.Tests.User
             Assert.NotNull(responseContent);
 
             // Deserialize the response to inspect its details
-            var problemDetails = JsonSerializer.Deserialize<ProblemDetails>(JsonSerializer.Serialize(responseContent));
+            var problemDetails = Assert.IsType<ProblemDetails>(badRequestResult.Value);
 
             Assert.NotNull(problemDetails);
-            Assert.Contains("Invalid Date of Birth", problemDetails?.Detail ?? string.Empty, StringComparison.OrdinalIgnoreCase);
+            Assert.Contains("DOB is invalid", problemDetails.Detail);
         }
-
     }
 }

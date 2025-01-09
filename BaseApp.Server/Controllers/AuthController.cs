@@ -1,7 +1,7 @@
 ﻿using BaseApp.Data.User.Dtos;
 using BaseApp.Data.User.Models;
 using BaseApp.Shared.Dtos;
-using BaseApp.Shared.Validation;
+using FluentValidation;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,15 +13,15 @@ namespace BaseApp.Server.Controllers
     public class AuthController : ControllerBase
     {
         private readonly ILogger<AuthController> _logger;
-        private readonly InputValidation _inputValidation;
+        private readonly IValidator<UserRegisterDto> _userRegisterValidator;
         private readonly Microsoft.AspNetCore.Identity.UserManager<ApplicationUser> _userManager;
 
-        public AuthController(ILogger<AuthController> logger, InputValidation inputValidation,
-            Microsoft.AspNetCore.Identity.UserManager<ApplicationUser> userManager)
+        public AuthController(ILogger<AuthController> logger, Microsoft.AspNetCore.Identity.UserManager<ApplicationUser> userManager,
+            IValidator<UserRegisterDto> userRegisterValidator)
         {
             _logger = logger;
-            _inputValidation = inputValidation;
             _userManager = userManager;
+            _userRegisterValidator = userRegisterValidator;
         }
 
         [HttpPost("register", Name = "RegisterUser")]
@@ -32,41 +32,18 @@ namespace BaseApp.Server.Controllers
         {
             try
             {
-                // Validate input data using InputValidation methods
-                if (!_inputValidation.ValidateModel(userRegisterDto, out var validationResults))
-                {
-                    var validationErrors = _inputValidation.GetValidationErrors(validationResults);
-                    _logger.LogWarning("UserProfile model is invalid. Error: {ValidationErrors}", validationErrors);
-                    return Problem(
-                        detail: $"Invalid model: {userRegisterDto}. Errors: {validationErrors}",
-                        statusCode: StatusCodes.Status400BadRequest);
-                }
+                // Validate the request
+                var validationResult = _userRegisterValidator.Validate(userRegisterDto);
 
-                if (!_inputValidation.ValidateEmailAddress(userRegisterDto.Email, out var emailErrorMessage))
+                if (!validationResult.IsValid) 
                 {
-                    _logger.LogWarning("Invalid Email Address: {ErrorMessage}", emailErrorMessage);
-                    return Problem(
-                        detail: $"Invalid Email: {userRegisterDto.Email}. Errors: {emailErrorMessage}",
-                        statusCode: StatusCodes.Status400BadRequest);
-                }
+                    // Format validation errors into a string summary
+                    var errorDetails = string.Join("; ", validationResult.Errors
+                        .Select(failure => $"{failure.PropertyName}: {failure.ErrorMessage}"));
 
-                // Validate the phone number only if it's not empty
-                if (!string.IsNullOrWhiteSpace(userRegisterDto.PhoneNumber) &&
-                    !_inputValidation.ValidatePhoneNumber(userRegisterDto.PhoneNumber, out var phoneValidationError))
-                {
-                    _logger.LogWarning("Invalid Phone: {ErrorMessage}", phoneValidationError);
                     return Problem(
-                        detail: $"Invalid Phone for UserName: {userRegisterDto.UserName}. Errors: {phoneValidationError}",
-                        statusCode: StatusCodes.Status400BadRequest);
-                }
-
-                // Validate the date of birth only if it's not null
-                if (userRegisterDto.DateOfBirth != null &&
-                    !_inputValidation.ValidateDateOfBirth(userRegisterDto.DateOfBirth, out var dateValidationError))
-                {
-                    _logger.LogWarning("Invalid Date of Birth: {ErrorMessage}", dateValidationError);
-                    return Problem(
-                        detail: $"Invalid Date of Birth for UserName: {userRegisterDto.UserName}. Errors: {dateValidationError}",
+                        title: "Validation failed",
+                        detail: errorDetails,
                         statusCode: StatusCodes.Status400BadRequest);
                 }
 
@@ -100,7 +77,7 @@ namespace BaseApp.Server.Controllers
             {
                 _logger.LogError(ex, "An unexpected error occurred during user registration.");
                 return Problem(
-                    detail: "An unexpected error occurred while processing your request.",
+                    detail: ex.Message,
                     statusCode: StatusCodes.Status500InternalServerError);
             }
         }

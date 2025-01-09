@@ -6,20 +6,17 @@ using Radzen;
 
 namespace BaseApp.Client.Pages.User
 {
-    public partial class Create : ComponentBase
+    public partial class Create
     {
-
         [Inject] protected NotificationService NotificationService { get; set; } = default!;
         [Inject] protected NavigationManager NavigationManager { get; set; } = default!;
         [Inject] private IUserApiClient UserApiClient { get; set; } = default!;
 
         private bool IsLoading = false;
         private bool IsSaving = false;
-
-        [SupplyParameterFromForm]
         private UserProfileDto UserProfileDto { get; set; } = new UserProfileDto();
 
-        protected async Task OnInitializedAsync()
+        protected override async Task OnInitializedAsync()
         {
             IsLoading = false;
         }
@@ -39,6 +36,7 @@ namespace BaseApp.Client.Pages.User
                 }
                 else
                 {
+                    // Extract and show validation errors from server response
                     string errorMessage = await ErrorHandler.ExtractErrorMessageAsync(response);
                     ShowNotification("Error", errorMessage, NotificationSeverity.Error);
                 }

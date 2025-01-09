@@ -3,8 +3,7 @@ using BaseApp.Data.Repositories.Interfaces;
 using BaseApp.ServiceProvider.Interfaces.User;
 using BaseApp.ServiceProvider.Services.User;
 using BaseApp.Shared.Validation;
-using Microsoft.AspNetCore.SignalR;
-using Serilog;
+using FluentValidation;
 
 namespace BaseApp.Server.AppStart
 {
@@ -14,6 +13,15 @@ namespace BaseApp.Server.AppStart
         {
             //Add Validator
             services.AddSingleton<InputValidation>();
+
+            // Add fluent validation
+            //builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly, includeInternalTypes: true);
+
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies()
+                .Where(assembly => assembly.GetName().Name.StartsWith("BaseApp"))
+                .ToArray();
+
+            services.AddValidatorsFromAssemblies(assemblies, includeInternalTypes: true);
 
             // Add Providers
             services.AddTransient<IUserService, UserService>();
