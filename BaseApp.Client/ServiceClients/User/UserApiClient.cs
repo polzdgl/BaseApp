@@ -42,9 +42,9 @@ namespace BaseApp.Client.ServiceClients.User
             return await httpClient.PostAsJsonAsync($"/api/user", userProfileDto, cancellationToken);
         }
 
-        public async Task<HttpResponseMessage> EditUserAsync(string id, UserUpdateDto userRequestDto, CancellationToken cancellationToken = default)
+        public async Task<HttpResponseMessage> EditUserAsync(string id, UserProfileDto userProfileDto, CancellationToken cancellationToken = default)
         {
-            return await httpClient.PutAsJsonAsync($"/api/user/{id}", userRequestDto, cancellationToken);
+            return await httpClient.PutAsJsonAsync($"/api/user/{id}", userProfileDto, cancellationToken);
         }
 
         public async Task<HttpResponseMessage> DeleteUserAsync(string id, CancellationToken cancellationToken = default)

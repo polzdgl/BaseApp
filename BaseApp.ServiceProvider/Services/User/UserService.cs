@@ -75,7 +75,7 @@ namespace BaseApp.ServiceProvider.Services.User
             return UserDto.FromModel(user);
         }
 
-        public async Task<bool> UpdateUserAsync(string id, UserUpdateDto userRequestDto)
+        public async Task<bool> UpdateUserAsync(string id, UserProfileDto userProfileDto)
         {
             var user = await Repository.UserRepository.GetUserAsync(id);
 
@@ -86,14 +86,14 @@ namespace BaseApp.ServiceProvider.Services.User
             }
 
             // Check if UserName has changed
-            if (userRequestDto.UserName != user.UserName)
+            if (userProfileDto.UserName != user.UserName)
             {
                 // Check if UserName already taken
-                bool isUserNameTaken = await Repository.UserRepository.IsUserNameTakenAsync(id, userRequestDto.UserName);
+                bool isUserNameTaken = await Repository.UserRepository.IsUserNameTakenAsync(id, userProfileDto.UserName);
 
                 if (isUserNameTaken)
                 {
-                    _logger.LogWarning("UserName: {userName} is not available!", userRequestDto.UserName);
+                    _logger.LogWarning("UserName: {userName} is not available!", userProfileDto.UserName);
                     throw new DuplicateNameException("UserName not available!");
                 }
             }
@@ -101,13 +101,13 @@ namespace BaseApp.ServiceProvider.Services.User
             _logger.LogInformation("Updating User with Id: {id}", id);
 
             // Update the properties necessary
-            user.UserName = userRequestDto.UserName;
-            user.Email = userRequestDto.Email;
-            user.FirstName = userRequestDto.FirstName;
-            user.LastName = userRequestDto.LastName;
-            user.PhoneNumber = userRequestDto.PhoneNumber;
-            user.DateOfBirth = userRequestDto.DateOfBirth;
-            user.IsActive = userRequestDto.IsActive;
+            user.UserName = userProfileDto.UserName;
+            user.Email = userProfileDto.Email;  
+            user.FirstName = userProfileDto.FirstName;
+            user.LastName = userProfileDto.LastName;
+            user.PhoneNumber = userProfileDto.PhoneNumber;
+            user.DateOfBirth = userProfileDto.DateOfBirth;
+            user.IsActive = userProfileDto.IsActive;
 
             return await Repository.UserRepository.UpdateAsync(user);
         }

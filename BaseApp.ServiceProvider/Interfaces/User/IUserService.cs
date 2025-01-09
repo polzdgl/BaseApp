@@ -8,7 +8,7 @@ namespace BaseApp.ServiceProvider.Interfaces.User
         Task<PaginatedResult<UserDto>> GetUsersAsync(int page, int pageSize);
         Task<UserDto> GetUserAsync(string id);
         Task<bool> CreateUserAsync(UserProfileDto userProfileDto);
-        Task<bool> UpdateUserAsync(string id, UserUpdateDto userRequestDto);
+        Task<bool> UpdateUserAsync(string id, UserProfileDto userRequestDto);
         Task<bool> DeleteUserAsync(string id);
     }
 }

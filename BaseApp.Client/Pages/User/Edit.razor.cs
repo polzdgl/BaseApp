@@ -82,11 +82,10 @@ namespace BaseApp.Client.Pages.User
             }
         }
 
-        private static UserUpdateDto MapToRequestDto(UserDto user)
+        private static UserProfileDto MapToRequestDto(UserDto user)
         {
-            return new UserUpdateDto
+            return new UserProfileDto
             {
-                UserName = user.Email,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 Email = user.Email,

@@ -52,8 +52,8 @@ namespace BaseApp.Tests.API.Tests.User
 
             var users = new List<UserDto>
             {
-                new UserDto { Id = "1", UserName = "User1", FirstName = "John", LastName = "Doe", Email = "johndoe@company.com" },
-                new UserDto { Id = "2", UserName = "User2", FirstName = "Jane", LastName = "Smith", Email = "janesmith@company.com" }
+                new UserDto { Id = "1", FirstName = "John", LastName = "Doe", Email = "johndoe@company.com" },
+                new UserDto { Id = "2", FirstName = "Jane", LastName = "Smith", Email = "janesmith@company.com" }
             };
 
             var paginatedResult = new PaginatedResult<UserDto>
@@ -126,7 +126,7 @@ namespace BaseApp.Tests.API.Tests.User
         public async Task GetUserByIdAsync_ReturnsOkResult_WhenUserIsFound()
         {
             var userId = new Guid().ToString();
-            var user = new UserDto { Id = userId, UserName = "User1", FirstName = "John", LastName = "Doe", Email = "johndoe@company.com" };
+            var user = new UserDto { Id = userId, FirstName = "John", LastName = "Doe", Email = "johndoe@company.com" };
 
             _mockUserService.GetUserAsync(userId).Returns(user);
 
@@ -264,7 +264,7 @@ namespace BaseApp.Tests.API.Tests.User
         {
             var userId = new Guid().ToString();
 
-            var user = new UserDto { Id = userId, UserName = "User1", FirstName = "John", LastName = "Doe", Email = "johndoe@company.com" };
+            var user = new UserDto { Id = userId, FirstName = "John", LastName = "Doe", Email = "johndoe@company.com" };
 
             _mockUserService.GetUserAsync(userId).Returns(user);
 
@@ -296,9 +296,8 @@ namespace BaseApp.Tests.API.Tests.User
         {
             // Arrange
             var userId = new Guid().ToString();
-            var userRequest = new UserUpdateDto
+            var userRequest = new UserProfileDto
             {
-                UserName = "updated.john",
                 Email = "updated.john@example.com",
                 FirstName = "John",
                 LastName = "Doe"
