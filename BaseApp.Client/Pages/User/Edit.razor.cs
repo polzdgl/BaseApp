@@ -86,7 +86,7 @@ namespace BaseApp.Client.Pages.User
         {
             return new UserUpdateDto
             {
-                UserName = user.UserName,
+                UserName = user.Email,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 Email = user.Email,
