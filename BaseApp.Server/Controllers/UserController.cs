@@ -109,7 +109,7 @@ namespace BaseApp.Server.Controllers
         [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> EditUserAsync(string id, [FromBody] UserUpdateDto userRequestDto)
+        public async Task<IActionResult> EditUserAsync(string id, [FromBody] UserProfileDto userProfileDto)
         {
             try
             {
@@ -121,7 +121,7 @@ namespace BaseApp.Server.Controllers
                 }
 
                 // Validate model
-                if (!_inputValidation.ValidateModel(userRequestDto, out var validationResults))
+                if (!_inputValidation.ValidateModel(userProfileDto, out var validationResults))
                 {
                     var validationErrors = _inputValidation.GetValidationErrors(validationResults);
                     _logger.LogWarning("UserProfile model is invalid. Errors: {validationErrors}", validationErrors);

@@ -7,8 +7,7 @@ namespace BaseApp.Data.User.Dtos
     {
         public string Id { get; set; }
 
-        [Required(ErrorMessage = "User Name is required!")]
-        public required string UserName { get; set; }
+        public string UserName => Email;
 
         [Required(ErrorMessage = "First Name is required!")]
         public required string FirstName { get; set; }
@@ -36,11 +35,10 @@ namespace BaseApp.Data.User.Dtos
             return new UserDto
             {
                 Id = user.Id,
-                UserName = user.UserName,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 Email = user.Email,
-                PhoneNumber = user.PhoneNumber,   
+                PhoneNumber = user.PhoneNumber,
                 DateOfBirth = user.DateOfBirth,
                 EmailConfirmed = user.EmailConfirmed,
                 PhoneNumberConfirmed = user.PhoneNumberConfirmed,

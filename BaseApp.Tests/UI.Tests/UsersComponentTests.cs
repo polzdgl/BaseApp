@@ -37,8 +37,8 @@ namespace BaseApp.Tests.UI.Tests.User
             // Arrange
             var users = new List<UserDto>
             {
-                new UserDto { Id = "1", UserName = "User1", FirstName = "John", LastName = "Doe", Email = "johndoe@email.com" },
-                new UserDto { Id = "2", UserName = "User2", FirstName = "Jane", LastName = "Smith", Email = "janesmith@email.com" }
+                new UserDto { Id = "1", FirstName = "John", LastName = "Doe", Email = "johndoe@email.com" },
+                new UserDto { Id = "2", FirstName = "Jane", LastName = "Smith", Email = "janesmith@email.com" }
             };
 
             _mockApiClient.GetUsersAsync(1, 5, default)
@@ -53,8 +53,8 @@ namespace BaseApp.Tests.UI.Tests.User
             var component = RenderComponent<Users>();
 
             // Assert
-            Assert.Contains("User1", component.Markup);
-            Assert.Contains("User2", component.Markup);
+            Assert.Contains("johndoe@email.com", component.Markup);
+            Assert.Contains("janesmith@email.com", component.Markup);
             Assert.Contains("Users", component.Markup);
         }
 
@@ -64,7 +64,7 @@ namespace BaseApp.Tests.UI.Tests.User
             // Arrange
             var users = new List<UserDto>
             {
-                new UserDto { Id = "1", UserName = "User1", FirstName = "John", LastName = "Doe", Email = "johndoe@email.com" }
+                new UserDto { Id = "1", FirstName = "John", LastName = "Doe", Email = "johndoe@email.com" }
             };
 
             // Mock the GetUsersAsync method
@@ -99,7 +99,7 @@ namespace BaseApp.Tests.UI.Tests.User
             // Arrange
             var users = new List<UserDto>
             {
-                new UserDto { Id = "1", UserName = "User1", FirstName = "John", LastName = "Doe", Email = "johndoe@email.com" }
+                new UserDto { Id = "1", FirstName = "John", LastName = "Doe", Email = "johndoe@email.com" }
             };
 
             // Mock the GetUsersAsync method
