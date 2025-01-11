@@ -15,6 +15,9 @@ namespace BaseApp.Data.Migrations
                 name: "User");
 
             migrationBuilder.EnsureSchema(
+                name: "Sec");
+
+            migrationBuilder.EnsureSchema(
                 name: "App");
 
             migrationBuilder.CreateTable(
@@ -62,6 +65,19 @@ namespace BaseApp.Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ApplicationUser", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "EdgarCompanyInfo",
+                schema: "Sec",
+                columns: table => new
+                {
+                    Cik = table.Column<string>(type: "CHAR(10)", nullable: false),
+                    EntityName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_EdgarCompanyInfo", x => x.Cik);
                 });
 
             migrationBuilder.CreateTable(
@@ -216,6 +232,114 @@ namespace BaseApp.Data.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "InfoFact",
+                schema: "Sec",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    EdgarCompanyInfoId = table.Column<string>(type: "CHAR(10)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_InfoFact", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_InfoFact_EdgarCompanyInfo_EdgarCompanyInfoId",
+                        column: x => x.EdgarCompanyInfoId,
+                        principalSchema: "Sec",
+                        principalTable: "EdgarCompanyInfo",
+                        principalColumn: "Cik",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "InfoFactUsGaap",
+                schema: "Sec",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    InfoFactId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_InfoFactUsGaap", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_InfoFactUsGaap_InfoFact_InfoFactId",
+                        column: x => x.InfoFactId,
+                        principalSchema: "Sec",
+                        principalTable: "InfoFact",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "InfoFactUsGaapNetIncomeLoss",
+                schema: "Sec",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    InfoFactUsGaapId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_InfoFactUsGaapNetIncomeLoss", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_InfoFactUsGaapNetIncomeLoss_InfoFactUsGaap_InfoFactUsGaapId",
+                        column: x => x.InfoFactUsGaapId,
+                        principalSchema: "Sec",
+                        principalTable: "InfoFactUsGaap",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "InfoFactUsGaapIncomeLossUnits",
+                schema: "Sec",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    InfoFactUsGaapNetIncomeLossId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_InfoFactUsGaapIncomeLossUnits", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_InfoFactUsGaapIncomeLossUnits_InfoFactUsGaapNetIncomeLoss_InfoFactUsGaapNetIncomeLossId",
+                        column: x => x.InfoFactUsGaapNetIncomeLossId,
+                        principalSchema: "Sec",
+                        principalTable: "InfoFactUsGaapNetIncomeLoss",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "InfoFactUsGaapIncomeLossUnitsUsd",
+                schema: "Sec",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    InfoFactUsGaapIncomeLossUnitsId = table.Column<int>(type: "int", nullable: false),
+                    Form = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
+                    Frame = table.Column<string>(type: "nvarchar(6)", maxLength: 6, nullable: false),
+                    Val = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_InfoFactUsGaapIncomeLossUnitsUsd", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_InfoFactUsGaapIncomeLossUnitsUsd_InfoFactUsGaapIncomeLossUnits_InfoFactUsGaapIncomeLossUnitsId",
+                        column: x => x.InfoFactUsGaapIncomeLossUnitsId,
+                        principalSchema: "Sec",
+                        principalTable: "InfoFactUsGaapIncomeLossUnits",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "RoleNameIndex",
                 schema: "User",
@@ -261,6 +385,40 @@ namespace BaseApp.Data.Migrations
                 schema: "User",
                 table: "ApplicationUserRole ",
                 column: "RoleId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_InfoFact_EdgarCompanyInfoId",
+                schema: "Sec",
+                table: "InfoFact",
+                column: "EdgarCompanyInfoId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_InfoFactUsGaap_InfoFactId",
+                schema: "Sec",
+                table: "InfoFactUsGaap",
+                column: "InfoFactId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_InfoFactUsGaapIncomeLossUnits_InfoFactUsGaapNetIncomeLossId",
+                schema: "Sec",
+                table: "InfoFactUsGaapIncomeLossUnits",
+                column: "InfoFactUsGaapNetIncomeLossId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_InfoFactUsGaapIncomeLossUnitsUsd_InfoFactUsGaapIncomeLossUnitsId",
+                schema: "Sec",
+                table: "InfoFactUsGaapIncomeLossUnitsUsd",
+                column: "InfoFactUsGaapIncomeLossUnitsId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_InfoFactUsGaapNetIncomeLoss_InfoFactUsGaapId",
+                schema: "Sec",
+                table: "InfoFactUsGaapNetIncomeLoss",
+                column: "InfoFactUsGaapId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Log_Application",
@@ -323,6 +481,10 @@ namespace BaseApp.Data.Migrations
                 schema: "User");
 
             migrationBuilder.DropTable(
+                name: "InfoFactUsGaapIncomeLossUnitsUsd",
+                schema: "Sec");
+
+            migrationBuilder.DropTable(
                 name: "Log",
                 schema: "App");
 
@@ -333,6 +495,26 @@ namespace BaseApp.Data.Migrations
             migrationBuilder.DropTable(
                 name: "ApplicationUser",
                 schema: "User");
+
+            migrationBuilder.DropTable(
+                name: "InfoFactUsGaapIncomeLossUnits",
+                schema: "Sec");
+
+            migrationBuilder.DropTable(
+                name: "InfoFactUsGaapNetIncomeLoss",
+                schema: "Sec");
+
+            migrationBuilder.DropTable(
+                name: "InfoFactUsGaap",
+                schema: "Sec");
+
+            migrationBuilder.DropTable(
+                name: "InfoFact",
+                schema: "Sec");
+
+            migrationBuilder.DropTable(
+                name: "EdgarCompanyInfo",
+                schema: "Sec");
         }
     }
 }

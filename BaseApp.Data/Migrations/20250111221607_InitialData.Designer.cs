@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BaseApp.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241231222704_InitialData")]
+    [Migration("20250111221607_InitialData")]
     partial class InitialData
     {
         /// <inheritdoc />
@@ -115,6 +115,138 @@ namespace BaseApp.Data.Migrations
                         .HasDatabaseName("IX_Log_TimeStamp_Level_CorrelationId");
 
                     b.ToTable("Log", "App");
+                });
+
+            modelBuilder.Entity("BaseApp.Data.SecurityExchange.Models.EdgarCompanyInfo", b =>
+                {
+                    b.Property<string>("Cik")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("CHAR(10)");
+
+                    b.Property<string>("EntityName")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.HasKey("Cik")
+                        .HasName("PK_EdgarCompanyInfo");
+
+                    b.ToTable("EdgarCompanyInfo", "Sec");
+                });
+
+            modelBuilder.Entity("BaseApp.Data.SecurityExchange.Models.InfoFact", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("EdgarCompanyInfoId")
+                        .IsRequired()
+                        .HasColumnType("CHAR(10)");
+
+                    b.HasKey("Id")
+                        .HasName("PK_InfoFact");
+
+                    b.HasIndex("EdgarCompanyInfoId")
+                        .IsUnique();
+
+                    b.ToTable("InfoFact", "Sec");
+                });
+
+            modelBuilder.Entity("BaseApp.Data.SecurityExchange.Models.InfoFactUsGaap", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("InfoFactId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id")
+                        .HasName("PK_InfoFactUsGaap");
+
+                    b.HasIndex("InfoFactId")
+                        .IsUnique();
+
+                    b.ToTable("InfoFactUsGaap", "Sec");
+
+                    b.HasAnnotation("Relational:JsonPropertyName", "us-gaap");
+                });
+
+            modelBuilder.Entity("BaseApp.Data.SecurityExchange.Models.InfoFactUsGaapIncomeLossUnits", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("InfoFactUsGaapNetIncomeLossId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id")
+                        .HasName("PK_InfoFactUsGaapIncomeLossUnits");
+
+                    b.HasIndex("InfoFactUsGaapNetIncomeLossId")
+                        .IsUnique();
+
+                    b.ToTable("InfoFactUsGaapIncomeLossUnits", "Sec");
+                });
+
+            modelBuilder.Entity("BaseApp.Data.SecurityExchange.Models.InfoFactUsGaapIncomeLossUnitsUsd", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Form")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<string>("Frame")
+                        .IsRequired()
+                        .HasMaxLength(6)
+                        .HasColumnType("nvarchar(6)");
+
+                    b.Property<int>("InfoFactUsGaapIncomeLossUnitsId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Val")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.HasKey("Id")
+                        .HasName("PK_InfoFactUsGaapIncomeLossUnitsUsd");
+
+                    b.HasIndex("InfoFactUsGaapIncomeLossUnitsId");
+
+                    b.ToTable("InfoFactUsGaapIncomeLossUnitsUsd", "Sec");
+                });
+
+            modelBuilder.Entity("BaseApp.Data.SecurityExchange.Models.InfoFactUsGaapNetIncomeLoss", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("InfoFactUsGaapId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id")
+                        .HasName("PK_InfoFactUsGaapNetIncomeLoss");
+
+                    b.HasIndex("InfoFactUsGaapId")
+                        .IsUnique();
+
+                    b.ToTable("InfoFactUsGaapNetIncomeLoss", "Sec");
                 });
 
             modelBuilder.Entity("BaseApp.Data.User.Models.ApplicationRole", b =>
@@ -367,6 +499,51 @@ namespace BaseApp.Data.Migrations
                     b.ToTable("ApplicationUserToken  ", "User");
                 });
 
+            modelBuilder.Entity("BaseApp.Data.SecurityExchange.Models.InfoFact", b =>
+                {
+                    b.HasOne("BaseApp.Data.SecurityExchange.Models.EdgarCompanyInfo", null)
+                        .WithOne("Facts")
+                        .HasForeignKey("BaseApp.Data.SecurityExchange.Models.InfoFact", "EdgarCompanyInfoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("BaseApp.Data.SecurityExchange.Models.InfoFactUsGaap", b =>
+                {
+                    b.HasOne("BaseApp.Data.SecurityExchange.Models.InfoFact", null)
+                        .WithOne("UsGaap")
+                        .HasForeignKey("BaseApp.Data.SecurityExchange.Models.InfoFactUsGaap", "InfoFactId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("BaseApp.Data.SecurityExchange.Models.InfoFactUsGaapIncomeLossUnits", b =>
+                {
+                    b.HasOne("BaseApp.Data.SecurityExchange.Models.InfoFactUsGaapNetIncomeLoss", null)
+                        .WithOne("Units")
+                        .HasForeignKey("BaseApp.Data.SecurityExchange.Models.InfoFactUsGaapIncomeLossUnits", "InfoFactUsGaapNetIncomeLossId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("BaseApp.Data.SecurityExchange.Models.InfoFactUsGaapIncomeLossUnitsUsd", b =>
+                {
+                    b.HasOne("BaseApp.Data.SecurityExchange.Models.InfoFactUsGaapIncomeLossUnits", null)
+                        .WithMany("Usd")
+                        .HasForeignKey("InfoFactUsGaapIncomeLossUnitsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("BaseApp.Data.SecurityExchange.Models.InfoFactUsGaapNetIncomeLoss", b =>
+                {
+                    b.HasOne("BaseApp.Data.SecurityExchange.Models.InfoFactUsGaap", null)
+                        .WithOne("NetIncomeLoss")
+                        .HasForeignKey("BaseApp.Data.SecurityExchange.Models.InfoFactUsGaapNetIncomeLoss", "InfoFactUsGaapId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("BaseApp.Data.User.Models.ApplicationRoleClaim", b =>
                 {
                     b.HasOne("BaseApp.Data.User.Models.ApplicationRole", null)
@@ -415,6 +592,35 @@ namespace BaseApp.Data.Migrations
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("BaseApp.Data.SecurityExchange.Models.EdgarCompanyInfo", b =>
+                {
+                    b.Navigation("Facts")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("BaseApp.Data.SecurityExchange.Models.InfoFact", b =>
+                {
+                    b.Navigation("UsGaap")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("BaseApp.Data.SecurityExchange.Models.InfoFactUsGaap", b =>
+                {
+                    b.Navigation("NetIncomeLoss")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("BaseApp.Data.SecurityExchange.Models.InfoFactUsGaapIncomeLossUnits", b =>
+                {
+                    b.Navigation("Usd");
+                });
+
+            modelBuilder.Entity("BaseApp.Data.SecurityExchange.Models.InfoFactUsGaapNetIncomeLoss", b =>
+                {
+                    b.Navigation("Units")
                         .IsRequired();
                 });
 #pragma warning restore 612, 618

@@ -15,20 +15,6 @@ namespace BaseApp.Data.User.Models
         [DefaultValue(true)]
         public bool IsActive { get; set; }
 
-        public static ApplicationUser FromDto(UserRegisterDto userRequestDto)
-        {
-            return new ApplicationUser
-            {
-                UserName = userRequestDto.UserName,
-                Email = userRequestDto.Email,
-                PhoneNumber = userRequestDto.PhoneNumber,
-                FirstName = userRequestDto.FirstName,
-                LastName = userRequestDto.LastName,
-                DateOfBirth = userRequestDto.DateOfBirth,
-                IsActive = userRequestDto.IsActive,
-            };
-        }
-
         public static ApplicationUser FromDto(UserProfileDto userProfileDto)
         {
             return new ApplicationUser

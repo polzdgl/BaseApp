@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BaseApp.Data.User.Dtos
 {
-    public class UserRegisterDto : IValidatableObject
+    public record UserRegisterDto : IValidatableObject
     {
         [Required(ErrorMessage = "First Name is required!")]
         public string FirstName { get; set; }
