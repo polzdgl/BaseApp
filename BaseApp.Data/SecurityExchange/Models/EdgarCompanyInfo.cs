@@ -6,6 +6,8 @@ namespace BaseApp.Data.SecurityExchange.Models
     {
         public int Cik { get; set; }
         public string EntityName { get; set; }
+
+        [JsonPropertyName("facts")]
         public InfoFact Facts { get; set; }
     }
 }
