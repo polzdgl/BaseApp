@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BaseApp.ServiceProvider.SecurityExchange.Interfaces
 {
-    public interface ISecurityExchangeService
+    public interface ISecurityExchangeManager
     {
     }
 }

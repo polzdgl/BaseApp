@@ -8,14 +8,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BaseApp.ServiceProvider.SecurityExchange
+namespace BaseApp.ServiceProvider.SecurityExchange.Manager
 {
-    public class SecurityExchangeService : ISecurityExchangeService
+    public class SecurityExchangeManager : ISecurityExchangeManager
     {
         private IRepositoryFactory _repository;
         private readonly ILogger _logger;
 
-        public SecurityExchangeService(IRepositoryFactory repository, ILogger<SecurityExchangeService> logger)
+        public SecurityExchangeManager(IRepositoryFactory repository, ILogger<SecurityExchangeManager> logger)
         {
             _repository = repository;
             _logger = logger;
