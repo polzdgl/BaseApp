@@ -1,8 +1,8 @@
 ﻿using BaseApp.Data.User.Dtos;
 
-namespace BaseApp.ServiceProvider.Interfaces.Auth
+namespace BaseApp.ServiceProvider.Auth.Interfaces
 {
-    public interface IAuthApiClient 
+    public interface IAuthProvider
     {
         Task<HttpResponseMessage> RegisterAsync(UserRegisterDto userRegisterDto, CancellationToken cancellationToken = default);
         Task<HttpResponseMessage> LoginAsync(UserLoginDto userLoginDto, CancellationToken cancellationToken = default);

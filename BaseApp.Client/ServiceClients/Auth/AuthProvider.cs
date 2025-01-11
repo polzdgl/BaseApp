@@ -1,19 +1,19 @@
 ﻿using BaseApp.Data.User.Dtos;
 using BaseApp.ServiceClients.Auth;
-using BaseApp.ServiceProvider.Interfaces.Auth;
+using BaseApp.ServiceProvider.Auth.Interfaces;
 using BaseApp.Shared.Validation;
 using Microsoft.AspNetCore.Components.Authorization;
 using System.Net.Http.Json;
 
 namespace BaseApp.Client.ServiceClients.Auth
 {
-    public class AuthApiClient : IAuthApiClient
+    public class AuthProvider : IAuthProvider
     {
         private readonly HttpClient httpClient;
         private readonly InputValidation inputValidation;
         private readonly AuthenticationStateProvider authenticationStateProvider;
 
-        public AuthApiClient(HttpClient httpClient, InputValidation inputValidation, AuthenticationStateProvider authenticationStateProvider)
+        public AuthProvider(HttpClient httpClient, InputValidation inputValidation, AuthenticationStateProvider authenticationStateProvider)
         {
             this.httpClient = httpClient;
             this.inputValidation = inputValidation;

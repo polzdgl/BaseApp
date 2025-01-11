@@ -1,5 +1,5 @@
 using BaseApp.Data.User.Dtos;
-using BaseApp.ServiceProvider.Interfaces.User;
+using BaseApp.ServiceProvider.User.Interfaces;
 using BaseApp.Shared.ErrorHandling;
 using Microsoft.AspNetCore.Components;
 using Radzen;
@@ -10,7 +10,7 @@ namespace BaseApp.Client.Pages.User
     {
         [Parameter] public string Id { get; set; } = string.Empty;
 
-        [Inject] private IUserApiClient ApiClient { get; set; } = default!;
+        [Inject] private IUserProvider UserProvider { get; set; } = default!;
         [Inject] private NavigationManager NavigationManager { get; set; } = default!;
         [Inject] private NotificationService NotificationService { get; set; } = default!;
 
@@ -34,7 +34,7 @@ namespace BaseApp.Client.Pages.User
             try
             {
                 IsLoading = true;
-                User = await ApiClient.GetUserAsync(Id);
+                User = await UserProvider.GetUserAsync(Id);
             }
             catch (Exception ex)
             {
@@ -59,7 +59,7 @@ namespace BaseApp.Client.Pages.User
                 }
 
                 var userRequest = MapToRequestDto(User);
-                var response = await ApiClient.EditUserAsync(Id, userRequest);
+                var response = await UserProvider.EditUserAsync(Id, userRequest);
 
                 if (response.IsSuccessStatusCode)
                 {

@@ -1,5 +1,5 @@
 ﻿using BaseApp.Data.User.Dtos;
-using BaseApp.ServiceProvider.Interfaces.User;
+using BaseApp.ServiceProvider.User.Interfaces;
 using BaseApp.Shared.Dtos;
 using BaseApp.Shared.Validation;
 using FluentValidation;
@@ -12,12 +12,12 @@ namespace BaseApp.Server.Controllers
     public class UserController : ControllerBase
     {
         private readonly ILogger<UserController> _logger;
-        private readonly IUserService _userService;
+        private readonly IUserManager _userService;
         private readonly InputValidation _inputValidation;
         private readonly IValidator<UserProfileDto> _userProfileValidator;
 
 
-        public UserController(ILogger<UserController> logger, IUserService userService, InputValidation inputValidation,
+        public UserController(ILogger<UserController> logger, IUserManager userService, InputValidation inputValidation,
             IValidator<UserProfileDto> userProfileValidator)
         {
             _logger = logger;

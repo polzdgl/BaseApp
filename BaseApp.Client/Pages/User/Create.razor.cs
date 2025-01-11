@@ -1,5 +1,5 @@
 ﻿using BaseApp.Data.User.Dtos;
-using BaseApp.ServiceProvider.Interfaces.User;
+using BaseApp.ServiceProvider.User.Interfaces;
 using BaseApp.Shared.ErrorHandling;
 using Microsoft.AspNetCore.Components;
 using Radzen;
@@ -10,7 +10,7 @@ namespace BaseApp.Client.Pages.User
     {
         [Inject] protected NotificationService NotificationService { get; set; } = default!;
         [Inject] protected NavigationManager NavigationManager { get; set; } = default!;
-        [Inject] private IUserApiClient UserApiClient { get; set; } = default!;
+        [Inject] private IUserProvider UserProvider { get; set; } = default!;
 
         private bool IsLoading = false;
         private bool IsSaving = false;
@@ -27,7 +27,7 @@ namespace BaseApp.Client.Pages.User
             {
                 IsSaving = true;
 
-                var response = await UserApiClient.CreateUserAsync(UserProfileDto);
+                var response = await UserProvider.CreateUserAsync(UserProfileDto);
 
                 if (response.IsSuccessStatusCode)
                 {

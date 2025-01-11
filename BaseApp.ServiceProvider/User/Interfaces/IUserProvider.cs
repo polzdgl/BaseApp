@@ -1,9 +1,9 @@
 ﻿using BaseApp.Data.User.Dtos;
 using BaseApp.Shared.Dtos;
 
-namespace BaseApp.ServiceProvider.Interfaces.User
+namespace BaseApp.ServiceProvider.User.Interfaces
 {
-    public interface IUserApiClient
+    public interface IUserProvider
     {
         Task<PaginatedResult<UserDto>> GetUsersAsync(int page, int pageSize, CancellationToken cancellationToken = default);
         Task<UserDto> GetUserAsync(string id, CancellationToken cancellationToken = default);

@@ -1,6 +1,6 @@
 using BaseApp.Client.Shared;
 using BaseApp.Data.User.Dtos;
-using BaseApp.ServiceProvider.Interfaces.User;
+using BaseApp.ServiceProvider.User.Interfaces;
 using BaseApp.Shared.ErrorHandling;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
@@ -20,7 +20,7 @@ namespace BaseApp.Client.Pages.User
 
         [Inject] protected NotificationService NotificationService { get; set; } = default!;
 
-        [Inject] private IUserApiClient ApiClient { get; set; } = default!;
+        [Inject] private IUserProvider UserProvider { get; set; } = default!;
 
 
         private DeleteConfirmation DeleteConfirmationPopup { get; set; } = default!;
@@ -45,7 +45,7 @@ namespace BaseApp.Client.Pages.User
                 var pageIndex = args.Skip / args.Top + 1;
                 var pageSize = args.Top;
 
-                var result = await ApiClient.GetUsersAsync((int)pageIndex, (int)pageSize);
+                var result = await UserProvider.GetUsersAsync((int)pageIndex, (int)pageSize);
 
                 if (result != null)
                 {
@@ -75,7 +75,7 @@ namespace BaseApp.Client.Pages.User
         {
             try
             {
-                var response = await ApiClient.DeleteUserAsync(SelectedUserId);
+                var response = await UserProvider.DeleteUserAsync(SelectedUserId);
 
                 if (response.IsSuccessStatusCode)
                 {

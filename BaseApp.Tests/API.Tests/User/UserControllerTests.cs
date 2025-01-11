@@ -1,7 +1,7 @@
 ﻿using BaseApp.Data.User.Dtos;
 using BaseApp.Data.User.Models;
 using BaseApp.Server.Controllers;
-using BaseApp.ServiceProvider.Interfaces.User;
+using BaseApp.ServiceProvider.User.Interfaces;
 using BaseApp.Shared.Dtos;
 using BaseApp.Shared.Validation;
 using FluentValidation;
@@ -18,7 +18,7 @@ namespace BaseApp.Tests.API.Tests.User
 {
     public class UserControllerTests
     {
-        private readonly IUserService _mockUserService;
+        private readonly IUserManager _mockUserService;
         private readonly ILogger<UserController> _mockLogger;
         private readonly InputValidation _mockInputValidation;
         private readonly UserController _controller;
@@ -26,7 +26,7 @@ namespace BaseApp.Tests.API.Tests.User
 
         public UserControllerTests()
         {
-            _mockUserService = Substitute.For<IUserService>();
+            _mockUserService = Substitute.For<IUserManager>();
             _mockLogger = Substitute.For<ILogger<UserController>>();
             _mockInputValidation = Substitute.For<InputValidation>();
             _mockUserProfileValidator = Substitute.For<IValidator<UserProfileDto>>();

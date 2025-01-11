@@ -1,5 +1,5 @@
 using BaseApp.Data.User.Dtos;
-using BaseApp.ServiceProvider.Interfaces.Auth;
+using BaseApp.ServiceProvider.Auth.Interfaces;
 using BaseApp.Shared.ErrorHandling;
 using Microsoft.AspNetCore.Components;
 using Radzen;
@@ -10,7 +10,7 @@ namespace BaseApp.Client.Pages.Auth
     {
         [Inject] protected NotificationService NotificationService { get; set; } = default!;
         [Inject] protected NavigationManager NavigationManager { get; set; } = default!;
-        [Inject] private IAuthApiClient AuthApiClient { get; set; } = default!;
+        [Inject] private IAuthProvider AuthProvider { get; set; } = default!;
 
         private bool IsLoading = false;
         private bool IsLoggingIn = false;
@@ -28,7 +28,7 @@ namespace BaseApp.Client.Pages.Auth
             {
                 IsLoggingIn = true;
 
-                var response = await AuthApiClient.LoginAsync(UserLoginDto);
+                var response = await AuthProvider.LoginAsync(UserLoginDto);
 
                 if (response.IsSuccessStatusCode)
                 {

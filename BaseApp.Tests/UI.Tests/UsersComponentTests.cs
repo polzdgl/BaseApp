@@ -1,6 +1,6 @@
 ﻿using BaseApp.Client.Pages.User;
 using BaseApp.Data.User.Dtos;
-using BaseApp.ServiceProvider.Interfaces.User;
+using BaseApp.ServiceProvider.User.Interfaces;
 using BaseApp.Shared.Dtos;
 using Bunit;
 using Bunit.TestDoubles;
@@ -11,12 +11,12 @@ namespace BaseApp.Tests.UI.Tests.User
 {
     public class UsersComponentTests : TestContext
     {
-        private readonly IUserApiClient _mockApiClient;
+        private readonly IUserProvider _mockApiClient;
 
         public UsersComponentTests()
         {
             // Mock API client and register it in the test services
-            _mockApiClient = Substitute.For<IUserApiClient>();
+            _mockApiClient = Substitute.For<IUserProvider>();
             Services.AddSingleton(_mockApiClient);
 
             // Configure JSInterop to avoid unhandled invocation exceptions

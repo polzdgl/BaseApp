@@ -2,19 +2,19 @@
 using BaseApp.Data.Repositories.Interfaces;
 using BaseApp.Data.User.Dtos;
 using BaseApp.Data.User.Models;
-using BaseApp.ServiceProvider.Interfaces.User;
+using BaseApp.ServiceProvider.User.Interfaces;
 using BaseApp.Shared.Dtos;
 using Microsoft.Extensions.Logging;
 using System.Data;
 
-namespace BaseApp.ServiceProvider.Services.User
+namespace BaseApp.ServiceProvider.User.Manager
 {
-    public class UserService : IUserService
+    public class UserManager : IUserManager
     {
         private IRepositoryFactory _repository;
         private readonly ILogger _logger;
 
-        public UserService(IRepositoryFactory repository, ILogger<UserService> logger)
+        public UserManager(IRepositoryFactory repository, ILogger<UserManager> logger)
         {
             _repository = repository;
             _logger = logger;
@@ -102,7 +102,7 @@ namespace BaseApp.ServiceProvider.Services.User
 
             // Update the properties necessary
             user.UserName = userProfileDto.UserName;
-            user.Email = userProfileDto.Email;  
+            user.Email = userProfileDto.Email;
             user.FirstName = userProfileDto.FirstName;
             user.LastName = userProfileDto.LastName;
             user.PhoneNumber = userProfileDto.PhoneNumber;

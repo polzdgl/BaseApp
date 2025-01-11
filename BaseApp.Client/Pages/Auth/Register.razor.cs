@@ -1,5 +1,5 @@
 using BaseApp.Data.User.Dtos;
-using BaseApp.ServiceProvider.Interfaces.Auth;
+using BaseApp.ServiceProvider.Auth.Interfaces;
 using BaseApp.Shared.ErrorHandling;
 using Microsoft.AspNetCore.Components;
 using Radzen;
@@ -11,7 +11,7 @@ namespace BaseApp.Client.Pages.Auth
 
         [Inject] protected NotificationService NotificationService { get; set; } = default!;
         [Inject] protected NavigationManager NavigationManager { get; set; } = default!;
-        [Inject] private IAuthApiClient AuthApiClient { get; set; } = default!;
+        [Inject] private IAuthProvider AuthProvider { get; set; } = default!;
 
         private bool IsLoading = false;
         private bool IsSaving = false;
@@ -30,7 +30,7 @@ namespace BaseApp.Client.Pages.Auth
             {
                 IsSaving = true;
 
-                var response = await AuthApiClient.RegisterAsync(UserRegisterDto);
+                var response = await AuthProvider.RegisterAsync(UserRegisterDto);
 
                 if (response.IsSuccessStatusCode)
                 {

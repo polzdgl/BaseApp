@@ -18,7 +18,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 
 // Serilog Configuration
-string connectionString = builder.Configuration.GetConnectionString("OneKlerenContext");
+string connectionString = builder.Configuration.GetConnectionString("BaseAppContext");
 string loggingFileLocation = builder.Configuration.GetSection("LogginFileLocation").Value;
 // Load CORS settings from appsettings.json
 var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>();

@@ -1,15 +1,15 @@
 ﻿using BaseApp.Data.User.Dtos;
-using BaseApp.ServiceProvider.Interfaces.User;
+using BaseApp.ServiceProvider.User.Interfaces;
 using BaseApp.Shared.Dtos;
 using System.Net.Http.Json;
 
 namespace BaseApp.Client.ServiceClients.User
 {
-    public partial class UserApiClient : IUserApiClient
+    public partial class UserProvider : IUserProvider
     {
         private readonly HttpClient httpClient;
 
-        public UserApiClient(HttpClient httpClient)
+        public UserProvider(HttpClient httpClient)
         {
             this.httpClient = httpClient;
         }

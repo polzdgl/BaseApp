@@ -1,7 +1,7 @@
 ﻿using BaseApp.Data.Repositories;
 using BaseApp.Data.Repositories.Interfaces;
-using BaseApp.ServiceProvider.Interfaces.User;
-using BaseApp.ServiceProvider.Services.User;
+using BaseApp.ServiceProvider.User.Interfaces;
+using BaseApp.ServiceProvider.User.Manager;
 using BaseApp.Shared.Validation;
 using FluentValidation;
 
@@ -24,7 +24,7 @@ namespace BaseApp.Server.AppStart
             services.AddValidatorsFromAssemblies(assemblies, includeInternalTypes: true);
 
             // Add Providers
-            services.AddTransient<IUserService, UserService>();
+            services.AddTransient<IUserManager, UserManager>();
             services.AddTransient<IRepositoryFactory, RepositoryFactory>();
 
             return services;

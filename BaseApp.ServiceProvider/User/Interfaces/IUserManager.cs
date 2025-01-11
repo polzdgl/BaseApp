@@ -1,9 +1,9 @@
 ﻿using BaseApp.Data.User.Dtos;
 using BaseApp.Shared.Dtos;
 
-namespace BaseApp.ServiceProvider.Interfaces.User
+namespace BaseApp.ServiceProvider.User.Interfaces
 {
-    public interface IUserService
+    public interface IUserManager
     {
         Task<PaginatedResult<UserDto>> GetUsersAsync(int page, int pageSize);
         Task<UserDto> GetUserAsync(string id);
