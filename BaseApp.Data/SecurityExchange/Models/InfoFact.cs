@@ -15,6 +15,6 @@ namespace BaseApp.Data.SecurityExchange.Models
         public int EdgarCompanyInfoId { get; set; }
 
         [JsonPropertyName("us-gaap")]
-        public InfoFactUsGaap UsGaap { get; set; }
+        public virtual InfoFactUsGaap InfoFactUsGaap { get; set; }
     }
 }

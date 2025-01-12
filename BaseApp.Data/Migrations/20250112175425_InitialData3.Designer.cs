@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BaseApp.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250111221607_InitialData")]
-    partial class InitialData
+    [Migration("20250112175425_InitialData3")]
+    partial class InitialData3
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -121,12 +121,14 @@ namespace BaseApp.Data.Migrations
                 {
                     b.Property<string>("Cik")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("CHAR(10)");
+                        .HasColumnType("CHAR(10)")
+                        .HasAnnotation("Relational:JsonPropertyName", "cik");
 
                     b.Property<string>("EntityName")
                         .IsRequired()
                         .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasColumnType("nvarchar(256)")
+                        .HasAnnotation("Relational:JsonPropertyName", "entityName");
 
                     b.HasKey("Cik")
                         .HasName("PK_EdgarCompanyInfo");
@@ -153,6 +155,8 @@ namespace BaseApp.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("InfoFact", "Sec");
+
+                    b.HasAnnotation("Relational:JsonPropertyName", "facts");
                 });
 
             modelBuilder.Entity("BaseApp.Data.SecurityExchange.Models.InfoFactUsGaap", b =>
@@ -195,6 +199,8 @@ namespace BaseApp.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("InfoFactUsGaapIncomeLossUnits", "Sec");
+
+                    b.HasAnnotation("Relational:JsonPropertyName", "units");
                 });
 
             modelBuilder.Entity("BaseApp.Data.SecurityExchange.Models.InfoFactUsGaapIncomeLossUnitsUsd", b =>
@@ -208,18 +214,21 @@ namespace BaseApp.Data.Migrations
                     b.Property<string>("Form")
                         .IsRequired()
                         .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .HasColumnType("nvarchar(10)")
+                        .HasAnnotation("Relational:JsonPropertyName", "form");
 
                     b.Property<string>("Frame")
                         .IsRequired()
-                        .HasMaxLength(6)
-                        .HasColumnType("nvarchar(6)");
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)")
+                        .HasAnnotation("Relational:JsonPropertyName", "frame");
 
                     b.Property<int>("InfoFactUsGaapIncomeLossUnitsId")
                         .HasColumnType("int");
 
                     b.Property<decimal>("Val")
-                        .HasColumnType("decimal(18, 2)");
+                        .HasColumnType("decimal(18, 2)")
+                        .HasAnnotation("Relational:JsonPropertyName", "val");
 
                     b.HasKey("Id")
                         .HasName("PK_InfoFactUsGaapIncomeLossUnitsUsd");
@@ -227,6 +236,8 @@ namespace BaseApp.Data.Migrations
                     b.HasIndex("InfoFactUsGaapIncomeLossUnitsId");
 
                     b.ToTable("InfoFactUsGaapIncomeLossUnitsUsd", "Sec");
+
+                    b.HasAnnotation("Relational:JsonPropertyName", "USD");
                 });
 
             modelBuilder.Entity("BaseApp.Data.SecurityExchange.Models.InfoFactUsGaapNetIncomeLoss", b =>
@@ -247,6 +258,8 @@ namespace BaseApp.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("InfoFactUsGaapNetIncomeLoss", "Sec");
+
+                    b.HasAnnotation("Relational:JsonPropertyName", "NetIncomeLoss");
                 });
 
             modelBuilder.Entity("BaseApp.Data.User.Models.ApplicationRole", b =>
@@ -502,7 +515,7 @@ namespace BaseApp.Data.Migrations
             modelBuilder.Entity("BaseApp.Data.SecurityExchange.Models.InfoFact", b =>
                 {
                     b.HasOne("BaseApp.Data.SecurityExchange.Models.EdgarCompanyInfo", null)
-                        .WithOne("Facts")
+                        .WithOne("InfoFact")
                         .HasForeignKey("BaseApp.Data.SecurityExchange.Models.InfoFact", "EdgarCompanyInfoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -511,7 +524,7 @@ namespace BaseApp.Data.Migrations
             modelBuilder.Entity("BaseApp.Data.SecurityExchange.Models.InfoFactUsGaap", b =>
                 {
                     b.HasOne("BaseApp.Data.SecurityExchange.Models.InfoFact", null)
-                        .WithOne("UsGaap")
+                        .WithOne("InfoFactUsGaap")
                         .HasForeignKey("BaseApp.Data.SecurityExchange.Models.InfoFactUsGaap", "InfoFactId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -520,7 +533,7 @@ namespace BaseApp.Data.Migrations
             modelBuilder.Entity("BaseApp.Data.SecurityExchange.Models.InfoFactUsGaapIncomeLossUnits", b =>
                 {
                     b.HasOne("BaseApp.Data.SecurityExchange.Models.InfoFactUsGaapNetIncomeLoss", null)
-                        .WithOne("Units")
+                        .WithOne("InfoFactUsGaapIncomeLossUnits")
                         .HasForeignKey("BaseApp.Data.SecurityExchange.Models.InfoFactUsGaapIncomeLossUnits", "InfoFactUsGaapNetIncomeLossId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -529,7 +542,7 @@ namespace BaseApp.Data.Migrations
             modelBuilder.Entity("BaseApp.Data.SecurityExchange.Models.InfoFactUsGaapIncomeLossUnitsUsd", b =>
                 {
                     b.HasOne("BaseApp.Data.SecurityExchange.Models.InfoFactUsGaapIncomeLossUnits", null)
-                        .WithMany("Usd")
+                        .WithMany("InfoFactUsGaapIncomeLossUnitsUsd")
                         .HasForeignKey("InfoFactUsGaapIncomeLossUnitsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -538,7 +551,7 @@ namespace BaseApp.Data.Migrations
             modelBuilder.Entity("BaseApp.Data.SecurityExchange.Models.InfoFactUsGaapNetIncomeLoss", b =>
                 {
                     b.HasOne("BaseApp.Data.SecurityExchange.Models.InfoFactUsGaap", null)
-                        .WithOne("NetIncomeLoss")
+                        .WithOne("InfoFactUsGaapNetIncomeLoss")
                         .HasForeignKey("BaseApp.Data.SecurityExchange.Models.InfoFactUsGaapNetIncomeLoss", "InfoFactUsGaapId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -597,30 +610,30 @@ namespace BaseApp.Data.Migrations
 
             modelBuilder.Entity("BaseApp.Data.SecurityExchange.Models.EdgarCompanyInfo", b =>
                 {
-                    b.Navigation("Facts")
+                    b.Navigation("InfoFact")
                         .IsRequired();
                 });
 
             modelBuilder.Entity("BaseApp.Data.SecurityExchange.Models.InfoFact", b =>
                 {
-                    b.Navigation("UsGaap")
+                    b.Navigation("InfoFactUsGaap")
                         .IsRequired();
                 });
 
             modelBuilder.Entity("BaseApp.Data.SecurityExchange.Models.InfoFactUsGaap", b =>
                 {
-                    b.Navigation("NetIncomeLoss")
+                    b.Navigation("InfoFactUsGaapNetIncomeLoss")
                         .IsRequired();
                 });
 
             modelBuilder.Entity("BaseApp.Data.SecurityExchange.Models.InfoFactUsGaapIncomeLossUnits", b =>
                 {
-                    b.Navigation("Usd");
+                    b.Navigation("InfoFactUsGaapIncomeLossUnitsUsd");
                 });
 
             modelBuilder.Entity("BaseApp.Data.SecurityExchange.Models.InfoFactUsGaapNetIncomeLoss", b =>
                 {
-                    b.Navigation("Units")
+                    b.Navigation("InfoFactUsGaapIncomeLossUnits")
                         .IsRequired();
                 });
 #pragma warning restore 612, 618

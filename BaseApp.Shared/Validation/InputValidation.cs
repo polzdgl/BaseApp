@@ -65,83 +65,29 @@ namespace BaseApp.Shared.Validation
             return false;
         }
 
-        //public bool ValidateDateOfBirth(object value, out string validationErrorMessage)
-        //{
-        //    validationErrorMessage = string.Empty;
+        // Validate if input list is empty or in a specific range
+        public bool ValidateIntList(IEnumerable<int> values, int minValue, int maxValue, out string validationErrorMessage)
+        {
+            if (values == null || !values.Any())
+            {
+                validationErrorMessage = "The list cannot be null or empty.";
+                return false;
+            }
 
-        //    // Check if the value is a valid DateTime or DateOnly
-        //    if (value is DateTime dateTimeValue)
-        //    {
-        //        if (dateTimeValue.Date <= DateTime.Today)
-        //        {
-        //            return true;
-        //        }
+            if (values.Any(value => value < minValue || value > maxValue))
+            {
+                validationErrorMessage = $"All integers in the list must be between {minValue} and {maxValue}.";
+                return false;
+            }
 
-        //        validationErrorMessage = "The date of birth cannot be in the future.";
-        //        return false;
-        //    }
-        //    else if (value is DateOnly dateOnlyValue)
-        //    {
-        //        if (dateOnlyValue <= DateOnly.FromDateTime(DateTime.Today))
-        //        {
-        //            return true;
-        //        }
-
-        //        validationErrorMessage = "The date of birth cannot be in the future.";
-        //        return false;
-        //    }
-
-        //    validationErrorMessage = "The value must be a valid date.";
-        //    return false;
-        //}
-
-
-        //// Validate a phone number
-        //public bool ValidatePhoneNumber(string phoneNumber, out string validationErrorMessage)
-        //{
-        //    string phonePattern = @"^(\+?\d{1,3})?[-.\s]?\(?\d{1,4}\)?[-.\s]?\d{1,4}[-.\s]?\d{1,9}$";
-        //    if (Regex.IsMatch(phoneNumber, phonePattern))
-        //    {
-        //        validationErrorMessage = string.Empty;
-        //        return true;
-        //    }
-
-        //    validationErrorMessage = "The phone number is not in a valid format.";
-        //    return false;
-        //}
-
-        //// Validate an email address
-        //public bool ValidateEmailAddress(string email, out string validationErrorMessage)
-        //{
-        //    string emailPattern = @"^[^\s@]+@[^\s@]+\.[^\s@]+$";
-        //    if (Regex.IsMatch(email, emailPattern))
-        //    {
-        //        validationErrorMessage = string.Empty;
-        //        return true;
-        //    }
-
-        //    validationErrorMessage = "The email address is not in a valid format.";
-        //    return false;
-        //}
-
-        //public bool ValidateUserName(string userName, out string validationErrorMessage)
-        //{
-        //    if (RegexHelper.IsOnlyLettersNumbers(userName))
-        //    {
-        //        validationErrorMessage = string.Empty;
-        //        return true;
-        //    }
-
-        //    validationErrorMessage = "The UserName is not in a valid format. Please enter letters and numbers only!";
-        //    return false;
-        //}
+            validationErrorMessage = string.Empty;
+            return true;
+        }
 
         // Get validation errors as a formatted string
         public string GetValidationErrors(List<ValidationResult> validationResults)
         {
             return string.Join(Environment.NewLine, validationResults.Select(vr => vr.ErrorMessage));
         }
-
-
     }
 }

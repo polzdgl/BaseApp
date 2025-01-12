@@ -28,10 +28,13 @@ namespace BaseApp.Server.Controllers
 
         [HttpGet("users", Name = "GetUsersAsync")]
         [ProducesResponseType(typeof(PaginatedResult<UserDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetUsersAsync([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
             try
             {
+                _logger.LogInformation("Getting list of all users. Request Page:{page},  Size:{pagesize}", page, pageSize);
+
                 PaginatedResult<UserDto> users = await _userService.GetUsersAsync(page, pageSize);
 
                 return Ok(users);
@@ -46,6 +49,7 @@ namespace BaseApp.Server.Controllers
         [HttpGet("{id}", Name = "GetUserByIdAsync")]
         [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetUserByIdAsync(string id)
         {
@@ -56,6 +60,8 @@ namespace BaseApp.Server.Controllers
                     _logger.LogWarning("Invalid Id: {id}. Errors: {erorrMessage}", id, guidValidationError);
                     return Problem(detail: $"Invalid Id: {id}. Errors: {guidValidationError}", statusCode: StatusCodes.Status400BadRequest);
                 }
+
+                _logger.LogInformation("Getting UserId:{id}", id);
 
                 UserDto user = await _userService.GetUserAsync(id);
 
@@ -91,6 +97,8 @@ namespace BaseApp.Server.Controllers
                         detail: errorDetails,
                         statusCode: StatusCodes.Status400BadRequest);
                 }
+
+                _logger.LogInformation("Creating new User with userId:{userId}", userProfileDto.UserName);
 
                 bool isUserCreated = await _userService.CreateUserAsync(userProfileDto);
 

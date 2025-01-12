@@ -202,7 +202,7 @@ namespace BaseApp.Data.Context
                       .HasMaxLength(256);
 
                 // Relationship with InfoFacts
-                entity.HasOne(e => e.Facts)
+                entity.HasOne(e => e.InfoFact)
                       .WithOne()
                       .HasForeignKey<InfoFact>(f => f.EdgarCompanyInfoId)
                       .OnDelete(DeleteBehavior.Cascade);
@@ -217,7 +217,7 @@ namespace BaseApp.Data.Context
                 entity.HasKey(f => f.Id).HasName("PK_InfoFact");
 
                 // Relationships
-                entity.HasOne(f => f.UsGaap)
+                entity.HasOne(f => f.InfoFactUsGaap)
                       .WithOne()
                       .HasForeignKey<InfoFactUsGaap>(g => g.InfoFactId)
                       .OnDelete(DeleteBehavior.Cascade);
@@ -232,7 +232,7 @@ namespace BaseApp.Data.Context
                 entity.HasKey(g => g.Id).HasName("PK_InfoFactUsGaap");
 
                 // Relationship with NetIncomeLoss
-                entity.HasOne(g => g.NetIncomeLoss)
+                entity.HasOne(g => g.InfoFactUsGaapNetIncomeLoss)
                       .WithOne()
                       .HasForeignKey<InfoFactUsGaapNetIncomeLoss>(n => n.InfoFactUsGaapId)
                       .OnDelete(DeleteBehavior.Cascade);
@@ -247,7 +247,7 @@ namespace BaseApp.Data.Context
                 entity.HasKey(n => n.Id).HasName("PK_InfoFactUsGaapNetIncomeLoss");
 
                 // Relationships
-                entity.HasOne(n => n.Units)
+                entity.HasOne(n => n.InfoFactUsGaapIncomeLossUnits)
                       .WithOne()
                       .HasForeignKey<InfoFactUsGaapIncomeLossUnits>(u => u.InfoFactUsGaapNetIncomeLossId)
                       .OnDelete(DeleteBehavior.Cascade);
@@ -263,7 +263,7 @@ namespace BaseApp.Data.Context
                 entity.HasKey(u => u.Id).HasName("PK_InfoFactUsGaapIncomeLossUnits");
 
                 // Relationship with InfoFactUsGaapNetIncomeLoss
-                entity.HasMany(u => u.Usd)
+                entity.HasMany(u => u.InfoFactUsGaapIncomeLossUnitsUsd)
                       .WithOne()
                       .HasForeignKey(usd => usd.InfoFactUsGaapIncomeLossUnitsId)
                       .OnDelete(DeleteBehavior.Cascade);
@@ -283,7 +283,7 @@ namespace BaseApp.Data.Context
                       .IsRequired();
 
                 entity.Property(usd => usd.Frame)
-                      .HasMaxLength(6) // E.g., "CY2021"
+                      .HasMaxLength(10) // E.g., "CY2021"
                       .IsRequired();
 
                 entity.Property(usd => usd.Val)

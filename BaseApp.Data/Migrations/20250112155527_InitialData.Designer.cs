@@ -4,6 +4,7 @@ using BaseApp.Data.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BaseApp.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250112155527_InitialData")]
+    partial class InitialData
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -512,7 +515,7 @@ namespace BaseApp.Data.Migrations
             modelBuilder.Entity("BaseApp.Data.SecurityExchange.Models.InfoFact", b =>
                 {
                     b.HasOne("BaseApp.Data.SecurityExchange.Models.EdgarCompanyInfo", null)
-                        .WithOne("InfoFact")
+                        .WithOne("Facts")
                         .HasForeignKey("BaseApp.Data.SecurityExchange.Models.InfoFact", "EdgarCompanyInfoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -521,7 +524,7 @@ namespace BaseApp.Data.Migrations
             modelBuilder.Entity("BaseApp.Data.SecurityExchange.Models.InfoFactUsGaap", b =>
                 {
                     b.HasOne("BaseApp.Data.SecurityExchange.Models.InfoFact", null)
-                        .WithOne("InfoFactUsGaap")
+                        .WithOne("UsGaap")
                         .HasForeignKey("BaseApp.Data.SecurityExchange.Models.InfoFactUsGaap", "InfoFactId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -530,7 +533,7 @@ namespace BaseApp.Data.Migrations
             modelBuilder.Entity("BaseApp.Data.SecurityExchange.Models.InfoFactUsGaapIncomeLossUnits", b =>
                 {
                     b.HasOne("BaseApp.Data.SecurityExchange.Models.InfoFactUsGaapNetIncomeLoss", null)
-                        .WithOne("InfoFactUsGaapIncomeLossUnits")
+                        .WithOne("Units")
                         .HasForeignKey("BaseApp.Data.SecurityExchange.Models.InfoFactUsGaapIncomeLossUnits", "InfoFactUsGaapNetIncomeLossId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -539,7 +542,7 @@ namespace BaseApp.Data.Migrations
             modelBuilder.Entity("BaseApp.Data.SecurityExchange.Models.InfoFactUsGaapIncomeLossUnitsUsd", b =>
                 {
                     b.HasOne("BaseApp.Data.SecurityExchange.Models.InfoFactUsGaapIncomeLossUnits", null)
-                        .WithMany("InfoFactUsGaapIncomeLossUnitsUsd")
+                        .WithMany("Usd")
                         .HasForeignKey("InfoFactUsGaapIncomeLossUnitsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -548,7 +551,7 @@ namespace BaseApp.Data.Migrations
             modelBuilder.Entity("BaseApp.Data.SecurityExchange.Models.InfoFactUsGaapNetIncomeLoss", b =>
                 {
                     b.HasOne("BaseApp.Data.SecurityExchange.Models.InfoFactUsGaap", null)
-                        .WithOne("InfoFactUsGaapNetIncomeLoss")
+                        .WithOne("NetIncomeLoss")
                         .HasForeignKey("BaseApp.Data.SecurityExchange.Models.InfoFactUsGaapNetIncomeLoss", "InfoFactUsGaapId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -607,30 +610,30 @@ namespace BaseApp.Data.Migrations
 
             modelBuilder.Entity("BaseApp.Data.SecurityExchange.Models.EdgarCompanyInfo", b =>
                 {
-                    b.Navigation("InfoFact")
+                    b.Navigation("Facts")
                         .IsRequired();
                 });
 
             modelBuilder.Entity("BaseApp.Data.SecurityExchange.Models.InfoFact", b =>
                 {
-                    b.Navigation("InfoFactUsGaap")
+                    b.Navigation("UsGaap")
                         .IsRequired();
                 });
 
             modelBuilder.Entity("BaseApp.Data.SecurityExchange.Models.InfoFactUsGaap", b =>
                 {
-                    b.Navigation("InfoFactUsGaapNetIncomeLoss")
+                    b.Navigation("NetIncomeLoss")
                         .IsRequired();
                 });
 
             modelBuilder.Entity("BaseApp.Data.SecurityExchange.Models.InfoFactUsGaapIncomeLossUnits", b =>
                 {
-                    b.Navigation("InfoFactUsGaapIncomeLossUnitsUsd");
+                    b.Navigation("Usd");
                 });
 
             modelBuilder.Entity("BaseApp.Data.SecurityExchange.Models.InfoFactUsGaapNetIncomeLoss", b =>
                 {
-                    b.Navigation("InfoFactUsGaapIncomeLossUnits")
+                    b.Navigation("Units")
                         .IsRequired();
                 });
 #pragma warning restore 612, 618

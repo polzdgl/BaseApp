@@ -325,7 +325,7 @@ namespace BaseApp.Data.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     InfoFactUsGaapIncomeLossUnitsId = table.Column<int>(type: "int", nullable: false),
                     Form = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
-                    Frame = table.Column<string>(type: "nvarchar(6)", maxLength: 6, nullable: false),
+                    Frame = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
                     Val = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
                 },
                 constraints: table =>

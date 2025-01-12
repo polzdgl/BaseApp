@@ -15,6 +15,6 @@ namespace BaseApp.Data.SecurityExchange.Models
         public int InfoFactUsGaapNetIncomeLossId { get; set; }
 
         [JsonPropertyName("USD")]
-        public ICollection<InfoFactUsGaapIncomeLossUnitsUsd> Usd { get; set; }
+        public virtual ICollection<InfoFactUsGaapIncomeLossUnitsUsd> InfoFactUsGaapIncomeLossUnitsUsd { get; set; }
     }
 }
