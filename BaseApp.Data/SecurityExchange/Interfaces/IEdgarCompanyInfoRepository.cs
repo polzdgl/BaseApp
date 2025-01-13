@@ -1,16 +1,12 @@
 ﻿using BaseApp.Data.Repositories.Interfaces;
 using BaseApp.Data.SecurityExchange.Models;
-using BaseApp.Data.User.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BaseApp.Data.SecurityExchange.Interfaces
 {
-    public interface ISecurityExchangeRepository : IGenericRepository<EdgarCompanyInfo>
+    public interface IEdgarCompanyInfoRepository : IGenericRepository<EdgarCompanyInfo>
     {
+        IEnumerable<string> GetCiksToImport();
+        Task<IEnumerable<string>> GetAllCikIds();
         Task<IEnumerable<EdgarCompanyInfo>> GetCompaniesWithDetails(string? startsWith = null);
     }
 }

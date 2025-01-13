@@ -108,6 +108,20 @@ namespace BaseApp.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "MarketDataStatus",
+                schema: "Sec",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    LoadDate = table.Column<DateTime>(type: "datetime", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MarketDataStatus", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ApplicationRoleClaim ",
                 schema: "User",
                 columns: table => new
@@ -487,6 +501,10 @@ namespace BaseApp.Data.Migrations
             migrationBuilder.DropTable(
                 name: "Log",
                 schema: "App");
+
+            migrationBuilder.DropTable(
+                name: "MarketDataStatus",
+                schema: "Sec");
 
             migrationBuilder.DropTable(
                 name: "ApplicationRole",

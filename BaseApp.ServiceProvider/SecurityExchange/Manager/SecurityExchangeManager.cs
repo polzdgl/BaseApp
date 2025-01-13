@@ -3,6 +3,7 @@ using BaseApp.Data.Repositories.Interfaces;
 using BaseApp.Data.SecurityExchange.Dtos;
 using BaseApp.Data.SecurityExchange.Models;
 using BaseApp.ServiceProvider.SecurityExchange.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace BaseApp.ServiceProvider.SecurityExchange.Manager
@@ -34,48 +35,80 @@ namespace BaseApp.ServiceProvider.SecurityExchange.Manager
             }
         }
 
+        // Import Initial Market Data from SEC API with given CIKs
+        public async Task ImportMarketDataAsync()
+        {
+            // Get all CIKs to import data for
+            IEnumerable<string> ciksToImport = this.Repository.EdgarCompanyInfoRepository.GetCiksToImport();
+
+            // Get all CIKs from the SEC API and save to database
+            await this.ImportCompnanyDataAsync(ciksToImport);
+
+            // Create Market Data Load Status
+            await this.CreateMarketDataLoadRecord();
+        }
+
         public async Task ImportCompnanyDataAsync(IEnumerable<string> ciks)
         {
             List<EdgarCompanyInfo> companies = new List<EdgarCompanyInfo>();
 
-            foreach (var cik in ciks)
-            {
-                var data = await _securityExchangeProvider.FetchEdgarCompanyInfoAsync(cik);
+            // Format to make all ciks 10 digits
+            ciks = ciks.Select(cik => cik.Trim().PadLeft(10, '0')).Distinct();
 
-                // Filter relevant data
-                var company = new EdgarCompanyInfo
+            // Get CIKs that dont exist in the database
+            var existingCiks = await Repository.EdgarCompanyInfoRepository.GetAllCikIds();
+
+            var newCiks = ciks.Except(existingCiks);
+
+            foreach (var cik in newCiks)
+            {
+                try
                 {
-                    Cik = data.Cik,
-                    EntityName = data.EntityName,
-                    InfoFact = new InfoFact
+                    _logger.LogInformation("Loading Company data for CIK: {cik}", cik);
+
+                    var data = await _securityExchangeProvider.FetchEdgarCompanyInfoAsync(cik);
+
+                    // Filter relevant data
+                    var company = new EdgarCompanyInfo
                     {
-                        InfoFactUsGaap = new InfoFactUsGaap
+                        Cik = data.Cik,
+                        EntityName = data.EntityName,
+                        InfoFact = new InfoFact
                         {
-                            InfoFactUsGaapNetIncomeLoss = new InfoFactUsGaapNetIncomeLoss
+                            InfoFactUsGaap = new InfoFactUsGaap
                             {
-                                InfoFactUsGaapIncomeLossUnits = new InfoFactUsGaapIncomeLossUnits
+                                InfoFactUsGaapNetIncomeLoss = new InfoFactUsGaapNetIncomeLoss
                                 {
-                                    InfoFactUsGaapIncomeLossUnitsUsd = data.InfoFact?.InfoFactUsGaap?.InfoFactUsGaapNetIncomeLoss?
-                                    .InfoFactUsGaapIncomeLossUnits?.InfoFactUsGaapIncomeLossUnitsUsd?
-                                    .Where(usd => usd.Form == "10-K" && (usd.Frame?.StartsWith("CY") ?? false))
-                                    .ToArray() ?? Array.Empty<InfoFactUsGaapIncomeLossUnitsUsd>()
+                                    InfoFactUsGaapIncomeLossUnits = new InfoFactUsGaapIncomeLossUnits
+                                    {
+                                        InfoFactUsGaapIncomeLossUnitsUsd = data.InfoFact?.InfoFactUsGaap?.InfoFactUsGaapNetIncomeLoss?
+                                        .InfoFactUsGaapIncomeLossUnits?.InfoFactUsGaapIncomeLossUnitsUsd?
+                                        .Where(usd => usd.Form == "10-K" && (usd.Frame?.StartsWith("CY") ?? false))
+                                        .ToArray() ?? Array.Empty<InfoFactUsGaapIncomeLossUnitsUsd>()
+                                    }
                                 }
                             }
                         }
-                    }
-                };
-                companies.Add(company);
+                    };
+                    companies.Add(company);
+                }
+                catch (Exception ex)
+                {
+                    // Log error and continue with next CIK
+                    _logger.LogError(ex, $"Failed to retrieve company information for CIK ID: {cik}");
+                    continue;
+                }
             }
 
             // Save to database
-            await Repository.SecurityExchangeRepository.CreateAllAsync(companies);
+            await Repository.EdgarCompanyInfoRepository.CreateAllAsync(companies);
         }
 
-        public async Task<List<FundableCompanyDto>> GetFunableCompanies(string? startsWith = null)
+        public async Task<List<FundableCompanyDto>> GetCompanies(string? startsWith = null)
         {
             var fundableCompanies = new List<FundableCompanyDto>();
 
-            var companies = await Repository.SecurityExchangeRepository.GetCompaniesWithDetails(startsWith);
+            var companies = await Repository.EdgarCompanyInfoRepository.GetCompaniesWithDetails(startsWith);
 
             if (companies.Any())
             {
@@ -104,49 +137,85 @@ namespace BaseApp.ServiceProvider.SecurityExchange.Manager
             return fundableCompanies;
         }
 
-        private decimal CalculateStandardFundableAmount(IEnumerable<InfoFactUsGaapIncomeLossUnitsUsd> incomeData)
+        public decimal CalculateStandardFundableAmount(IEnumerable<InfoFactUsGaapIncomeLossUnitsUsd> incomeData)
         {
-            var targetYears = new[] { 2018, 2019, 2020, 2021, 2022 };
+            try
+            {
+                var targetYears = new[] { 2018, 2019, 2020, 2021, 2022 };
 
-            // Filter for yearly data only (e.g., "CY2018", not "CY2018Q1")
-            var yearlyData = incomeData
-                .Where(usd => targetYears.Contains(GetYearFromFrame(usd.Frame)))
-                .GroupBy(usd => GetYearFromFrame(usd.Frame)) // Ensure only one entry per year
-                .Select(g => g.FirstOrDefault()) // Pick the first entry for the year
-                .ToList();
+                // Filter for yearly data only (e.g., "CY2018", not "CY2018Q1")
+                var yearlyData = incomeData
+                    .Where(usd => targetYears.Contains(GetYearFromFrame(usd.Frame)))
+                    .GroupBy(usd => GetYearFromFrame(usd.Frame)) // Ensure only one entry per year
+                    .Select(g => g.FirstOrDefault()) // Pick the first entry for the year
+                    .ToList();
 
-            // Check if we have data for all required years
-            if (yearlyData.Count != targetYears.Length) return 0;
+                // Check if we have data for all required years
+                if (yearlyData.Count != targetYears.Length) return 0;
 
-            // Ensure positive income for specific years
-            if (!yearlyData.Any(d => d.Frame.StartsWith("CY2021") && d.Val > 0) ||
-                !yearlyData.Any(d => d.Frame.StartsWith("CY2022") && d.Val > 0)) return 0;
+                // Ensure positive income for specific years
+                if (!yearlyData.Any(d => d.Frame.StartsWith("CY2021") && d.Val > 0) ||
+                    !yearlyData.Any(d => d.Frame.StartsWith("CY2022") && d.Val > 0)) return 0;
 
-            // Calculate highest income
-            var highestIncome = yearlyData.Max(d => d.Val);
+                // Calculate highest income
+                var highestIncome = yearlyData.Max(d => d.Val);
 
-            // Apply different rates based on income threshold
-            return highestIncome >= 10_000_000_000
-                ? highestIncome * 0.1233m
-                : highestIncome * 0.2151m;
+                // Apply different rates based on income threshold
+                return highestIncome >= 10_000_000_000
+                    ? highestIncome * 0.1233m
+                    : highestIncome * 0.2151m;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Failed to calculate standard fundable amount.");
+                return 0;
+            }
         }
 
         // Helper method to extract the year from the frame
-        private int GetYearFromFrame(string frame)
+        public int GetYearFromFrame(string frame)
         {
             // Extract numeric year from frame (e.g., "CY2018" or "CY2018Q1")
             var match = System.Text.RegularExpressions.Regex.Match(frame, @"CY(\d{4})");
             return match.Success ? int.Parse(match.Groups[1].Value) : 0;
         }
 
-        private decimal CalculateSpecialFundableAmount(decimal standardAmount, string name, decimal income2021, decimal income2022)
+        public decimal CalculateSpecialFundableAmount(decimal standardAmount, string name, decimal income2021, decimal income2022)
         {
             var specialAmount = standardAmount;
 
-            if ("AEIOU".Contains(name[0])) specialAmount += standardAmount * 0.15m;
-            if (income2022 < income2021) specialAmount -= standardAmount * 0.25m;
+            // Check if the name is not null or empty, and starts with a vowel
+            if (!string.IsNullOrEmpty(name) && "AEIOU".Contains(char.ToUpper(name[0])))
+            {
+                specialAmount += standardAmount * 0.15m;
+            }
+
+            // Check if the 2022 income is less than the 2021 income
+            if (income2022 < income2021)
+            {
+                specialAmount -= standardAmount * 0.25m;
+            }
 
             return specialAmount;
+        }
+
+        public async Task CreateMarketDataLoadRecord()
+        {
+            _logger.LogInformation("Market Data Load.");
+
+            // Create Market Data Load Status in the database
+            await Repository.Context.AddAsync(new MarketDataLoadRecord
+            {
+                LoadDate = DateTime.UtcNow
+            });
+
+            // Save changes to the database
+            await Repository.Context.SaveChangesAsync();
+        }
+
+        public async Task<bool> IsMarketDataLoadedAsync()
+        {
+            return await Repository.Context.MarketDataLoadRecord.AnyAsync();
         }
     }
 }

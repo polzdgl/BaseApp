@@ -259,6 +259,23 @@ namespace BaseApp.Data.Migrations
                     b.HasAnnotation("Relational:JsonPropertyName", "NetIncomeLoss");
                 });
 
+            modelBuilder.Entity("BaseApp.Data.SecurityExchange.Models.MarketDataLoadRecord", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("LoadDate")
+                        .HasColumnType("datetime");
+
+                    b.HasKey("Id")
+                        .HasName("PK_MarketDataStatus");
+
+                    b.ToTable("MarketDataStatus", "Sec");
+                });
+
             modelBuilder.Entity("BaseApp.Data.User.Models.ApplicationRole", b =>
                 {
                     b.Property<string>("Id")

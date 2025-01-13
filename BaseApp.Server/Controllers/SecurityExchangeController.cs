@@ -22,14 +22,54 @@ namespace BaseApp.Server.Controllers
             _inputValidation = inputValidation;
         }
 
-        [HttpGet("import", Name = "ImportCompnanyDataAsync")]
+        [HttpPost("importMarketData", Name = "ImportMarketDataAsync")]
+        [ProducesResponseType(typeof(List<FundableCompanyDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> ImportMarketDataAsync()
+        {
+            try
+            {
+                _logger.LogInformation("Loading Company data from SEC API..");
+
+                await _securityExchangeManager.ImportMarketDataAsync();
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An unexpected error occurred while getting fundable Companies list!");
+                return Problem(detail: ex.Message.ToString(), statusCode: StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        [HttpGet("isMarketDataLoaded", Name = "IsMarketDataLoadedAsync")]
+        [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> IsMarketDataLoadedAsync()
+        {
+            try
+            {
+                _logger.LogInformation("Checking if Market Data is loaded..");
+
+                bool isLoaded = await _securityExchangeManager.IsMarketDataLoadedAsync();
+
+                return Ok(isLoaded);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An unexpected error occurred while getting fundable Companies list!");
+                return Problem(detail: ex.Message.ToString(), statusCode: StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        [HttpPost("import", Name = "ImportCompnanyDataAsync")]
         [ProducesResponseType(typeof(List<FundableCompanyDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> ImportCompaniesInfoAsync([FromQuery] IEnumerable<string> ciks)
         {
             try
             {
-                _logger.LogInformation("Importing Company data for CIKs: {ciks}", string.Concat(',',ciks));
+                _logger.LogInformation("Importing Company data for CIKs: {ciks}", string.Concat(',', ciks));
 
                 await _securityExchangeManager.ImportCompnanyDataAsync(ciks);
                 return Ok();
@@ -41,16 +81,16 @@ namespace BaseApp.Server.Controllers
             }
         }
 
-        [HttpGet("fundablecompanies", Name = "GetFundableCompaniesAsync")]
+        [HttpGet("companies", Name = "GetCompaniesAsync")]
         [ProducesResponseType(typeof(List<FundableCompanyDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetFundableCompaniesAsync([FromQuery] string startsWith = null)
+        public async Task<IActionResult> GetCompaniesAsync([FromQuery] string startsWith = null)
         {
             try
             {
-                _logger.LogInformation("Gettimg Company data for: {name}", startsWith.IsNullOrEmpty() ? "All" : startsWith);
+                _logger.LogInformation("Getting Company data: {name}", startsWith.IsNullOrEmpty() ? "for All" : $"starts with: {startsWith}");
 
-                List<FundableCompanyDto> companies = await _securityExchangeManager.GetFunableCompanies(startsWith);
+                List<FundableCompanyDto> companies = await _securityExchangeManager.GetCompanies(startsWith);
                 return Ok(companies);
             }
             catch (Exception ex)

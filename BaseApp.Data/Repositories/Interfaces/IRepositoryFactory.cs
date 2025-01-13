@@ -10,6 +10,6 @@ namespace BaseApp.Data.Repositories.Interfaces
 
         IUserRepository UserRepository { get; }
 
-        ISecurityExchangeRepository SecurityExchangeRepository { get; }
+        IEdgarCompanyInfoRepository EdgarCompanyInfoRepository { get; }
     }
 }

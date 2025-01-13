@@ -24,9 +24,23 @@ namespace BaseApp.Data.Context
         // Parameterless constructor for EF Core tools
         public ApplicationDbContext() { }
 
-        //public DbSet<UserAccounts> UserAccounts { get; set; }
-        public DbSet<ApplicationUser> User { get; set; }
+        // Log table
         public DbSet<Log> Logs { get; set; }
+
+        // User tables
+        public DbSet<ApplicationUser> ApplicationUser { get; set; }
+        public DbSet<ApplicationRole> ApplicationRole { get; set; }
+        public DbSet<ApplicationUserRole> ApplicationUserRole { get; set; }
+
+        // Security Exchange tables
+        public DbSet<EdgarCompanyInfo> EdgarCompanyInfo { get; set; }
+        public DbSet<InfoFact> InfoFact { get; set; }
+        public DbSet<InfoFactUsGaap> InfoFactUsGaap { get; set; }
+        public DbSet<InfoFactUsGaapNetIncomeLoss> InfoFactUsGaapNetIncomeLoss { get; set; }
+        public DbSet<InfoFactUsGaapIncomeLossUnits> InfoFactUsGaapIncomeLossUnits { get; set; }
+        public DbSet<InfoFactUsGaapIncomeLossUnitsUsd> InfoFactUsGaapIncomeLossUnitsUsd { get; set; }
+        public DbSet<MarketDataLoadRecord> MarketDataLoadRecord { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -288,6 +302,18 @@ namespace BaseApp.Data.Context
 
                 entity.Property(usd => usd.Val)
                       .HasColumnType("decimal(18, 2)")
+                      .IsRequired();
+            });
+
+            // MarketDataStatus
+            modelBuilder.Entity<MarketDataLoadRecord>(entity =>
+            {
+                entity.ToTable("MarketDataStatus", schema: "Sec");
+                // Primary Key
+                entity.HasKey(e => e.Id).HasName("PK_MarketDataStatus");
+                // Properties
+                entity.Property(e => e.LoadDate)
+                      .HasColumnType("datetime")
                       .IsRequired();
             });
             #endregion

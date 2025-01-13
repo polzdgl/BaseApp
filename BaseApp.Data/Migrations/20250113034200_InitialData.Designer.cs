@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BaseApp.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250112175425_InitialData3")]
-    partial class InitialData3
+    [Migration("20250113034200_InitialData")]
+    partial class InitialData
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -260,6 +260,23 @@ namespace BaseApp.Data.Migrations
                     b.ToTable("InfoFactUsGaapNetIncomeLoss", "Sec");
 
                     b.HasAnnotation("Relational:JsonPropertyName", "NetIncomeLoss");
+                });
+
+            modelBuilder.Entity("BaseApp.Data.SecurityExchange.Models.MarketDataLoadRecord", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("LoadDate")
+                        .HasColumnType("datetime");
+
+                    b.HasKey("Id")
+                        .HasName("PK_MarketDataStatus");
+
+                    b.ToTable("MarketDataStatus", "Sec");
                 });
 
             modelBuilder.Entity("BaseApp.Data.User.Models.ApplicationRole", b =>

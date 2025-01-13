@@ -10,7 +10,7 @@ namespace BaseApp.Data.Repositories
     public class RepositoryFactory(ApplicationDbContext context) : IRepositoryFactory
     {
         private IUserRepository _userRepository;
-        private ISecurityExchangeRepository _securityExchangeRepository;
+        private IEdgarCompanyInfoRepository _securityExchangeRepository;
 
         public ApplicationDbContext Context { get; set; } = context;
 
@@ -27,13 +27,13 @@ namespace BaseApp.Data.Repositories
             }
         }
 
-        public ISecurityExchangeRepository SecurityExchangeRepository
+        public IEdgarCompanyInfoRepository EdgarCompanyInfoRepository
         {
             get
             {
                 if (this._securityExchangeRepository == null)
                 {
-                    this._securityExchangeRepository = new SecurityExchangeRepository(this.Context);
+                    this._securityExchangeRepository = new EdgarCompanyInfoRepository(this.Context);
                 }
 
                 return this._securityExchangeRepository;
