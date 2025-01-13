@@ -7,7 +7,7 @@ namespace BaseApp.ServiceProvider.Company.Interfaces
     {
         Task<CikImportResult> ImportMarketDataAsync();
         Task<CikImportResult> ImportCompnanyDataAsync(IEnumerable<string> ciks);
-        Task<List<FundableCompanyDto>> GetCompanies(string? startsWith = null);
+        Task<List<FundableCompanyDto>> GetCompaniesAsync(string? startsWith = null);
         decimal CalculateStandardFundableAmount(IEnumerable<InfoFactUsGaapIncomeLossUnitsUsd> incomeData);
         int GetYearFromFrame(string frame);
         decimal CalculateSpecialFundableAmount(decimal standardAmount, string name, decimal income2021, decimal income2022);

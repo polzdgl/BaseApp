@@ -1,7 +1,6 @@
 ﻿using BaseApp.Data.SecurityExchange.Dtos;
 using BaseApp.Data.SecurityExchange.Models;
 using BaseApp.ServiceProvider.Company.Interfaces;
-using BaseApp.Shared.Validation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
@@ -13,14 +12,11 @@ namespace BaseApp.Server.Controllers
     {
         private readonly ILogger<CompanyController> _logger;
         private readonly ICompanyManager _companyManager;
-        private readonly InputValidation _inputValidation;
 
-        public CompanyController(ILogger<CompanyController> logger, ICompanyManager securityExchangeManager,
-            InputValidation inputValidation)
+        public CompanyController(ILogger<CompanyController> logger, ICompanyManager securityExchangeManager)
         {
             _logger = logger;
             _companyManager = securityExchangeManager;
-            _inputValidation = inputValidation;
         }
 
         [HttpPost("importMarketData", Name = "ImportMarketDataAsync")]
@@ -108,7 +104,7 @@ namespace BaseApp.Server.Controllers
             {
                 _logger.LogInformation("Getting Company data: {name}", startsWith.IsNullOrEmpty() ? "for All" : $"starts with: {startsWith}");
 
-                List<FundableCompanyDto> companies = await _companyManager.GetCompanies(startsWith);
+                List<FundableCompanyDto> companies = await _companyManager.GetCompaniesAsync(startsWith);
                 return Ok(companies);
             }
             catch (Exception ex)

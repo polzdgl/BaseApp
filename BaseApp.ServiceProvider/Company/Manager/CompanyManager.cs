@@ -127,7 +127,7 @@ namespace BaseApp.ServiceProvider.Company.Manager
         }
 
         // Get Fundable Companies
-        public async Task<List<FundableCompanyDto>> GetCompanies(string? startsWith = null)
+        public async Task<List<FundableCompanyDto>> GetCompaniesAsync(string? startsWith = null)
         {
             var fundableCompanies = new List<FundableCompanyDto>();
 
