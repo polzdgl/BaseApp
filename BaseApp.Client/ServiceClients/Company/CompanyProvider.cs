@@ -15,11 +15,13 @@ namespace BaseApp.Client.ServiceClients.Company
             this.httpClient = httpClient;
         }
 
-        public async Task<IEnumerable<FundableCompanyDto>> GetCompaniesAsync(CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<FundableCompanyDto>> GetCompaniesAsync(string nameFilter = null, CancellationToken cancellationToken = default)
         {
             try
             {
-                var response = await httpClient.GetFromJsonAsync<IEnumerable<FundableCompanyDto>>($"/api/company/companies", cancellationToken);
+                string queryString = string.IsNullOrWhiteSpace(nameFilter) ? "" : $"?startsWith={Uri.EscapeDataString(nameFilter)}";
+
+                var response = await httpClient.GetFromJsonAsync<IEnumerable<FundableCompanyDto>>($"/api/company/companies{queryString}", cancellationToken);
 
                 return response ?? Enumerable.Empty<FundableCompanyDto>();
             }

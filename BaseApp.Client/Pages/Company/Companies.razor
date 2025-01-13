@@ -25,8 +25,8 @@
 else
 {
     <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true" AllowAlternatingRows="false"
-                    FilterMode="FilterMode.Advanced" AllowSorting="false"
-                    Data="@fundableCompanies" LogicalFilterOperator="LogicalFilterOperator.And"
+                    FilterMode="FilterMode.Simple" AllowSorting="true"
+                    Data="@fundableCompanies" FilterCaseSensitivity=FilterCaseSensitivity.CaseInsensitive LogicalFilterOperator=LogicalFilterOperator.And
                     TItem="FundableCompanyDto" LoadData="GetFundableCompaniesAsync" SelectionMode="DataGridSelectionMode.Single">
         <Columns>
             <RadzenDataGridColumn TItem="FundableCompanyDto" Property="@nameof(FundableCompanyDto.Id)" Filterable="false" Title="CIK" Frozen="true" Width="80px" TextAlign="TextAlign.Center" />

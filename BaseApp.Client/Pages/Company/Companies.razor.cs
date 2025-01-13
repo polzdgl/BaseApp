@@ -49,7 +49,9 @@ namespace BaseApp.Client.Pages.Company
             try
             {
                 IsLoading = true;
-                fundableCompanies = await CompanyProvider.GetCompaniesAsync();
+
+                string nameFilter = args.Filters?.FirstOrDefault()?.FilterValue.ToString() ?? null;
+                fundableCompanies = await CompanyProvider.GetCompaniesAsync(nameFilter);
             }
             catch (Exception ex)
             {
