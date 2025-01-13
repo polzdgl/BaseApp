@@ -4,6 +4,7 @@ using BaseApp.Server.AppStart;
 using BaseApp.Server.Components;
 using BaseApp.Server.Middleware;
 using BaseApp.Server.Settings;
+using BaseApp.ServiceProvider.Company.Porvider;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -84,7 +85,9 @@ builder.Services.AddRadzenCookieThemeService(options =>
     options.Name = "BaseAppTheme";
     options.Duration = TimeSpan.FromDays(365);
 });
-builder.Services.AddHttpClient();
+
+// Add HttpClient with StandardResilency
+builder.Services.AddHttpClient<SecurityExchangeProvider>().AddStandardResilienceHandler();
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
