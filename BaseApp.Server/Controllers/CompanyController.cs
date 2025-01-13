@@ -1,4 +1,5 @@
 ﻿using BaseApp.Data.SecurityExchange.Dtos;
+using BaseApp.Data.SecurityExchange.Models;
 using BaseApp.ServiceProvider.Company.Interfaces;
 using BaseApp.Shared.Validation;
 using Microsoft.AspNetCore.Mvc;
@@ -32,7 +33,13 @@ namespace BaseApp.Server.Controllers
                 _logger.LogInformation("Starting import of market data from SEC API...");
 
                 // Call the manager to perform the import
-                await _companyManager.ImportMarketDataAsync();
+                CikImportResult result = await _companyManager.ImportMarketDataAsync();
+
+                if (result.FailedCiks.Any())
+                {
+                    _logger.LogInformation("Market data imported partially.");
+                    return StatusCode(StatusCodes.Status207MultiStatus, result);
+                }
 
                 _logger.LogInformation("Market data imported successfully.");
                 return Ok(new { Message = "Market data imported successfully." });
@@ -66,6 +73,7 @@ namespace BaseApp.Server.Controllers
 
         [HttpPost("import", Name = "ImportCompnanyDataAsync")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status207MultiStatus)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> ImportCompaniesInfoAsync([FromQuery] IEnumerable<string> ciks)
         {
@@ -73,7 +81,15 @@ namespace BaseApp.Server.Controllers
             {
                 _logger.LogInformation("Importing Company data for CIKs: {ciks}", string.Concat(',', ciks));
 
-                await _companyManager.ImportCompnanyDataAsync(ciks);
+                var result = await _companyManager.ImportCompnanyDataAsync(ciks);
+
+                if (result.FailedCiks.Any())
+                {
+                    _logger.LogInformation("CIKs data imported partially.");
+                    return StatusCode(StatusCodes.Status207MultiStatus, result);
+                }
+
+                _logger.LogInformation("CIKs data imported successfully.");
                 return Ok(new { Message = "CIKs data imported successfully." });
             }
             catch (Exception ex)

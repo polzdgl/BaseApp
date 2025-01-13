@@ -5,8 +5,8 @@ namespace BaseApp.ServiceProvider.Company.Interfaces
 {
     public interface ICompanyManager
     {
-        Task ImportMarketDataAsync();
-        Task ImportCompnanyDataAsync(IEnumerable<string> ciks);
+        Task<CikImportResult> ImportMarketDataAsync();
+        Task<CikImportResult> ImportCompnanyDataAsync(IEnumerable<string> ciks);
         Task<List<FundableCompanyDto>> GetCompanies(string? startsWith = null);
         decimal CalculateStandardFundableAmount(IEnumerable<InfoFactUsGaapIncomeLossUnitsUsd> incomeData);
         int GetYearFromFrame(string frame);

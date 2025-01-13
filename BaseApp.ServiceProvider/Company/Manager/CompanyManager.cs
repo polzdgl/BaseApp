@@ -36,21 +36,28 @@ namespace BaseApp.ServiceProvider.Company.Manager
         }
 
         // Import Initial Market Data from SEC API with given CIKs
-        public async Task ImportMarketDataAsync()
+        public async Task<CikImportResult> ImportMarketDataAsync()
         {
             // Get all CIKs to import data for
             IEnumerable<string> ciksToImport = this.Repository.EdgarCompanyInfoRepository.GetCiksToImport();
 
             // Get all CIKs from the SEC API and save to database
-            await this.ImportCompnanyDataAsync(ciksToImport);
+            CikImportResult cikImportResult = await this.ImportCompnanyDataAsync(ciksToImport);
 
-            // Create Market Data Load Status
-            await this.CreateMarketDataLoadRecord();
+            // If any CIKs were successfully imported, create Market Data Load Status
+            if (cikImportResult.SucceededCiks.Any())
+            {
+                // Create Market Data Load Status
+                await this.CreateMarketDataLoadRecord();
+            }
+
+            return cikImportResult;
         }
 
         // Import Company Data from SEC API with given CIKs
-        public async Task ImportCompnanyDataAsync(IEnumerable<string> ciks)
+        public async Task<CikImportResult> ImportCompnanyDataAsync(IEnumerable<string> ciks)
         {
+            CikImportResult cikImportResult = new CikImportResult();
             List<EdgarCompanyInfo> companies = new List<EdgarCompanyInfo>();
 
             // Format to make all ciks 10 digits
@@ -92,17 +99,31 @@ namespace BaseApp.ServiceProvider.Company.Manager
                         }
                     };
                     companies.Add(company);
+                    cikImportResult.SucceededCiks.Add(cik);
                 }
                 catch (Exception ex)
                 {
                     // Log error and continue with next CIK
                     _logger.LogError(ex, $"Failed to retrieve company information for CIK ID: {cik}");
+                    cikImportResult.FailedCiks.Add(cik);
                     continue;
                 }
             }
 
             // Save to database
             await Repository.EdgarCompanyInfoRepository.CreateAllAsync(companies);
+
+            // If some failed, we can set a different message
+            if (cikImportResult.FailedCiks.Any())
+            {
+                cikImportResult.Message = "Import completed with some failures.";
+            }
+            else
+            {
+                cikImportResult.Message = "All CIKs imported successfully.";
+            }
+
+            return cikImportResult;
         }
 
         // Get Fundable Companies
@@ -206,7 +227,7 @@ namespace BaseApp.ServiceProvider.Company.Manager
         // Create Market Data Load Record
         public async Task CreateMarketDataLoadRecord()
         {
-            _logger.LogInformation("Market Data Load.");
+            _logger.LogInformation("Create Market Data Load.");
 
             // Create Market Data Load Status in the database
             await Repository.Context.AddAsync(new MarketDataLoadRecord
