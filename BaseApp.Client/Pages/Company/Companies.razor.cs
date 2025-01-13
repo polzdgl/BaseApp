@@ -12,10 +12,12 @@ namespace BaseApp.Client.Pages.Company
         [Inject] protected NotificationService NotificationService { get; set; } = default!;
         [Inject] private ICompanyProvider CompanyProvider { get; set; } = default!;
 
-        private IEnumerable<FundableCompanyDto>? fundableCompanies = new List<FundableCompanyDto>();
         private bool IsLoading = true;
         private bool IsMarketDataLoaded = false;
         RadzenDataGrid<FundableCompanyDto> grid;
+
+        private IEnumerable<FundableCompanyDto> fundableCompanies = new List<FundableCompanyDto>();
+
 
         protected override async Task OnInitializedAsync()
         {
@@ -24,11 +26,12 @@ namespace BaseApp.Client.Pages.Company
 
             if (IsMarketDataLoaded)
             {
-                // If Market Data is loaded, get Fundable Companies
-                await GetFundableCompaniesAsync(new LoadDataArgs { });
+                // If Market Data is loaded, data is available, get Company lists
+                await GetFundableCompaniesAsync();
             }
         }
 
+        // Check if Data is Imported from the SEC EgdarConpany API, and update the status for IsMarketDataLoaded
         private async Task CheckMarketDataLoadStatus()
         {
             try
@@ -46,18 +49,21 @@ namespace BaseApp.Client.Pages.Company
             }
         }
 
-        private async Task GetFundableCompaniesAsync(LoadDataArgs args)
+        // Get Companies from the Backend API/Database
+        // LoadDataArgs is used to pass filters and other parameters to the API
+        // Filtering is handled by the BackendApi 
+        private async Task GetFundableCompaniesAsync(LoadDataArgs args = null)
         {
             try
             {
                 IsLoading = true;
 
                 // Extract the filter value for "Name"
-                string? nameFilter = args.Filters?
+                string nameFilter = args?.Filters?
                     .FirstOrDefault(f => f.Property == nameof(FundableCompanyDto.Name))?
                     .FilterValue?.ToString();
 
-                // Call the provider with the filter value
+                // Call the API provider with the filter value
                 fundableCompanies = await CompanyProvider.GetCompaniesAsync(nameFilter);
             }
             catch (Exception ex)
@@ -70,6 +76,7 @@ namespace BaseApp.Client.Pages.Company
             }
         }
 
+        // Import Companies and their Market Data from the SEC EdgarCompany API and persist in the database
         private async Task ImportMarketData()
         {
             try
@@ -99,6 +106,8 @@ namespace BaseApp.Client.Pages.Company
             }
         }
 
+
+        // Clear all filters and reload all data.
         private async Task ClearFilters()
         {
             try
@@ -113,6 +122,7 @@ namespace BaseApp.Client.Pages.Company
             }
         }
 
+        // Show a notification message
         private void ShowNotification(string summary, string detail, NotificationSeverity severity)
         {
             NotificationService.Notify(new NotificationMessage

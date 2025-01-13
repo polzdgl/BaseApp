@@ -11,6 +11,8 @@ namespace BaseApp.Client.Pages.User
 
 
         private List<Theme> FilteredThemes;
+
+        // List of themes are allowed to be selected, and available/free from the Razden ThemeService
         private List<string> AllowedThemes = new List<string> 
         {
             "material", "material-dark", 

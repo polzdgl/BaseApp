@@ -9,6 +9,7 @@ BaseApp is a web application built using a Blazor Web Assembly and an ASP.NET We
 ## Features
 
 - **User Management**: Add new User (without Identity Registration), retrieve, and manage user data.
+- **Import SEC Company Data**: Import data based on Ids, retrieve on UI and calculate Funding Amount.
 - **User Authentication**: Register and Login to Authenticate users using ASP.Net Identity Provider 
 - **Data Validation**: Includes custom validation logic for phone numbers, email addresses, and dates of birth.
 - **Logging**: Integrated with Serilog for structured and detailed logging.

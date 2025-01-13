@@ -23,6 +23,7 @@ namespace BaseApp.Client.Pages.User
             await LoadUserAsync();
         }
 
+        // Load User data by Id from the Backend API
         private async Task LoadUserAsync()
         {
             if (string.IsNullOrEmpty(Id))
@@ -46,6 +47,7 @@ namespace BaseApp.Client.Pages.User
             }
         }
 
+        // Save User data by calling the Backend API
         private async Task SaveUserAsync()
         {
             try
@@ -82,6 +84,7 @@ namespace BaseApp.Client.Pages.User
             }
         }
 
+        // Map UserDto to UserProfileDto for the API request
         private static UserProfileDto MapToRequestDto(UserDto user)
         {
             return new UserProfileDto
@@ -95,6 +98,7 @@ namespace BaseApp.Client.Pages.User
             };
         }
 
+        // Show a notification message
         private void ShowNotification(string summary, string detail, NotificationSeverity severity)
         {
             NotificationService.Notify(new NotificationMessage

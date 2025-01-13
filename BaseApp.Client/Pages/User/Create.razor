@@ -9,7 +9,9 @@
         <RadzenText TextStyle="TextStyle.Subtitle1" Class="rz-mb-3">Enter User Information</RadzenText>
         @if (IsLoading)
         {
-            <RadzenProgressBar Mode="ProgressBarMode.Indeterminate" Style="width: 100%;" />
+            <RadzenStack AlignItems="AlignItems.Center" class="rz-m-12" Gap="2rem">
+                <RadzenProgressBarCircular Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" />
+            </RadzenStack>
         }
         else
         {

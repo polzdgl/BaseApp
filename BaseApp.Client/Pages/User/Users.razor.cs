@@ -9,12 +9,6 @@ namespace BaseApp.Client.Pages.User
 {
     public partial class Users : ComponentBase
     {
-        // Other Services available from Radzen Components
-        //[Inject] protected IJSRuntime JSRuntime { get; set; }
-        //[Inject] protected DialogService DialogService { get; set; }
-        //[Inject] protected TooltipService TooltipService { get; set; }
-        //[Inject] protected ContextMenuService ContextMenuService { get; set; }
-
         [Inject] protected NavigationManager NavigationManager { get; set; } = default!;
 
         [Inject] protected NotificationService NotificationService { get; set; } = default!;
@@ -36,6 +30,9 @@ namespace BaseApp.Client.Pages.User
             await GetUserList(new LoadDataArgs { Skip = 0, Top = PageSize });
         }
 
+
+        // Gets the list of Users from the Backend api.
+        // This method uses severside paging
         private async Task GetUserList(LoadDataArgs args)
         {
                 try
@@ -63,6 +60,8 @@ namespace BaseApp.Client.Pages.User
             }
         }
 
+        // This method is called when the user clicks on the delete button
+        // This method shows a confirmation popup before deleting the user
         private void ShowDeletePopup(string userId, string userName)
         {
             SelectedUserId = userId;
@@ -70,6 +69,7 @@ namespace BaseApp.Client.Pages.User
             DeleteConfirmationPopup.OpenPopup();
         }
 
+        // This method is called when the user confirms the deletion
         private async Task DeleteUser()
         {
             try
@@ -93,26 +93,32 @@ namespace BaseApp.Client.Pages.User
             }
         }
 
+        // This method is called when the user clicks on the edit button
         private void NavigateToEdit(string userId)
         {
             NavigationManager.NavigateTo($"/user/edit/{userId}");
         }
 
+        // This method is called when the user clicks on the create button
         private void NavigateToCreateUser()
         {
             NavigationManager.NavigateTo("/user/create");
         }
 
+        // This method is called when the user navigates to the Users page 
+        // Refresh the user list
         private async Task RefreshUserList()
         {
             await GetUserList(new LoadDataArgs { Skip = 0, Top = PageSize });
         }
 
+        // This method is called when the user cancels the deletion
         private void HandleCancel()
         {
             SelectedUserId = string.Empty;
         }
 
+        // Show a notification message
         private void ShowNotification(string summary, string detail, NotificationSeverity severity)
         {
             NotificationService.Notify(new NotificationMessage

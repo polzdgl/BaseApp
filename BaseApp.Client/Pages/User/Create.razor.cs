@@ -21,6 +21,7 @@ namespace BaseApp.Client.Pages.User
             IsLoading = false;
         }
 
+        // This method is called when the form is submitted, and it creates a new user
         protected async Task CreateUserAsync()
         {
             try
@@ -51,6 +52,7 @@ namespace BaseApp.Client.Pages.User
             }
         }
 
+        // This method shows the notification message on the screen
         private void ShowNotification(string summary, string detail, NotificationSeverity severity)
         {
             NotificationService.Notify(new NotificationMessage
