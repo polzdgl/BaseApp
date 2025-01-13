@@ -1,11 +1,6 @@
 ﻿using BaseApp.Data.SecurityExchange.Models;
 using BaseApp.ServiceProvider.Company.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace BaseApp.ServiceProvider.Company.Porvider
 {
@@ -26,6 +21,7 @@ namespace BaseApp.ServiceProvider.Company.Porvider
             _httpClient.DefaultRequestHeaders.Accept.ParseAdd("*/*");
         }
 
+        // Get Company Info from SEC API
         public async Task<EdgarCompanyInfo> FetchEdgarCompanyInfoAsync(string cik)
         {
             // Build request url and make sure cik is 10 characters long

@@ -5,11 +5,11 @@ using System.Net.Http.Json;
 
 namespace BaseApp.Client.ServiceClients.User
 {
-    public class UserProvider : IUserProvider
+    public class UserClient : IUserClient
     {
         private readonly HttpClient _httpClient;
 
-        public UserProvider(HttpClient httpClient)
+        public UserClient(HttpClient httpClient)
         {
             this._httpClient = httpClient;
         }

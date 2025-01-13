@@ -65,7 +65,7 @@ namespace BaseApp.Server.Controllers
         }
 
         [HttpPost("import", Name = "ImportCompnanyDataAsync")]
-        [ProducesResponseType(typeof(List<FundableCompanyDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> ImportCompaniesInfoAsync([FromQuery] IEnumerable<string> ciks)
         {
@@ -74,7 +74,7 @@ namespace BaseApp.Server.Controllers
                 _logger.LogInformation("Importing Company data for CIKs: {ciks}", string.Concat(',', ciks));
 
                 await _companyManager.ImportCompnanyDataAsync(ciks);
-                return Ok();
+                return Ok(new { Message = "CIKs data imported successfully." });
             }
             catch (Exception ex)
             {

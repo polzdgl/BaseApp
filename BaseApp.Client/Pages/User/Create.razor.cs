@@ -10,7 +10,7 @@ namespace BaseApp.Client.Pages.User
     {
         [Inject] protected NotificationService NotificationService { get; set; } = default!;
         [Inject] protected NavigationManager NavigationManager { get; set; } = default!;
-        [Inject] private IUserProvider UserProvider { get; set; } = default!;
+        [Inject] private IUserClient UserClient { get; set; } = default!;
 
         private bool IsLoading = false;
         private bool IsSaving = false;
@@ -28,7 +28,7 @@ namespace BaseApp.Client.Pages.User
             {
                 IsSaving = true;
 
-                var response = await UserProvider.CreateUserAsync(UserProfileDto);
+                var response = await UserClient.CreateUserAsync(UserProfileDto);
 
                 if (response.IsSuccessStatusCode)
                 {

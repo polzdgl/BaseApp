@@ -3,7 +3,7 @@ using BaseApp.Shared.Dtos;
 
 namespace BaseApp.ServiceProvider.User.Interfaces
 {
-    public interface IUserProvider
+    public interface IUserClient
     {
         Task<PaginatedResult<UserDto>> GetUsersAsync(int page, int pageSize, CancellationToken cancellationToken = default);
         Task<UserDto> GetUserAsync(string id, CancellationToken cancellationToken = default);

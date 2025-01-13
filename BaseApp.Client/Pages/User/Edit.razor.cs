@@ -10,7 +10,7 @@ namespace BaseApp.Client.Pages.User
     {
         [Parameter] public string Id { get; set; } = string.Empty;
 
-        [Inject] private IUserProvider UserProvider { get; set; } = default!;
+        [Inject] private IUserClient UserClient { get; set; } = default!;
         [Inject] private NavigationManager NavigationManager { get; set; } = default!;
         [Inject] private NotificationService NotificationService { get; set; } = default!;
 
@@ -35,7 +35,7 @@ namespace BaseApp.Client.Pages.User
             try
             {
                 IsLoading = true;
-                User = await UserProvider.GetUserAsync(Id);
+                User = await UserClient.GetUserAsync(Id);
             }
             catch (Exception ex)
             {
@@ -61,7 +61,7 @@ namespace BaseApp.Client.Pages.User
                 }
 
                 var userRequest = MapToRequestDto(User);
-                var response = await UserProvider.EditUserAsync(Id, userRequest);
+                var response = await UserClient.EditUserAsync(Id, userRequest);
 
                 if (response.IsSuccessStatusCode)
                 {

@@ -48,6 +48,7 @@ namespace BaseApp.ServiceProvider.Company.Manager
             await this.CreateMarketDataLoadRecord();
         }
 
+        // Import Company Data from SEC API with given CIKs
         public async Task ImportCompnanyDataAsync(IEnumerable<string> ciks)
         {
             List<EdgarCompanyInfo> companies = new List<EdgarCompanyInfo>();
@@ -104,6 +105,7 @@ namespace BaseApp.ServiceProvider.Company.Manager
             await Repository.EdgarCompanyInfoRepository.CreateAllAsync(companies);
         }
 
+        // Get Fundable Companies
         public async Task<List<FundableCompanyDto>> GetCompanies(string? startsWith = null)
         {
             var fundableCompanies = new List<FundableCompanyDto>();
@@ -137,6 +139,7 @@ namespace BaseApp.ServiceProvider.Company.Manager
             return fundableCompanies.OrderBy(c => c.Name).ToList();
         }
 
+        // Calculate Standard Fundable Amount
         public decimal CalculateStandardFundableAmount(IEnumerable<InfoFactUsGaapIncomeLossUnitsUsd> incomeData)
         {
             try
@@ -180,6 +183,7 @@ namespace BaseApp.ServiceProvider.Company.Manager
             return match.Success ? int.Parse(match.Groups[1].Value) : 0;
         }
 
+        // Calculate Special Fundable Amount
         public decimal CalculateSpecialFundableAmount(decimal standardAmount, string name, decimal income2021, decimal income2022)
         {
             var specialAmount = standardAmount;
@@ -199,6 +203,7 @@ namespace BaseApp.ServiceProvider.Company.Manager
             return specialAmount;
         }
 
+        // Create Market Data Load Record
         public async Task CreateMarketDataLoadRecord()
         {
             _logger.LogInformation("Market Data Load.");
@@ -213,6 +218,7 @@ namespace BaseApp.ServiceProvider.Company.Manager
             await Repository.Context.SaveChangesAsync();
         }
 
+        // Check if Market Data is loaded
         public async Task<bool> IsMarketDataLoadedAsync()
         {
             return await Repository.Context.MarketDataLoadRecord.AnyAsync();

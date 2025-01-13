@@ -11,12 +11,12 @@ namespace BaseApp.Tests.UI.Tests.User
 {
     public class UsersComponentTests : TestContext
     {
-        private readonly IUserProvider _mockApiClient;
+        private readonly IUserClient _mockApiClient;
 
         public UsersComponentTests()
         {
             // Mock API client and register it in the test services
-            _mockApiClient = Substitute.For<IUserProvider>();
+            _mockApiClient = Substitute.For<IUserClient>();
             Services.AddSingleton(_mockApiClient);
 
             // Configure JSInterop to avoid unhandled invocation exceptions

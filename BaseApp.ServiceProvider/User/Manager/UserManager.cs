@@ -33,6 +33,7 @@ namespace BaseApp.ServiceProvider.User.Manager
             }
         }
 
+        // Get Users with Pagination
         public async Task<PaginatedResult<UserDto>> GetUsersAsync(int page, int pageSize)
         {
             _logger.LogInformation($"Getting Users for page {page} with page size {pageSize}");
@@ -60,6 +61,7 @@ namespace BaseApp.ServiceProvider.User.Manager
             };
         }
 
+        // Get User by Id
         public async Task<UserDto> GetUserAsync(string id)
         {
             _logger.LogInformation("Getting User with Id: {id}", id);
@@ -75,6 +77,7 @@ namespace BaseApp.ServiceProvider.User.Manager
             return UserDto.FromModel(user);
         }
 
+        // Update User
         public async Task<bool> UpdateUserAsync(string id, UserProfileDto userProfileDto)
         {
             var user = await Repository.UserRepository.GetUserAsync(id);
@@ -112,6 +115,7 @@ namespace BaseApp.ServiceProvider.User.Manager
             return await Repository.UserRepository.UpdateAsync(user);
         }
 
+        // Create User (without new user registration)
         public async Task<bool> CreateUserAsync(UserProfileDto userProfileDto)
         {
             // Check if UserName already exists
@@ -131,6 +135,7 @@ namespace BaseApp.ServiceProvider.User.Manager
             return await Repository.UserRepository.CreateAsync(ApplicationUser.FromDto(userProfileDto));
         }
 
+        // Delete User
         public async Task<bool> DeleteUserAsync(string id)
         {
             _logger.LogInformation("Deleting User with Id: {id}", id);

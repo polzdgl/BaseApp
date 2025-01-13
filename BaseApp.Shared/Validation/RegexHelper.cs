@@ -2,6 +2,7 @@
 
 namespace BaseApp.Shared.Validation
 {
+    // Helper class to validate strings using regular expressions
     public static class RegexHelper
     {
         public const string Alpha = @"^[a-zA-Z]+$";

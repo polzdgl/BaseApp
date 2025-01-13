@@ -18,7 +18,7 @@ namespace BaseApp.Client.AppStart
             services.AddSingleton<InputValidation>();
 
             // Add User Api Client
-            services.AddScoped<IUserProvider, UserProvider>();
+            services.AddScoped<IUserClient, UserClient>();
 
             // Add Auth Api Client
             services.AddScoped<IAuthClient, AuthClient>();

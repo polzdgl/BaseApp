@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.Text.RegularExpressions;
 
 namespace BaseApp.Shared.Validation
 {
+    // Helper class to validate input data
     public class InputValidation
     {
         // Validate a model using Data Annotations
