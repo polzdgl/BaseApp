@@ -134,7 +134,7 @@ namespace BaseApp.ServiceProvider.Company.Manager
                 }
             }
 
-            return fundableCompanies;
+            return fundableCompanies.OrderBy(c => c.Name).ToList();
         }
 
         public decimal CalculateStandardFundableAmount(IEnumerable<InfoFactUsGaapIncomeLossUnitsUsd> incomeData)

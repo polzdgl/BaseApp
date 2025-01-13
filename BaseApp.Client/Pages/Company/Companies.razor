@@ -24,21 +24,24 @@
 }
 else
 {
-    <RadzenButton Text="Clear Filters" ButtonStyle="ButtonStyle.Info" Click="ClearFilters" />
-    <br />
-    <br />
     <RadzenDataGrid @ref="grid" AllowFiltering="true" AllowColumnResize="true"
-                    FilterMode="FilterMode.Simple"
-                    AllowSorting="true" Data="@fundableCompanies" ColumnWidth="300px"
+                    FilterMode="FilterMode.Simple" AllowSorting="false"
+                    Data="@fundableCompanies" ColumnWidth="300px"
                     FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
                     LogicalFilterOperator="LogicalFilterOperator.And"
                     LoadData="GetFundableCompaniesAsync">
         <Columns>
             <RadzenDataGridColumn TItem="FundableCompanyDto" Property="Id" Filterable="false" Title="CIK" Frozen="true" Width="80px" TextAlign="TextAlign.Center" />
-            <RadzenDataGridColumn TItem="FundableCompanyDto" Property="Name" Title="Name" Filterable="true" FilterOperator="FilterOperator.Contains" Width="200px" />
+            <RadzenDataGridColumn TItem="FundableCompanyDto" Property="Name" Title="Name" Filterable="true" FilterOperator="FilterOperator.Contains" Width="300px">
+                <HeaderTemplate>
+                    <div style="display: flex; align-items: center; gap: 30px;">
+                        <span>Name</span>
+                        <RadzenButton Text="Clear Filters" ButtonStyle="ButtonStyle.Info" Click="ClearFilters" Size="ButtonSize.Small" />
+                    </div>
+                </HeaderTemplate>
+            </RadzenDataGridColumn>
             <RadzenDataGridColumn TItem="FundableCompanyDto" Property="StandardFundableAmount" Filterable="false" Title="Standard Fundable Amount" Width="160px" />
             <RadzenDataGridColumn TItem="FundableCompanyDto" Property="SpecialFundableAmount" Filterable="false" Title="Special Fundable Amount" Width="160px" />
         </Columns>
     </RadzenDataGrid>
-
 }
