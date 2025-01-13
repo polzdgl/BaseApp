@@ -2,6 +2,7 @@
 using BaseApp.Data.Repositories;
 using BaseApp.Data.SecurityExchange.Interfaces;
 using BaseApp.Data.SecurityExchange.Models;
+using BaseApp.Shared.Enums.Compnay;
 using Microsoft.EntityFrameworkCore;
 
 namespace BaseApp.Data.SecurityExchange.Repository
@@ -17,7 +18,8 @@ namespace BaseApp.Data.SecurityExchange.Repository
         // Get all CIKs that need to be imported, and format them to be 10 characters long
         public async Task<IEnumerable<string>> GetAllCikIds()
         {
-            return await this.GetAll().Select(x => x.Cik.ToString().Trim().PadLeft(10, '0')).ToListAsync();
+            return await this.GetAll().Select(x => x.Cik.ToString().Trim()
+            .PadLeft((int)CikPaddingEnum.PaddingNumber, (char)CikPaddingEnum.PaddingValue)).ToListAsync();
         }
 
         // Get all companies with details by loading navigation properties

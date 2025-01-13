@@ -3,6 +3,9 @@ using BaseApp.Data.Repositories.Interfaces;
 using BaseApp.Data.SecurityExchange.Dtos;
 using BaseApp.Data.SecurityExchange.Models;
 using BaseApp.ServiceProvider.Company.Interfaces;
+using BaseApp.Shared.Const;
+using BaseApp.Shared.Enums.Compnay;
+using BaseApp.Shared.Extentions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -21,6 +24,16 @@ namespace BaseApp.ServiceProvider.Company.Manager
             _securityExchangeProvider = securityExchangeProvider;
             _logger = logger;
         }
+
+        // Target years for calculating the standard fundable amount
+        private readonly HashSet<int> TargetYears = new HashSet<int> 
+        { 
+            (int)RequiredYear.Y2018, 
+            (int)RequiredYear.Y2019, 
+            (int)RequiredYear.Y2020, 
+            (int)RequiredYear.Y2021, 
+            (int)RequiredYear.Y2022 
+        };
 
         public IRepositoryFactory Repository
         {
@@ -61,7 +74,7 @@ namespace BaseApp.ServiceProvider.Company.Manager
             List<EdgarCompanyInfo> companies = new List<EdgarCompanyInfo>();
 
             // Format to make all ciks 10 digits
-            ciks = ciks.Select(cik => cik.Trim().PadLeft(10, '0')).Distinct();
+            ciks = ciks.Select(cik => cik.Trim().PadLeft((int)CikPaddingEnum.PaddingNumber, (char)CikPaddingEnum.PaddingValue)).Distinct();
 
             // Get CIKs that dont exist in the database
             var existingCiks = await Repository.EdgarCompanyInfoRepository.GetAllCikIds();
@@ -91,7 +104,8 @@ namespace BaseApp.ServiceProvider.Company.Manager
                                     {
                                         InfoFactUsGaapIncomeLossUnitsUsd = data.InfoFact?.InfoFactUsGaap?.InfoFactUsGaapNetIncomeLoss?
                                         .InfoFactUsGaapIncomeLossUnits?.InfoFactUsGaapIncomeLossUnitsUsd?
-                                        .Where(usd => usd.Form == "10-K" && (usd.Frame?.StartsWith("CY") ?? false))
+                                        .Where(usd => usd.Form == FormEnum.Form10K.GetDescription() 
+                                        && (usd.Frame?.StartsWith(FrameEnum.YearlyInfo.GetDescription()) ?? false))
                                         .ToArray() ?? Array.Empty<InfoFactUsGaapIncomeLossUnitsUsd>()
                                     }
                                 }
@@ -142,10 +156,10 @@ namespace BaseApp.ServiceProvider.Company.Manager
 
                     var standardAmount = this.CalculateStandardFundableAmount(incomeDataList);
 
-                    var income2021 = incomeDataList.FirstOrDefault(d => d.Frame == "CY2021")?.Val ?? 0;
-                    var income2022 = incomeDataList.FirstOrDefault(d => d.Frame == "CY2022")?.Val ?? 0;
+                    var income2021 = incomeDataList.FirstOrDefault(d => d.Frame == FrameEnum.Year2021.GetDescription())?.Val ?? (int)FundableAmountEnum.StandardFundableAmount;
+                    var income2022 = incomeDataList.FirstOrDefault(d => d.Frame == FrameEnum.Year2022.GetDescription())?.Val ?? (int)FundableAmountEnum.StandardFundableAmount;
 
-                    var specialAmount = this.CalculateSpecialFundableAmount(standardAmount, company?.EntityName ?? "Unknown", income2021, income2022);
+                    var specialAmount = this.CalculateSpecialFundableAmount(standardAmount, company?.EntityName ?? "", income2021, income2022);
 
                     fundableCompanies.Add(new FundableCompanyDto
                     {
@@ -165,29 +179,36 @@ namespace BaseApp.ServiceProvider.Company.Manager
         {
             try
             {
-                var targetYears = new[] { 2018, 2019, 2020, 2021, 2022 };
-
-                // Filter for yearly data only (e.g., "CY2018", not "CY2018Q1")
+                // Filter for yearly data only
                 var yearlyData = incomeData
-                    .Where(usd => targetYears.Contains(GetYearFromFrame(usd.Frame)))
-                    .GroupBy(usd => GetYearFromFrame(usd.Frame)) // Ensure only one entry per year
-                    .Select(g => g.FirstOrDefault()) // Pick the first entry for the year
+                    .Where(usd => TargetYears.Contains(GetYearFromFrame(usd.Frame)))
+                    .GroupBy(usd => GetYearFromFrame(usd.Frame)) // only one entry per year
+                    .Select(g => g.FirstOrDefault()) // pick the first entry for the year
                     .ToList();
 
                 // Check if we have data for all required years
-                if (yearlyData.Count != targetYears.Length) return 0;
+                if (yearlyData.Count != TargetYears.Count)
+                {
+                    // Return Standard Fundable Amount
+                    return (int)FundableAmountEnum.StandardFundableAmount;
+                };
 
-                // Ensure positive income for specific years
-                if (!yearlyData.Any(d => d.Frame.StartsWith("CY2021") && d.Val > 0) ||
-                    !yearlyData.Any(d => d.Frame.StartsWith("CY2022") && d.Val > 0)) return 0;
+                // Check if income is positive for specific years
+                if (!yearlyData.Any(d => d.Frame.StartsWith(FrameEnum.Year2021.GetDescription()) && d.Val > (int)IncomeEnum.PositiveIncome) ||
+                    !yearlyData.Any(d => d.Frame.StartsWith(FrameEnum.Year2022.GetDescription()) && d.Val > (int)IncomeEnum.PositiveIncome))
+                {
+                    return (int)FundableAmountEnum.StandardFundableAmount;
+                }
 
                 // Calculate highest income
                 var highestIncome = yearlyData.Max(d => d.Val);
 
                 // Apply different rates based on income threshold
-                return highestIncome >= 10_000_000_000
-                    ? highestIncome * 0.1233m
-                    : highestIncome * 0.2151m;
+                decimal rate = highestIncome >= FundingRateConst.TenBillionThreshold? 
+                    FundingRateConst.LargeIncomeMultiplier : 
+                    FundingRateConst.SmallerIncomeMultiplier;
+
+                return highestIncome * rate;
             }
             catch (Exception ex)
             {
@@ -199,7 +220,7 @@ namespace BaseApp.ServiceProvider.Company.Manager
         // Helper method to extract the year from the frame
         public int GetYearFromFrame(string frame)
         {
-            // Extract numeric year from frame (e.g., "CY2018" or "CY2018Q1")
+            // Extract numeric year from frame
             var match = System.Text.RegularExpressions.Regex.Match(frame, @"CY(\d{4})");
             return match.Success ? int.Parse(match.Groups[1].Value) : 0;
         }
@@ -210,15 +231,15 @@ namespace BaseApp.ServiceProvider.Company.Manager
             var specialAmount = standardAmount;
 
             // Check if the name is not null or empty, and starts with a vowel
-            if (!string.IsNullOrEmpty(name) && "AEIOU".Contains(char.ToUpper(name[0])))
+            if (!string.IsNullOrEmpty(name) && CompanyNameEnum.Vowels.GetDescription().Contains(char.ToUpper(name[0])))
             {
-                specialAmount += standardAmount * 0.15m;
+                specialAmount += standardAmount * FundingRateConst.CompanyNameWithVowelMultiplier;
             }
 
             // Check if the 2022 income is less than the 2021 income
             if (income2022 < income2021)
             {
-                specialAmount -= standardAmount * 0.25m;
+                specialAmount += standardAmount * FundingRateConst.CompanyNameWithDecreasingIncomeMultiplier;
             }
 
             return specialAmount;

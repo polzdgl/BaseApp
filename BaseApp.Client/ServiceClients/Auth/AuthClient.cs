@@ -1,7 +1,7 @@
 ﻿using BaseApp.Data.User.Dtos;
 using BaseApp.ServiceClients.Auth;
 using BaseApp.ServiceProvider.Auth.Interfaces;
-using BaseApp.Shared.Validation;
+using BaseApp.Shared.Validations;
 using Microsoft.AspNetCore.Components.Authorization;
 using System.Net.Http.Json;
 

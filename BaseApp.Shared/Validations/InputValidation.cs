@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace BaseApp.Shared.Validation
+namespace BaseApp.Shared.Validations
 {
     // Helper class to validate input data
     public class InputValidation

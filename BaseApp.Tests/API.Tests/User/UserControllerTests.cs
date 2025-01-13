@@ -3,7 +3,7 @@ using BaseApp.Data.User.Models;
 using BaseApp.Server.Controllers;
 using BaseApp.ServiceProvider.User.Interfaces;
 using BaseApp.Shared.Dtos;
-using BaseApp.Shared.Validation;
+using BaseApp.Shared.Validations;
 using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Http;

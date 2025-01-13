@@ -1,5 +1,6 @@
 ﻿using BaseApp.Data.SecurityExchange.Models;
 using BaseApp.ServiceProvider.Company.Interfaces;
+using BaseApp.Shared.Enums.Compnay;
 using System.Text.Json;
 
 namespace BaseApp.ServiceProvider.Company.Porvider
@@ -25,7 +26,7 @@ namespace BaseApp.ServiceProvider.Company.Porvider
         public async Task<EdgarCompanyInfo> FetchEdgarCompanyInfoAsync(string cik)
         {
             // Build request url and make sure cik is 10 characters long
-            var url = $"{BaseUrl}{cik.PadLeft(10, '0')}.json";
+            var url = $"{BaseUrl}{cik.PadLeft((int)CikPaddingEnum.PaddingNumber, (char)CikPaddingEnum.PaddingValue)}.json";
 
             var response = await _httpClient.GetAsync(url);
 

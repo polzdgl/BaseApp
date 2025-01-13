@@ -5,7 +5,7 @@ using BaseApp.ServiceClients.Auth;
 using BaseApp.ServiceProvider.Auth.Interfaces;
 using BaseApp.ServiceProvider.Company.Interfaces;
 using BaseApp.ServiceProvider.User.Interfaces;
-using BaseApp.Shared.Validation;
+using BaseApp.Shared.Validations;
 using Microsoft.AspNetCore.Components.Authorization;
 
 namespace BaseApp.Client.AppStart

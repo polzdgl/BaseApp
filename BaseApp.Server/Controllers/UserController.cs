@@ -1,7 +1,7 @@
 ﻿using BaseApp.Data.User.Dtos;
 using BaseApp.ServiceProvider.User.Interfaces;
 using BaseApp.Shared.Dtos;
-using BaseApp.Shared.Validation;
+using BaseApp.Shared.Validations;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 

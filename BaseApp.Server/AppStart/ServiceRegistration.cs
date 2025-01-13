@@ -5,7 +5,7 @@ using BaseApp.ServiceProvider.Company.Manager;
 using BaseApp.ServiceProvider.Company.Porvider;
 using BaseApp.ServiceProvider.User.Interfaces;
 using BaseApp.ServiceProvider.User.Manager;
-using BaseApp.Shared.Validation;
+using BaseApp.Shared.Validations;
 using FluentValidation;
 
 namespace BaseApp.Server.AppStart

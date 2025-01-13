@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace BaseApp.Shared.Validation
+namespace BaseApp.Shared.Validations
 {
     // Helper class to validate strings using regular expressions
     public static class RegexHelper
