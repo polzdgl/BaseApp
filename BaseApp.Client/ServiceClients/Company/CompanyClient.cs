@@ -1,18 +1,15 @@
 ﻿using BaseApp.Data.SecurityExchange.Dtos;
-using BaseApp.Data.User.Dtos;
 using BaseApp.ServiceProvider.Company.Interfaces;
-using BaseApp.Shared.Dtos;
 using System.Net.Http.Json;
-using System.Threading;
 
 namespace BaseApp.Client.ServiceClients.Company
 {
-    public class CompanyProvider : ICompanyProvider
+    public class CompanyClient : ICompanyClient
     {
-        private readonly HttpClient httpClient;
-        public CompanyProvider(HttpClient httpClient)
+        private readonly HttpClient _httpClient;
+        public CompanyClient(HttpClient httpClient)
         {
-            this.httpClient = httpClient;
+            this._httpClient = httpClient;
         }
 
         public async Task<IEnumerable<FundableCompanyDto>> GetCompaniesAsync(string nameFilter = null, CancellationToken cancellationToken = default)
@@ -21,7 +18,7 @@ namespace BaseApp.Client.ServiceClients.Company
             {
                 string queryString = string.IsNullOrWhiteSpace(nameFilter) ? "" : $"?startsWith={Uri.EscapeDataString(nameFilter)}";
 
-                var response = await httpClient.GetFromJsonAsync<IEnumerable<FundableCompanyDto>>($"/api/company/companies{queryString}", cancellationToken);
+                var response = await _httpClient.GetFromJsonAsync<IEnumerable<FundableCompanyDto>>($"/api/company/companies{queryString}", cancellationToken);
 
                 return response ?? Enumerable.Empty<FundableCompanyDto>();
             }
@@ -35,7 +32,7 @@ namespace BaseApp.Client.ServiceClients.Company
         {
             try
             {
-                var response = await httpClient.PostAsync("/api/company/importMarketData", null, cancellationToken);
+                var response = await _httpClient.PostAsync("/api/company/importMarketData", null, cancellationToken);
 
                 if (!response.IsSuccessStatusCode)
                 {
@@ -53,7 +50,7 @@ namespace BaseApp.Client.ServiceClients.Company
         {
             try
             {
-                return await httpClient.GetFromJsonAsync<bool>($"/api/company/isMarketDataLoaded", cancellationToken);
+                return await _httpClient.GetFromJsonAsync<bool>($"/api/company/isMarketDataLoaded", cancellationToken);
             }
             catch (Exception ex)
             {

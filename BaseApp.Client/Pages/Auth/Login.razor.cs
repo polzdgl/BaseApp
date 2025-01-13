@@ -10,7 +10,7 @@ namespace BaseApp.Client.Pages.Auth
     {
         [Inject] protected NotificationService NotificationService { get; set; } = default!;
         [Inject] protected NavigationManager NavigationManager { get; set; } = default!;
-        [Inject] private IAuthProvider AuthProvider { get; set; } = default!;
+        [Inject] private IAuthClient AuthClient { get; set; } = default!;
 
         private bool IsLoading = false;
         private bool IsLoggingIn = false;
@@ -22,13 +22,14 @@ namespace BaseApp.Client.Pages.Auth
             IsLoading = false;
         }
 
+        // This method is called when the form is submitted, and it logs in the user
         protected async Task OnLoginAsync()
         {
             try
             {
                 IsLoggingIn = true;
 
-                var response = await AuthProvider.LoginAsync(UserLoginDto);
+                var response = await AuthClient.LoginAsync(UserLoginDto);
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -51,6 +52,7 @@ namespace BaseApp.Client.Pages.Auth
             }
         }
 
+        // This method shows the notification message on the screen
         private void ShowNotification(string summary, string detail, NotificationSeverity severity)
         {
             NotificationService.Notify(new NotificationMessage

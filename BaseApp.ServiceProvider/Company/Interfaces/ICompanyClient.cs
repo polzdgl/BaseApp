@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace BaseApp.ServiceProvider.Company.Interfaces
 {
-    public interface ICompanyProvider
+    public interface ICompanyClient
     {
         Task<IEnumerable<FundableCompanyDto>> GetCompaniesAsync(string? nameFilter, CancellationToken cancellationToken = default);
         Task ImportMarketDataAsync(CancellationToken cancellationToken = default);

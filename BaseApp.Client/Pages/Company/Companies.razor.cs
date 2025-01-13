@@ -10,7 +10,7 @@ namespace BaseApp.Client.Pages.Company
     {
         [Inject] protected NavigationManager NavigationManager { get; set; } = default!;
         [Inject] protected NotificationService NotificationService { get; set; } = default!;
-        [Inject] private ICompanyProvider CompanyProvider { get; set; } = default!;
+        [Inject] private ICompanyClient CompanyClient { get; set; } = default!;
 
         private bool IsLoading = true;
         private bool IsMarketDataLoaded = false;
@@ -37,7 +37,7 @@ namespace BaseApp.Client.Pages.Company
             try
             {
                 IsLoading = true;
-                IsMarketDataLoaded = await CompanyProvider.IsMarketDataLoaded();
+                IsMarketDataLoaded = await CompanyClient.IsMarketDataLoaded();
             }
             catch (Exception ex)
             {
@@ -64,7 +64,7 @@ namespace BaseApp.Client.Pages.Company
                     .FilterValue?.ToString();
 
                 // Call the API provider with the filter value
-                fundableCompanies = await CompanyProvider.GetCompaniesAsync(nameFilter);
+                fundableCompanies = await CompanyClient.GetCompaniesAsync(nameFilter);
             }
             catch (Exception ex)
             {
@@ -83,7 +83,7 @@ namespace BaseApp.Client.Pages.Company
             {
                 IsLoading = true;
 
-                await CompanyProvider.ImportMarketDataAsync();
+                await CompanyClient.ImportMarketDataAsync();
 
                 ShowNotification("Success", "Market data imported successfully.", NotificationSeverity.Success);
 

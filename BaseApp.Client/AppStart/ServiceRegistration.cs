@@ -21,10 +21,10 @@ namespace BaseApp.Client.AppStart
             services.AddScoped<IUserProvider, UserProvider>();
 
             // Add Auth Api Client
-            services.AddScoped<IAuthProvider, AuthProvider>();
+            services.AddScoped<IAuthClient, AuthClient>();
 
             // Add Company Api Client
-            services.AddScoped<ICompanyProvider, CompanyProvider>();
+            services.AddScoped<ICompanyClient, CompanyClient>();
 
             // Add Authentication State Provider
             services.AddScoped<AuthenticationStateProvider, AuthStateProvider>();

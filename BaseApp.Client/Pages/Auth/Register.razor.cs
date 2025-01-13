@@ -11,7 +11,7 @@ namespace BaseApp.Client.Pages.Auth
 
         [Inject] protected NotificationService NotificationService { get; set; } = default!;
         [Inject] protected NavigationManager NavigationManager { get; set; } = default!;
-        [Inject] private IAuthProvider AuthProvider { get; set; } = default!;
+        [Inject] private IAuthClient AuthClient { get; set; } = default!;
 
         private bool IsLoading = false;
         private bool IsSaving = false;
@@ -24,13 +24,14 @@ namespace BaseApp.Client.Pages.Auth
             IsLoading = false;
         }
 
+        // This method is called when the form is submitted, and it registers a new user
         protected async Task OnRegisterAsync()
         {
             try
             {
                 IsSaving = true;
 
-                var response = await AuthProvider.RegisterAsync(UserRegisterDto);
+                var response = await AuthClient.RegisterAsync(UserRegisterDto);
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -53,6 +54,7 @@ namespace BaseApp.Client.Pages.Auth
             }
         }
 
+        // This method shows the notification message on the screen
         private void ShowNotification(string summary, string detail, NotificationSeverity severity)
         {
             NotificationService.Notify(new NotificationMessage

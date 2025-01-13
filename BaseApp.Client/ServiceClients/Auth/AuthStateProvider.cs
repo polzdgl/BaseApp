@@ -15,6 +15,7 @@ namespace BaseApp.ServiceClients.Auth
             _httpClient = httpClient;
         }
 
+        // Get the current user's authentication state
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
             ClaimsIdentity identity;
@@ -69,7 +70,7 @@ namespace BaseApp.ServiceClients.Auth
             return new AuthenticationState(user);
         }
 
-
+        // Notify the AuthStateProvider that the user has been authenticated
         public void NotifyUserAuthentication()
         {
             NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());

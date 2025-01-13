@@ -7,24 +7,26 @@ using System.Net.Http.Json;
 
 namespace BaseApp.Client.ServiceClients.Auth
 {
-    public class AuthProvider : IAuthProvider
+    public class AuthClient : IAuthClient
     {
-        private readonly HttpClient httpClient;
-        private readonly InputValidation inputValidation;
-        private readonly AuthenticationStateProvider authenticationStateProvider;
+        private readonly HttpClient _httpClient;
+        private readonly InputValidation _inputValidation;
+        private readonly AuthenticationStateProvider _authenticationStateProvider;
 
-        public AuthProvider(HttpClient httpClient, InputValidation inputValidation, AuthenticationStateProvider authenticationStateProvider)
+        public AuthClient(HttpClient httpClient, InputValidation inputValidation, AuthenticationStateProvider authenticationStateProvider)
         {
-            this.httpClient = httpClient;
-            this.inputValidation = inputValidation;
-            this.authenticationStateProvider = authenticationStateProvider;
+            this._httpClient = httpClient;
+            this._inputValidation = inputValidation;
+            this._authenticationStateProvider = authenticationStateProvider;
         }
 
+        // Call the Register endpoint on the server to register a new user
         public async Task<HttpResponseMessage> RegisterAsync(UserRegisterDto userRegisterDto, CancellationToken cancellationToken = default)
         {
-            return await httpClient.PostAsJsonAsync($"/api/auth/register", userRegisterDto, cancellationToken);
+            return await _httpClient.PostAsJsonAsync($"/api/auth/register", userRegisterDto, cancellationToken);
         }
 
+        // Call the Login endpoint on the server to log in a user
         public async Task<HttpResponseMessage> LoginAsync(UserLoginDto userLoginDto, CancellationToken cancellationToken = default)
         {
             if (userLoginDto == null)
@@ -46,12 +48,12 @@ namespace BaseApp.Client.ServiceClients.Auth
             };
 
             // Make the POST request with the constructed URL and payload
-            var loginResult = await httpClient.PostAsJsonAsync($"/login{query}", payload, cancellationToken);
+            var loginResult = await _httpClient.PostAsJsonAsync($"/login{query}", payload, cancellationToken);
 
             if (loginResult.IsSuccessStatusCode)
             {
                 // Update AuthStateProvider with the new user state
-                var authProvider = (AuthStateProvider)authenticationStateProvider;
+                var authProvider = (AuthStateProvider)_authenticationStateProvider;
                 authProvider.NotifyUserAuthentication();
                 return loginResult;
             }
@@ -61,9 +63,10 @@ namespace BaseApp.Client.ServiceClients.Auth
             }
         }
 
+        // Todo: Implement the LogoutAsync method
         public async Task<HttpResponseMessage> LogoutAsync(CancellationToken cancellationToken = default)
         {
-            return await httpClient.PostAsync("api/auth/logout", null, cancellationToken);
+            return await _httpClient.PostAsync("api/auth/logout", null, cancellationToken);
         }
     }
 }

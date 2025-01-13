@@ -23,7 +23,9 @@
             <RadzenText TextStyle="TextStyle.H5" TagName="TagName.H2" class="rz-mb-6">Login</RadzenText>
             @if (IsLoading)
             {
-                <RadzenProgressBar Mode="ProgressBarMode.Indeterminate" Style="width: 100%;" />
+                <RadzenStack AlignItems="AlignItems.Center" class="rz-m-12" Gap="2rem">
+                    <RadzenProgressBarCircular Value="100" ShowValue="false" Mode="ProgressBarMode.Indeterminate" />
+                </RadzenStack>
             }
             else
             {
