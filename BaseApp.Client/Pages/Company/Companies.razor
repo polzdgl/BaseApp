@@ -10,14 +10,29 @@
     </RadzenColumn>
 </RadzenRow>
 
-<RadzenDataGrid AllowFiltering="true" AllowColumnResize="true" AllowAlternatingRows="false"
-                FilterMode="FilterMode.Advanced" AllowSorting="false"
-                Data="@fundableCompanies" LogicalFilterOperator="LogicalFilterOperator.And"
-                TItem="FundableCompanyDto" LoadData="GetFundableCompaniesAsync" SelectionMode="DataGridSelectionMode.Single">
-    <Columns>
-        <RadzenDataGridColumn TItem="FundableCompanyDto" Property="@nameof(FundableCompanyDto.Id)" Filterable="false" Title="CIK" Frozen="true" Width="80px" TextAlign="TextAlign.Center" />
-        <RadzenDataGridColumn TItem="FundableCompanyDto" Property="@nameof(FundableCompanyDto.Name)" Title="Name" Filterable="true" Frozen="true" Width="160px" />
-        <RadzenDataGridColumn TItem="FundableCompanyDto" Property="@nameof(FundableCompanyDto.StandardFundableAmount)" Filterable="false" Title="Standard Fundable Amount" Width="160px" />
-        <RadzenDataGridColumn TItem="FundableCompanyDto" Property="@nameof(FundableCompanyDto.SpecialFundableAmount)" Filterable="false" Title="Special Fundable Amount" Width="160px" />
-    </Columns>
-</RadzenDataGrid>
+<br />
+@if (!IsMarketDataLoaded && !IsLoading)
+{
+    <RadzenButton Text="Import Market Data" ButtonStyle="ButtonStyle.Primary" Click="@(() => ImportMarketData())" />
+}
+<br />
+<br />
+
+@if (IsLoading)
+{
+    <RadzenProgressBar Mode="ProgressBarMode.Indeterminate" Style="width: 100%;" />
+}
+else
+{
+    <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true" AllowAlternatingRows="false"
+                    FilterMode="FilterMode.Advanced" AllowSorting="false"
+                    Data="@fundableCompanies" LogicalFilterOperator="LogicalFilterOperator.And"
+                    TItem="FundableCompanyDto" LoadData="GetFundableCompaniesAsync" SelectionMode="DataGridSelectionMode.Single">
+        <Columns>
+            <RadzenDataGridColumn TItem="FundableCompanyDto" Property="@nameof(FundableCompanyDto.Id)" Filterable="false" Title="CIK" Frozen="true" Width="80px" TextAlign="TextAlign.Center" />
+            <RadzenDataGridColumn TItem="FundableCompanyDto" Property="@nameof(FundableCompanyDto.Name)" Title="Name" Filterable="true" FilterOperator="FilterOperator.Contains" Frozen="true" Width="160px" />
+            <RadzenDataGridColumn TItem="FundableCompanyDto" Property="@nameof(FundableCompanyDto.StandardFundableAmount)" Filterable="false" Title="Standard Fundable Amount" Width="160px" />
+            <RadzenDataGridColumn TItem="FundableCompanyDto" Property="@nameof(FundableCompanyDto.SpecialFundableAmount)" Filterable="false" Title="Special Fundable Amount" Width="160px" />
+        </Columns>
+    </RadzenDataGrid>
+}

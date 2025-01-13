@@ -8,13 +8,13 @@ namespace BaseApp.Server.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class CompnanyController : ControllerBase
+    public class CompanyController : ControllerBase
     {
-        private readonly ILogger<CompnanyController> _logger;
+        private readonly ILogger<CompanyController> _logger;
         private readonly ICompanyManager _companyManager;
         private readonly InputValidation _inputValidation;
 
-        public CompnanyController(ILogger<CompnanyController> logger, ICompanyManager securityExchangeManager,
+        public CompanyController(ILogger<CompanyController> logger, ICompanyManager securityExchangeManager,
             InputValidation inputValidation)
         {
             _logger = logger;
@@ -23,17 +23,19 @@ namespace BaseApp.Server.Controllers
         }
 
         [HttpPost("importMarketData", Name = "ImportMarketDataAsync")]
-        [ProducesResponseType(typeof(List<FundableCompanyDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> ImportMarketDataAsync()
         {
             try
             {
-                _logger.LogInformation("Loading Company data from SEC API..");
+                _logger.LogInformation("Starting import of market data from SEC API...");
 
+                // Call the manager to perform the import
                 await _companyManager.ImportMarketDataAsync();
 
-                return Ok();
+                _logger.LogInformation("Market data imported successfully.");
+                return Ok(new { Message = "Market data imported successfully." });
             }
             catch (Exception ex)
             {
