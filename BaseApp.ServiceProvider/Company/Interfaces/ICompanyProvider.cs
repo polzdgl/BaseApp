@@ -9,7 +9,7 @@ namespace BaseApp.ServiceProvider.Company.Interfaces
 {
     public interface ICompanyProvider
     {
-        Task<IEnumerable<FundableCompanyDto>> GetCompaniesAsync(string? nameFilter = null, CancellationToken cancellationToken = default);
+        Task<IEnumerable<FundableCompanyDto>> GetCompaniesAsync(string? nameFilter, CancellationToken cancellationToken = default);
         Task ImportMarketDataAsync(CancellationToken cancellationToken = default);
         Task<bool> IsMarketDataLoaded(CancellationToken cancellationToken = default);
     }

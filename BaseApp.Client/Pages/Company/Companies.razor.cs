@@ -2,6 +2,7 @@
 using BaseApp.ServiceProvider.Company.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Radzen;
+using Radzen.Blazor;
 
 namespace BaseApp.Client.Pages.Company
 {
@@ -14,6 +15,7 @@ namespace BaseApp.Client.Pages.Company
         private IEnumerable<FundableCompanyDto>? fundableCompanies = new List<FundableCompanyDto>();
         private bool IsLoading = true;
         private bool IsMarketDataLoaded = false;
+        RadzenDataGrid<FundableCompanyDto> grid;
 
         protected override async Task OnInitializedAsync()
         {
@@ -50,7 +52,12 @@ namespace BaseApp.Client.Pages.Company
             {
                 IsLoading = true;
 
-                string nameFilter = args.Filters?.FirstOrDefault()?.FilterValue.ToString() ?? null;
+                // Extract the filter value for "Name"
+                string? nameFilter = args.Filters?
+                    .FirstOrDefault(f => f.Property == nameof(FundableCompanyDto.Name))?
+                    .FilterValue?.ToString();
+
+                // Call the provider with the filter value
                 fundableCompanies = await CompanyProvider.GetCompaniesAsync(nameFilter);
             }
             catch (Exception ex)
@@ -89,6 +96,20 @@ namespace BaseApp.Client.Pages.Company
             finally
             {
                 IsLoading = false;
+            }
+        }
+
+        private async Task ClearFilters()
+        {
+            try
+            {
+                // Reset filters and reload all data
+                grid.Reset(false);
+                await GetFundableCompaniesAsync(new LoadDataArgs { Filters = null });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error clearing filters: {ex.Message}");
             }
         }
 
