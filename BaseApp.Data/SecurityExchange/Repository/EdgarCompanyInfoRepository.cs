@@ -14,11 +14,13 @@ namespace BaseApp.Data.SecurityExchange.Repository
 
         }
 
+        // Get all CIKs that need to be imported, and format them to be 10 characters long
         public async Task<IEnumerable<string>> GetAllCikIds()
         {
             return await this.GetAll().Select(x => x.Cik.ToString().Trim().PadLeft(10, '0')).ToListAsync();
         }
 
+        // Get all companies with details by loading navigation properties
         public async Task<IEnumerable<EdgarCompanyInfo>> GetCompaniesWithDetails(string? startsWith = null)
         {
             var query = startsWith == null
@@ -34,9 +36,10 @@ namespace BaseApp.Data.SecurityExchange.Repository
                 .ToListAsync();
         }
 
+        // Static data for CIKs that need to be imported
+        // Ideally, this should be fetched from a database or a file
         public IEnumerable<string> GetCiksToImport()
         {
-            // Todo: This should be fetched from a database or a file
             return new[]
             {
                 "18926", "892553", "1510524", "1858912", "1828248", "1819493", "60086",

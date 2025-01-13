@@ -7,6 +7,7 @@ namespace BaseApp.Data.User.Validator
     {
         int minimumAge = 18;
 
+        // This is a class that validates the UserProfileDto using fluent validation
         public UserProfileDtoValidator()
         {
             RuleFor(x => x.FirstName)

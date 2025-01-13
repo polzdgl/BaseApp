@@ -1,5 +1,4 @@
-﻿using BaseApp.Shared.Validation;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace BaseApp.Data.User.Dtos

@@ -148,10 +148,6 @@ namespace BaseApp.Data.Context
                 entity.Property(e => e.IsActive)
                 .HasDefaultValue(true)
                 .IsRequired();
-
-                //entity.HasIndex(e => e.Email)
-                //.HasDatabaseName("XI_User_Email")
-                //.IsUnique(true);
             });
 
             modelBuilder.Entity<ApplicationRole>(entity =>

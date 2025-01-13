@@ -2,9 +2,7 @@
 using BaseApp.Data.Repositories;
 using BaseApp.Data.User.Interfaces;
 using BaseApp.Data.User.Models;
-using BaseApp.Shared.Dtos;
 using Microsoft.EntityFrameworkCore;
-using System.Runtime.CompilerServices;
 
 namespace BaseApp.Data.User.Repository
 {
@@ -15,19 +13,22 @@ namespace BaseApp.Data.User.Repository
         {
         }
 
+        // Checks if username already exist in the database
         public async Task<bool> IsExistingUserAsync(string? userName)
         {
             return await this.AnyAsync(u => u.UserName == userName);
         }
 
+        // Checks if username is available, when updating user profile
         public async Task<bool> IsUserNameTakenAsync(string id, string? userName)
         {
             return await this.AnyAsync(u => u.UserName == userName && u.Id != id);
         }
 
+        // Get user by id
         public async Task<ApplicationUser?> GetUserAsync(string id)
         {
-            return await this.GetByConditionAsync(u => u.Id == id).FirstOrDefaultAsync();
+            return await this.FirstOrDefaultAsync(u => u.Id == id);
         }
     }
 }

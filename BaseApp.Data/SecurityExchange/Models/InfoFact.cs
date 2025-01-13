@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
-using static BaseApp.Data.SecurityExchange.Models.EdgarCompanyInfo;
+﻿using System.Text.Json.Serialization;
 
 namespace BaseApp.Data.SecurityExchange.Models
 {

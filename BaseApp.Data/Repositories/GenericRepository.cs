@@ -9,168 +9,79 @@ namespace BaseApp.Data.Repositories
 {
     public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
-
         protected readonly ApplicationDbContext _dbContext;
         private readonly BulkConfig _defaultBulkConfig;
 
         public GenericRepository(ApplicationDbContext dbContext)
         {
-            this._dbContext = dbContext;
+            _dbContext = dbContext;
             _defaultBulkConfig = new BulkConfig { UseTempDB = true };
         }
 
+        #region CREATE
+
         public virtual bool Create(T entity, bool saveChanges = true)
         {
-            this._dbContext.Set<T>().Add(entity);
+            _dbContext.Set<T>().Add(entity);
             if (saveChanges)
             {
-                return this.SaveChanges() > 0;
+                return SaveChanges() > 0;
             }
-            else
-            {
-                return true;
-            }
+            return true;
         }
 
-        public async virtual Task<bool> CreateAsync(T entity, bool saveChanges = true)
+        public virtual async Task<bool> CreateAsync(T entity, bool saveChanges = true)
         {
-            this._dbContext.Set<T>().Add(entity);
+            _dbContext.Set<T>().Add(entity);
             if (saveChanges)
             {
                 return await _dbContext.SaveChangesAsync() > 0;
             }
-            else
-            {
-                return true;
-            }
+            return true;
         }
 
         public virtual bool CreateAll(IEnumerable<T> entityList, bool saveChanges = true)
         {
-            this._dbContext.Set<T>().AddRange(entityList);
+            _dbContext.Set<T>().AddRange(entityList);
             if (saveChanges)
             {
-                return this.SaveChanges() > 0;
+                return SaveChanges() > 0;
             }
-            else
-            {
-                return true;
-            }
+            return true;
         }
 
-        public async virtual Task<bool> CreateAllAsync(IEnumerable<T> entityList, bool saveChanges = true)
+        public virtual async Task<bool> CreateAllAsync(IEnumerable<T> entityList, bool saveChanges = true)
         {
-            await this._dbContext.Set<T>().AddRangeAsync(entityList);
+            await _dbContext.Set<T>().AddRangeAsync(entityList);
             if (saveChanges)
             {
                 return await _dbContext.SaveChangesAsync() > 0;
             }
-            else
-            {
-                return true;
-            }
+            return true;
         }
 
         public virtual bool BulkCreateAll(IList<T> entityList, BulkConfig? bulkConfig = null)
         {
-            var type = typeof(T);
-
-            this._dbContext.BulkInsert(entityList, bulkConfig ?? _defaultBulkConfig);
-
+            _dbContext.BulkInsert(entityList, bulkConfig ?? _defaultBulkConfig);
             return true;
         }
 
-        public async virtual Task<bool> BulkCreateAllAsync(IList<T> entityList, BulkConfig? bulkConfig = null)
+        public virtual async Task<bool> BulkCreateAllAsync(IList<T> entityList, BulkConfig? bulkConfig = null)
         {
-            var type = typeof(T);
-
-            await this._dbContext.BulkInsertAsync(entityList, bulkConfig ?? _defaultBulkConfig);
-
+            await _dbContext.BulkInsertAsync(entityList, bulkConfig ?? _defaultBulkConfig);
             return true;
         }
 
-        public virtual bool BulkUpdateAll(IList<T> entityList, BulkConfig? bulkConfig = null)
-        {
-            this._dbContext.BulkUpdate(entityList, bulkConfig ?? _defaultBulkConfig);
+        #endregion
 
-            return true;
-        }
-
-        public async virtual Task<bool> BulkUpdateAllAsync(IList<T> entityList, BulkConfig? bulkConfig = null)
-        {
-            await _dbContext.BulkUpdateAsync(entityList, bulkConfig ?? _defaultBulkConfig);
-
-            return true;
-        }
-
-        public virtual bool BulkDeleteAll(IList<T> entityList, BulkConfig? bulkConfig = null)
-        {
-            return this.BulkUpdateAll(entityList, bulkConfig ?? _defaultBulkConfig);
-        }
-
-        public async virtual Task<bool> BulkDeleteAllAsync(IList<T> entityList, BulkConfig? bulkConfig = null)
-        {
-            return await BulkUpdateAllAsync(entityList, bulkConfig ?? _defaultBulkConfig);
-        }
-
-        public virtual bool Delete(T entity, bool saveChanges = true)
-        {
-            this._dbContext.Set<T>().Remove(entity);
-            if (saveChanges)
-            {
-                return this.SaveChanges() > 0;
-            }
-            else
-            {
-                return true;
-            }
-        }
-
-        public async virtual Task<bool> DeleteAsync(T entity, bool saveChanges = true)
-        {
-            this._dbContext.Set<T>().Remove(entity);
-            if (saveChanges)
-            {
-                return await _dbContext.SaveChangesAsync() > 0;
-            }
-            else
-            {
-                return true;
-            }
-        }
-
-        public virtual bool DeleteAll(IEnumerable<T> entityList, bool saveChanges = true)
-        {
-            this._dbContext.Set<T>().RemoveRange(entityList);
-            if (saveChanges)
-            {
-                return this.SaveChanges() > 0;
-            }
-            else
-            {
-                return true;
-            }
-        }
-
-        public async virtual Task<bool> DeleteAllAsync(IEnumerable<T> entityList, bool saveChanges = true)
-        {
-            this._dbContext.Set<T>().RemoveRange(entityList);
-            if (saveChanges)
-            {
-                return await _dbContext.SaveChangesAsync() > 0;
-            }
-            else
-            {
-                return true;
-            }
-        }
+        #region READ
 
         public virtual T Single(Expression<Func<T, bool>> predicate)
         {
             return _dbContext.Set<T>().Single(predicate);
         }
 
-        public async virtual Task<T> SingleAsync(Expression<Func<T, bool>> predicate)
+        public virtual async Task<T> SingleAsync(Expression<Func<T, bool>> predicate)
         {
             return await _dbContext.Set<T>().SingleAsync(predicate);
         }
@@ -180,174 +91,238 @@ namespace BaseApp.Data.Repositories
             return _dbContext.Set<T>().FirstOrDefault(predicate);
         }
 
-        public async virtual Task<T?> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate)
+        public virtual async Task<T?> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate)
         {
             return await _dbContext.Set<T>().FirstOrDefaultAsync(predicate);
         }
 
         public virtual T First(Expression<Func<T, bool>> predicate)
         {
-            return this._dbContext.Set<T>().First(predicate);
+            return _dbContext.Set<T>().First(predicate);
         }
 
-        public async virtual Task<T> FirstAsync(Expression<Func<T, bool>> predicate)
+        public virtual async Task<T> FirstAsync(Expression<Func<T, bool>> predicate)
         {
-            return await this._dbContext.Set<T>().FirstAsync(predicate);
+            return await _dbContext.Set<T>().FirstAsync(predicate);
         }
 
         public virtual T? SingleOrDefault(Expression<Func<T, bool>> predicate)
         {
-            return this._dbContext.Set<T>().SingleOrDefault(predicate);
+            return _dbContext.Set<T>().SingleOrDefault(predicate);
         }
 
-        public async virtual Task<T?> SingleOrDefaultAsync(Expression<Func<T, bool>> predicate)
+        public virtual async Task<T?> SingleOrDefaultAsync(Expression<Func<T, bool>> predicate)
         {
-            return await this._dbContext.Set<T>().SingleOrDefaultAsync(predicate);
+            return await _dbContext.Set<T>().SingleOrDefaultAsync(predicate);
         }
 
-        public async virtual Task<T?> FindAsync(int id)
+        public virtual async Task<T?> FindAsync(int id)
         {
-            return await this._dbContext.Set<T>().FindAsync(id);
+            return await _dbContext.Set<T>().FindAsync(id);
         }
 
-        public async virtual Task<T?> FindAsync(string id)
+        public virtual async Task<T?> FindAsync(string id)
         {
-            return await this._dbContext.Set<T>().FindAsync(id);
+            return await _dbContext.Set<T>().FindAsync(id);
         }
 
         public virtual IQueryable<T> GetAll()
         {
-            return this._dbContext.Set<T>();
+            return _dbContext.Set<T>();
         }
 
-        public async virtual Task<IEnumerable<T>> GetAllAsync()
+        public virtual async Task<IEnumerable<T>> GetAllAsync()
         {
-            return await this._dbContext.Set<T>().ToListAsync();
+            return await _dbContext.Set<T>().ToListAsync();
         }
 
-        public virtual IQueryable<T> GetByCondition(Expression<Func<T, bool>> expression, bool includeHistory = false)
+        // Removed the unused 'includeHistory' parameter
+        public virtual IQueryable<T> GetByCondition(Expression<Func<T, bool>> expression)
         {
-            var query = this._dbContext.Set<T>()
-                        .Where(expression);
-
-            return query;
+            return _dbContext.Set<T>().Where(expression);
         }
 
-        public virtual IQueryable<T> GetByConditionAsync(Expression<Func<T, bool>> expression, List<Expression<Func<T, object>>> includeLambdas = null)
+        public virtual async Task<List<T>> GetByConditionAsync(Expression<Func<T, bool>> expression, List<Expression<Func<T, object>>>? includeLambdas = null)
         {
-            var query = this._dbContext.Set<T>()
-                        .Where(expression);
+            IQueryable<T> query = _dbContext.Set<T>().Where(expression);
 
             if (includeLambdas != null)
             {
-                includeLambdas.ForEach((Expression<Func<T, object>> includeExpression) => query = query.Include(includeExpression));
+                includeLambdas.ForEach(include => query = query.Include(include));
             }
 
-            return query;
+            return await query.ToListAsync();
         }
 
         public virtual bool Any(Expression<Func<T, bool>> expression)
         {
-            return this._dbContext.Set<T>().Any(expression);
+            return _dbContext.Set<T>().Any(expression);
         }
 
-        public async virtual Task<bool> AnyAsync(Expression<Func<T, bool>> expression)
+        public virtual async Task<bool> AnyAsync(Expression<Func<T, bool>> expression)
         {
-            return await this._dbContext.Set<T>().AnyAsync(expression);
+            return await _dbContext.Set<T>().AnyAsync(expression);
         }
 
-        public async virtual Task<int> CountAsync()
+        public virtual async Task<int> CountAsync()
         {
-            return await this._dbContext.Set<T>().CountAsync();
+            return await _dbContext.Set<T>().CountAsync();
         }
 
-        public async Task<IEnumerable<T>> GetPagedAsync(int page, int pageSize)
+        public virtual async Task<IEnumerable<T>> GetPagedAsync(int page, int pageSize)
         {
-            return await this._dbContext.Set<T>()
+            return await _dbContext.Set<T>()
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
         }
 
+        #endregion
+
+        #region FILTERING
+
         public virtual IQueryable<T> FilterBy(IQueryable<T> entityList, Expression<Func<T, bool>> filterExpression)
         {
-            var query = entityList.Where(filterExpression);
-            return query;
+            return entityList.Where(filterExpression);
         }
 
         public virtual async Task<IList<T>> FilterByAsync(IQueryable<T> entityList, Expression<Func<T, bool>> filterExpression)
         {
-            var query = entityList.Where(filterExpression);
-            return await query.ToListAsync();
+            return await entityList.Where(filterExpression).ToListAsync();
         }
 
+        #endregion
+
+        #region UPDATE
 
         public virtual bool Update(T entity, bool saveChanges = true)
         {
-            this._dbContext.Set<T>().Update(entity);
+            _dbContext.Set<T>().Update(entity);
             if (saveChanges)
             {
-                return this.SaveChanges() > 0;
+                return SaveChanges() > 0;
             }
-            else
-            {
-                return true;
-            }
+            return true;
         }
 
-        public async virtual Task<bool> UpdateAsync(T entity, bool saveChanges = true)
+        public virtual async Task<bool> UpdateAsync(T entity, bool saveChanges = true)
         {
-            this._dbContext.Set<T>().Update(entity);
+            _dbContext.Set<T>().Update(entity);
             if (saveChanges)
             {
                 return await _dbContext.SaveChangesAsync() > 0;
             }
-            else
-            {
-                return true;
-            }
+            return true;
         }
 
         public virtual bool UpdateAll(IEnumerable<T> entityList, bool saveChanges = true)
         {
-            this._dbContext.UpdateRange(entityList);
-
+            _dbContext.UpdateRange(entityList);
             if (saveChanges)
             {
-                return this.SaveChanges() > 0;
+                return SaveChanges() > 0;
             }
-            else
-            {
-                return true;
-            }
+            return true;
         }
 
-        public async virtual Task<bool> UpdateAllAsync(IEnumerable<T> entityList, bool saveChanges = true)
+        public virtual async Task<bool> UpdateAllAsync(IEnumerable<T> entityList, bool saveChanges = true)
         {
-            this._dbContext.UpdateRange(entityList);
-
+            _dbContext.UpdateRange(entityList);
             if (saveChanges)
             {
                 return await _dbContext.SaveChangesAsync() > 0;
             }
-            else
-            {
-                return true;
-            }
-        }
-        public virtual int SaveChanges()
-        {
-            return this._dbContext.SaveChanges();
+            return true;
         }
 
-        public async virtual Task<int> SaveChangesAsync()
+        public virtual bool BulkUpdateAll(IList<T> entityList, BulkConfig? bulkConfig = null)
         {
-            return await this._dbContext.SaveChangesAsync();
+            _dbContext.BulkUpdate(entityList, bulkConfig ?? _defaultBulkConfig);
+            return true;
+        }
+
+        public virtual async Task<bool> BulkUpdateAllAsync(IList<T> entityList, BulkConfig? bulkConfig = null)
+        {
+            await _dbContext.BulkUpdateAsync(entityList, bulkConfig ?? _defaultBulkConfig);
+            return true;
+        }
+
+        #endregion
+
+        #region DELETE
+
+        public virtual bool Delete(T entity, bool saveChanges = true)
+        {
+            _dbContext.Set<T>().Remove(entity);
+            if (saveChanges)
+            {
+                return SaveChanges() > 0;
+            }
+            return true;
+        }
+
+        public virtual async Task<bool> DeleteAsync(T entity, bool saveChanges = true)
+        {
+            _dbContext.Set<T>().Remove(entity);
+            if (saveChanges)
+            {
+                return await _dbContext.SaveChangesAsync() > 0;
+            }
+            return true;
+        }
+
+        public virtual bool DeleteAll(IEnumerable<T> entityList, bool saveChanges = true)
+        {
+            _dbContext.Set<T>().RemoveRange(entityList);
+            if (saveChanges)
+            {
+                return SaveChanges() > 0;
+            }
+            return true;
+        }
+
+        public virtual async Task<bool> DeleteAllAsync(IEnumerable<T> entityList, bool saveChanges = true)
+        {
+            _dbContext.Set<T>().RemoveRange(entityList);
+            if (saveChanges)
+            {
+                return await _dbContext.SaveChangesAsync() > 0;
+            }
+            return true;
+        }
+
+        public virtual bool BulkDeleteAll(IList<T> entityList, BulkConfig? bulkConfig = null)
+        {
+            _dbContext.BulkDelete(entityList, bulkConfig ?? _defaultBulkConfig);
+            return true;
+        }
+
+        public virtual async Task<bool> BulkDeleteAllAsync(IList<T> entityList, BulkConfig? bulkConfig = null)
+        {
+            await _dbContext.BulkDeleteAsync(entityList, bulkConfig ?? _defaultBulkConfig);
+            return true;
+        }
+
+        #endregion
+
+        #region SAVE / ROLLBACK
+
+        public virtual int SaveChanges()
+        {
+            return _dbContext.SaveChanges();
+        }
+
+        public virtual async Task<int> SaveChangesAsync()
+        {
+            return await _dbContext.SaveChangesAsync();
         }
 
         public virtual void RollBack()
         {
-            IEnumerable<EntityEntry> changedEntries = this._dbContext.ChangeTracker.Entries().Where(x => x.State != EntityState.Unchanged).ToList();
+            IEnumerable<EntityEntry> changedEntries = _dbContext.ChangeTracker
+                .Entries()
+                .Where(x => x.State != EntityState.Unchanged)
+                .ToList();
 
             foreach (EntityEntry entry in changedEntries)
             {
@@ -357,16 +332,16 @@ namespace BaseApp.Data.Repositories
                         entry.CurrentValues.SetValues(entry.OriginalValues);
                         entry.State = EntityState.Unchanged;
                         break;
-
                     case EntityState.Added:
                         entry.State = EntityState.Detached;
                         break;
-
                     case EntityState.Deleted:
                         entry.State = EntityState.Unchanged;
                         break;
                 }
             }
         }
+
+        #endregion
     }
 }
