@@ -1,0 +1,23 @@
+﻿@page "/company/companies"
+@using BaseApp.Client.Shared
+@using BaseApp.Data.SecurityExchange.Dtos
+
+<PageTitle>Companies</PageTitle>
+
+<RadzenRow>
+    <RadzenColumn Size="12">
+        <RadzenText Text="Companies" TextStyle="TextStyle.H3" TagName="TagName.H1" />
+    </RadzenColumn>
+</RadzenRow>
+
+<RadzenDataGrid AllowFiltering="false" AllowColumnResize="true" AllowAlternatingRows="false"
+                FilterMode="FilterMode.Advanced" AllowSorting="false"
+                Data="@fundableCompanies" LogicalFilterOperator="LogicalFilterOperator.Or"
+                TItem="FundableCompanyDto" LoadData="GetFundableCompaniesAsync" SelectionMode="DataGridSelectionMode.Single">
+    <Columns>
+        <RadzenDataGridColumn TItem="FundableCompanyDto" Property="@nameof(FundableCompanyDto.Id)" Filterable="false" Title="ID" Frozen="true" Width="80px" TextAlign="TextAlign.Center" />
+        <RadzenDataGridColumn TItem="FundableCompanyDto" Property="@nameof(FundableCompanyDto.Name)" Title="Name" Frozen="true" Width="160px" />
+        <RadzenDataGridColumn TItem="FundableCompanyDto" Property="@nameof(FundableCompanyDto.StandardFundableAmount)" Title="Standard Fundable Amount" Width="160px" />
+        <RadzenDataGridColumn TItem="FundableCompanyDto" Property="@nameof(FundableCompanyDto.SpecialFundableAmount)" Title="Special Fundable Amount" Width="160px" />
+    </Columns>
+</RadzenDataGrid>

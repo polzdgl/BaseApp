@@ -7,9 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BaseApp.ServiceProvider.SecurityExchange.Interfaces
+namespace BaseApp.ServiceProvider.Company.Interfaces
 {
-    public interface ISecurityExchangeManager
+    public interface ICompanyManager
     {
         Task ImportMarketDataAsync();
         Task ImportCompnanyDataAsync(IEnumerable<string> ciks);

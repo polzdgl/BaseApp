@@ -1,5 +1,5 @@
 ﻿using BaseApp.Data.SecurityExchange.Dtos;
-using BaseApp.ServiceProvider.SecurityExchange.Interfaces;
+using BaseApp.ServiceProvider.Company.Interfaces;
 using BaseApp.Shared.Validation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -8,17 +8,17 @@ namespace BaseApp.Server.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class SecurityExchangeController : ControllerBase
+    public class CompnanyController : ControllerBase
     {
-        private readonly ILogger<SecurityExchangeController> _logger;
-        private readonly ISecurityExchangeManager _securityExchangeManager;
+        private readonly ILogger<CompnanyController> _logger;
+        private readonly ICompanyManager _companyManager;
         private readonly InputValidation _inputValidation;
 
-        public SecurityExchangeController(ILogger<SecurityExchangeController> logger, ISecurityExchangeManager securityExchangeManager,
+        public CompnanyController(ILogger<CompnanyController> logger, ICompanyManager securityExchangeManager,
             InputValidation inputValidation)
         {
             _logger = logger;
-            _securityExchangeManager = securityExchangeManager;
+            _companyManager = securityExchangeManager;
             _inputValidation = inputValidation;
         }
 
@@ -31,7 +31,7 @@ namespace BaseApp.Server.Controllers
             {
                 _logger.LogInformation("Loading Company data from SEC API..");
 
-                await _securityExchangeManager.ImportMarketDataAsync();
+                await _companyManager.ImportMarketDataAsync();
 
                 return Ok();
             }
@@ -51,7 +51,7 @@ namespace BaseApp.Server.Controllers
             {
                 _logger.LogInformation("Checking if Market Data is loaded..");
 
-                bool isLoaded = await _securityExchangeManager.IsMarketDataLoadedAsync();
+                bool isLoaded = await _companyManager.IsMarketDataLoadedAsync();
 
                 return Ok(isLoaded);
             }
@@ -71,7 +71,7 @@ namespace BaseApp.Server.Controllers
             {
                 _logger.LogInformation("Importing Company data for CIKs: {ciks}", string.Concat(',', ciks));
 
-                await _securityExchangeManager.ImportCompnanyDataAsync(ciks);
+                await _companyManager.ImportCompnanyDataAsync(ciks);
                 return Ok();
             }
             catch (Exception ex)
@@ -90,7 +90,7 @@ namespace BaseApp.Server.Controllers
             {
                 _logger.LogInformation("Getting Company data: {name}", startsWith.IsNullOrEmpty() ? "for All" : $"starts with: {startsWith}");
 
-                List<FundableCompanyDto> companies = await _securityExchangeManager.GetCompanies(startsWith);
+                List<FundableCompanyDto> companies = await _companyManager.GetCompanies(startsWith);
                 return Ok(companies);
             }
             catch (Exception ex)

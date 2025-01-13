@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BaseApp.ServiceProvider.SecurityExchange.Interfaces
+namespace BaseApp.ServiceProvider.Company.Interfaces
 {
     public interface ISecurityExchangeProvider
     {

@@ -2,20 +2,20 @@
 using BaseApp.Data.Repositories.Interfaces;
 using BaseApp.Data.SecurityExchange.Dtos;
 using BaseApp.Data.SecurityExchange.Models;
-using BaseApp.ServiceProvider.SecurityExchange.Interfaces;
+using BaseApp.ServiceProvider.Company.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace BaseApp.ServiceProvider.SecurityExchange.Manager
+namespace BaseApp.ServiceProvider.Company.Manager
 {
-    public class SecurityExchangeManager : ISecurityExchangeManager
+    public class CompanyManager : ICompanyManager
     {
         private IRepositoryFactory _repository;
         private ISecurityExchangeProvider _securityExchangeProvider;
         private readonly ILogger _logger;
 
-        public SecurityExchangeManager(IRepositoryFactory repository, ISecurityExchangeProvider securityExchangeProvider,
-            ILogger<SecurityExchangeManager> logger)
+        public CompanyManager(IRepositoryFactory repository, ISecurityExchangeProvider securityExchangeProvider,
+            ILogger<CompanyManager> logger)
         {
             _repository = repository;
             _securityExchangeProvider = securityExchangeProvider;

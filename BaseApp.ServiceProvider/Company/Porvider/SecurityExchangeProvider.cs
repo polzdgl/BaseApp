@@ -1,5 +1,5 @@
 ﻿using BaseApp.Data.SecurityExchange.Models;
-using BaseApp.ServiceProvider.SecurityExchange.Interfaces;
+using BaseApp.ServiceProvider.Company.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +7,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace BaseApp.ServiceProvider.SecurityExchange.Porvider
+namespace BaseApp.ServiceProvider.Company.Porvider
 {
     public class SecurityExchangeProvider : ISecurityExchangeProvider
     {

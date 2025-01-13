@@ -1,7 +1,9 @@
 ﻿using BaseApp.Client.ServiceClients.Auth;
+using BaseApp.Client.ServiceClients.Company;
 using BaseApp.Client.ServiceClients.User;
 using BaseApp.ServiceClients.Auth;
 using BaseApp.ServiceProvider.Auth.Interfaces;
+using BaseApp.ServiceProvider.Company.Interfaces;
 using BaseApp.ServiceProvider.User.Interfaces;
 using BaseApp.Shared.Validation;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -20,6 +22,9 @@ namespace BaseApp.Client.AppStart
 
             // Add Auth Api Client
             services.AddScoped<IAuthProvider, AuthProvider>();
+
+            // Add Company Api Client
+            services.AddScoped<ICompanyProvider, CompanyProvider>();
 
             // Add Authentication State Provider
             services.AddScoped<AuthenticationStateProvider, AuthStateProvider>();

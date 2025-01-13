@@ -5,7 +5,7 @@ using System.Net.Http.Json;
 
 namespace BaseApp.Client.ServiceClients.User
 {
-    public partial class UserProvider : IUserProvider
+    public class UserProvider : IUserProvider
     {
         private readonly HttpClient httpClient;
 

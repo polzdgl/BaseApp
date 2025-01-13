@@ -3,7 +3,6 @@ using BaseApp.Data.User.Dtos;
 using BaseApp.ServiceProvider.User.Interfaces;
 using BaseApp.Shared.ErrorHandling;
 using Microsoft.AspNetCore.Components;
-using Microsoft.JSInterop;
 using Radzen;
 
 namespace BaseApp.Client.Pages.User
@@ -39,8 +38,8 @@ namespace BaseApp.Client.Pages.User
 
         private async Task GetUserList(LoadDataArgs args)
         {
-            try
-            {
+                try
+                {
                 // Calculate page index based on Radzen's `Skip` and `Top` properties
                 var pageIndex = args.Skip / args.Top + 1;
                 var pageSize = args.Top;
