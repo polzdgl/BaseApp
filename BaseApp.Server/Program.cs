@@ -1,3 +1,4 @@
+using BaseApp.Data.Config.SecurityExchnage;
 using BaseApp.Data.Context;
 using BaseApp.Data.User.Models;
 using BaseApp.Server.AppStart;
@@ -86,8 +87,13 @@ builder.Services.AddRadzenCookieThemeService(options =>
     options.Duration = TimeSpan.FromDays(365);
 });
 
+// Add SEC. Api Settings
+builder.Services.Configure<SecApiSettings>(
+    builder.Configuration.GetSection("SecApiSettings"));
+
 // Add HttpClient with StandardResilency
-builder.Services.AddHttpClient<SecurityExchangeProvider>().AddStandardResilienceHandler();
+builder.Services.AddHttpClient<SecurityExchangeProvider>()
+    .AddStandardResilienceHandler();
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();

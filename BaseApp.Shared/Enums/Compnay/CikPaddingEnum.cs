@@ -3,6 +3,6 @@
     public enum CikPaddingEnum
     {
         PaddingNumber = 10,
-        PaddingValue = 0
+        PaddingValue = '0'
     }
 }

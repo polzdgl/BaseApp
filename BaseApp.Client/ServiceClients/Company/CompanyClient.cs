@@ -1,4 +1,4 @@
-﻿using BaseApp.Data.SecurityExchange.Dtos;
+﻿using BaseApp.Data.Company.Dtos;
 using BaseApp.ServiceProvider.Company.Interfaces;
 using System.Net.Http.Json;
 

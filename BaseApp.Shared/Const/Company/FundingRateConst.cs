@@ -1,4 +1,4 @@
-﻿namespace BaseApp.Shared.Const
+﻿namespace BaseApp.Shared.Const.Company
 {
     public static class FundingRateConst
     {

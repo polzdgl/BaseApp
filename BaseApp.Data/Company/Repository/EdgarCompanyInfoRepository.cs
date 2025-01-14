@@ -1,11 +1,11 @@
-﻿using BaseApp.Data.Context;
+﻿using BaseApp.Data.Company.Interfaces;
+using BaseApp.Data.Company.Models;
+using BaseApp.Data.Context;
 using BaseApp.Data.Repositories;
-using BaseApp.Data.SecurityExchange.Interfaces;
-using BaseApp.Data.SecurityExchange.Models;
 using BaseApp.Shared.Enums.Compnay;
 using Microsoft.EntityFrameworkCore;
 
-namespace BaseApp.Data.SecurityExchange.Repository
+namespace BaseApp.Data.Company.Repository
 {
     public class EdgarCompanyInfoRepository : GenericRepository<EdgarCompanyInfo>, IEdgarCompanyInfoRepository
     {
@@ -18,7 +18,7 @@ namespace BaseApp.Data.SecurityExchange.Repository
         // Get all CIKs that need to be imported, and format them to be 10 characters long
         public async Task<IEnumerable<string>> GetAllCikIds()
         {
-            return await this.GetAll().Select(x => x.Cik.ToString().Trim()
+            return await GetAll().Select(x => x.Cik.ToString().Trim()
             .PadLeft((int)CikPaddingEnum.PaddingNumber, (char)CikPaddingEnum.PaddingValue)).ToListAsync();
         }
 
@@ -26,8 +26,8 @@ namespace BaseApp.Data.SecurityExchange.Repository
         public async Task<IEnumerable<EdgarCompanyInfo>> GetCompaniesWithDetails(string? startsWith = null)
         {
             var query = startsWith == null
-                ? this.GetAll()
-                : this.GetByCondition(x => x.EntityName.StartsWith(startsWith));
+                ? GetAll()
+                : GetByCondition(x => x.EntityName.StartsWith(startsWith));
 
             return await query
                 .Include(x => x.InfoFact)

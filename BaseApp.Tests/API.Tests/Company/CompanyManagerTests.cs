@@ -1,5 +1,5 @@
-﻿using BaseApp.Data.Repositories.Interfaces;
-using BaseApp.Data.SecurityExchange.Models;
+﻿using BaseApp.Data.Company.Models;
+using BaseApp.Data.Repositories.Interfaces;
 using BaseApp.ServiceProvider.Company.Interfaces;
 using BaseApp.ServiceProvider.Company.Manager;
 using Microsoft.Extensions.Logging;

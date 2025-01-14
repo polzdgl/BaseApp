@@ -1,4 +1,5 @@
-﻿using BaseApp.Data.Repositories;
+﻿using BaseApp.Data.Config.SecurityExchnage;
+using BaseApp.Data.Repositories;
 using BaseApp.Data.Repositories.Interfaces;
 using BaseApp.ServiceProvider.Company.Interfaces;
 using BaseApp.ServiceProvider.Company.Manager;
@@ -7,6 +8,7 @@ using BaseApp.ServiceProvider.User.Interfaces;
 using BaseApp.ServiceProvider.User.Manager;
 using BaseApp.Shared.Validations;
 using FluentValidation;
+using Microsoft.Extensions.Options;
 
 namespace BaseApp.Server.AppStart
 {
@@ -16,9 +18,9 @@ namespace BaseApp.Server.AppStart
         {
             //Add Input Validator
             services.AddSingleton<InputValidation>();
-            
+
             // Add Fluent Validation
-            var assemblies = AppDomain.CurrentDomain.GetAssemblies()  
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies()
                 .Where(assembly => assembly.GetName().Name.StartsWith("BaseApp"))
                 .ToArray();
             services.AddValidatorsFromAssemblies(assemblies, includeInternalTypes: true);
@@ -31,6 +33,8 @@ namespace BaseApp.Server.AppStart
 
             // Add Security Exchange Services
             services.AddTransient<ICompanyManager, CompanyManager>();
+
+            // Add Security Exchange Provider
             services.AddTransient<ISecurityExchangeProvider, SecurityExchangeProvider>();
 
             return services;

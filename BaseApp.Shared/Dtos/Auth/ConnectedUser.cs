@@ -1,4 +1,4 @@
-﻿namespace BaseApp.Shared.Dtos
+﻿namespace BaseApp.Shared.Dtos.Auth
 {
     public class ConnectedUser
     {

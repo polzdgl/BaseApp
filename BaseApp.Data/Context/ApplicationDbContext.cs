@@ -1,5 +1,5 @@
-﻿using BaseApp.Data.LogTable.Models;
-using BaseApp.Data.SecurityExchange.Models;
+﻿using BaseApp.Data.Company.Models;
+using BaseApp.Data.LogTable.Models;
 using BaseApp.Data.User.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;

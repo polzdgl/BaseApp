@@ -1,4 +1,4 @@
-﻿using BaseApp.Shared.Dtos;
+﻿using BaseApp.Shared.Dtos.Auth;
 using Microsoft.AspNetCore.Components.Authorization;
 using System.Net;
 using System.Net.Http.Json;

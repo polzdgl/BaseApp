@@ -1,7 +1,7 @@
-﻿using BaseApp.Data.Context;
+﻿using BaseApp.Data.Company.Interfaces;
+using BaseApp.Data.Company.Repository;
+using BaseApp.Data.Context;
 using BaseApp.Data.Repositories.Interfaces;
-using BaseApp.Data.SecurityExchange.Interfaces;
-using BaseApp.Data.SecurityExchange.Repository;
 using BaseApp.Data.User.Interfaces;
 using BaseApp.Data.User.Repository;
 

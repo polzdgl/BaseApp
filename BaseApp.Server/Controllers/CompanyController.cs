@@ -1,5 +1,5 @@
-﻿using BaseApp.Data.SecurityExchange.Dtos;
-using BaseApp.Data.SecurityExchange.Models;
+﻿using BaseApp.Data.Company.Dtos;
+using BaseApp.Data.Company.Models;
 using BaseApp.ServiceProvider.Company.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;

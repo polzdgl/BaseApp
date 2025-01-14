@@ -1,4 +1,4 @@
-﻿using BaseApp.Data.SecurityExchange.Dtos;
+﻿using BaseApp.Data.Company.Dtos;
 
 namespace BaseApp.ServiceProvider.Company.Interfaces
 {

@@ -1,7 +1,7 @@
-﻿using BaseApp.Data.Repositories.Interfaces;
-using BaseApp.Data.SecurityExchange.Models;
+﻿using BaseApp.Data.Company.Models;
+using BaseApp.Data.Repositories.Interfaces;
 
-namespace BaseApp.Data.SecurityExchange.Interfaces
+namespace BaseApp.Data.Company.Interfaces
 {
     public interface IEdgarCompanyInfoRepository : IGenericRepository<EdgarCompanyInfo>
     {

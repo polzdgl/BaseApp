@@ -1,5 +1,5 @@
-﻿using BaseApp.Data.Context;
-using BaseApp.Data.SecurityExchange.Interfaces;
+﻿using BaseApp.Data.Company.Interfaces;
+using BaseApp.Data.Context;
 using BaseApp.Data.User.Interfaces;
 
 namespace BaseApp.Data.Repositories.Interfaces

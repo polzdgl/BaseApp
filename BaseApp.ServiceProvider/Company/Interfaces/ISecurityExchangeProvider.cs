@@ -1,4 +1,4 @@
-﻿using BaseApp.Data.SecurityExchange.Models;
+﻿using BaseApp.Data.Company.Models;
 
 namespace BaseApp.ServiceProvider.Company.Interfaces
 {

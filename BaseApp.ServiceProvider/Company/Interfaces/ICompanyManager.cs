@@ -1,5 +1,5 @@
-﻿using BaseApp.Data.SecurityExchange.Dtos;
-using BaseApp.Data.SecurityExchange.Models;
+﻿using BaseApp.Data.Company.Dtos;
+using BaseApp.Data.Company.Models;
 
 namespace BaseApp.ServiceProvider.Company.Interfaces
 {

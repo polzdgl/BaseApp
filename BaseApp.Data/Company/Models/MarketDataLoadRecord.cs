@@ -1,4 +1,4 @@
-﻿namespace BaseApp.Data.SecurityExchange.Models
+﻿namespace BaseApp.Data.Company.Models
 {
     public class MarketDataLoadRecord
     {

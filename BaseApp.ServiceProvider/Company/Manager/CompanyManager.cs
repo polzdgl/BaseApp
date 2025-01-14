@@ -1,9 +1,9 @@
-﻿using BaseApp.Data.Repositories;
+﻿using BaseApp.Data.Company.Dtos;
+using BaseApp.Data.Company.Models;
+using BaseApp.Data.Repositories;
 using BaseApp.Data.Repositories.Interfaces;
-using BaseApp.Data.SecurityExchange.Dtos;
-using BaseApp.Data.SecurityExchange.Models;
 using BaseApp.ServiceProvider.Company.Interfaces;
-using BaseApp.Shared.Const;
+using BaseApp.Shared.Const.Company;
 using BaseApp.Shared.Enums.Compnay;
 using BaseApp.Shared.Extentions;
 using Microsoft.EntityFrameworkCore;

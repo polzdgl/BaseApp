@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace BaseApp.Data.SecurityExchange.Models
+namespace BaseApp.Data.Company.Models
 {
     public class InfoFactUsGaapNetIncomeLoss
     {

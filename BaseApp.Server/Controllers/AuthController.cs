@@ -1,6 +1,6 @@
 ﻿using BaseApp.Data.User.Dtos;
 using BaseApp.Data.User.Models;
-using BaseApp.Shared.Dtos;
+using BaseApp.Shared.Dtos.Auth;
 using FluentValidation;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNetCore.Authorization;

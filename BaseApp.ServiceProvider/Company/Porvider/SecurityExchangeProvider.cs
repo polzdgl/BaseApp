@@ -1,6 +1,9 @@
-﻿using BaseApp.Data.SecurityExchange.Models;
+﻿using BaseApp.Data.Company.Models;
+using BaseApp.Data.Config.SecurityExchnage;
 using BaseApp.ServiceProvider.Company.Interfaces;
 using BaseApp.Shared.Enums.Compnay;
+using Microsoft.Extensions.Options;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
 
 namespace BaseApp.ServiceProvider.Company.Porvider
@@ -9,13 +12,12 @@ namespace BaseApp.ServiceProvider.Company.Porvider
     {
         // Todo: Inject HttpClient with StandardResilency in Program.cs
         private readonly HttpClient _httpClient;
+        private readonly SecApiSettings _secApiSettings;
 
-        // Todo: Retrive this from AppSettings 
-        private const string BaseUrl = "https://data.sec.gov/api/xbrl/companyfacts/CIK";
-
-        public SecurityExchangeProvider(HttpClient httpClient)
+        public SecurityExchangeProvider(HttpClient httpClient, IOptions<SecApiSettings> secApiSettings)
         {
             _httpClient = httpClient;
+            _secApiSettings = secApiSettings.Value;
 
             // Add required headers to HttpClient
             _httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("PostmanRuntime/7.34.0");
@@ -26,7 +28,7 @@ namespace BaseApp.ServiceProvider.Company.Porvider
         public async Task<EdgarCompanyInfo> FetchEdgarCompanyInfoAsync(string cik)
         {
             // Build request url and make sure cik is 10 characters long
-            var url = $"{BaseUrl}{cik.PadLeft((int)CikPaddingEnum.PaddingNumber, (char)CikPaddingEnum.PaddingValue)}.json";
+            var url = $"{_secApiSettings.BaseUrl}{_secApiSettings.EdgarCompanyInfoUrl}{cik.PadLeft((int)CikPaddingEnum.PaddingNumber, (char)CikPaddingEnum.PaddingValue)}.json";
 
             var response = await _httpClient.GetAsync(url);
 
