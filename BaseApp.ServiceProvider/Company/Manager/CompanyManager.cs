@@ -117,7 +117,7 @@ namespace BaseApp.ServiceProvider.Company.Manager
                     var company = new CompanyInfo
                     {
                         Cik = data.Cik,
-                        EntityName = data.EntityName,
+                        EntityName = data.EntityName ?? throw new InvalidDataException($"Entity Name is empty for CIK:{cik}"),
                         InfoFact = new InfoFact
                         {
                             InfoFactUsGaap = new InfoFactUsGaap
