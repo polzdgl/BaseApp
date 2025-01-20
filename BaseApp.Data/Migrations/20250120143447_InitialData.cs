@@ -68,19 +68,6 @@ namespace BaseApp.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "EdgarCompanyInfo",
-                schema: "Sec",
-                columns: table => new
-                {
-                    Cik = table.Column<string>(type: "CHAR(10)", nullable: false),
-                    EntityName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_EdgarCompanyInfo", x => x.Cik);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Log",
                 schema: "App",
                 columns: table => new
@@ -119,6 +106,33 @@ namespace BaseApp.Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_MarketDataStatus", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PublicCompany",
+                schema: "Sec",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
+                    Ticker = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Cik = table.Column<string>(type: "CHAR(10)", nullable: false),
+                    Sedar = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Isin = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Cusip = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Country = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Sector = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Industry = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SubIndustry = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Website = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Exchange = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Currency = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PublicCompany", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -247,6 +261,27 @@ namespace BaseApp.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "CompanyInfo",
+                schema: "Sec",
+                columns: table => new
+                {
+                    Cik = table.Column<string>(type: "CHAR(10)", nullable: false),
+                    PublicCompanyId = table.Column<int>(type: "int", nullable: false),
+                    EntityName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CompanyInfo", x => x.Cik);
+                    table.ForeignKey(
+                        name: "FK_CompanyInfo_PublicCompany_PublicCompanyId",
+                        column: x => x.PublicCompanyId,
+                        principalSchema: "Sec",
+                        principalTable: "PublicCompany",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "InfoFact",
                 schema: "Sec",
                 columns: table => new
@@ -259,10 +294,10 @@ namespace BaseApp.Data.Migrations
                 {
                     table.PrimaryKey("PK_InfoFact", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_InfoFact_EdgarCompanyInfo_EdgarCompanyInfoId",
+                        name: "FK_InfoFact_CompanyInfo_EdgarCompanyInfoId",
                         column: x => x.EdgarCompanyInfoId,
                         principalSchema: "Sec",
-                        principalTable: "EdgarCompanyInfo",
+                        principalTable: "CompanyInfo",
                         principalColumn: "Cik",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -401,6 +436,13 @@ namespace BaseApp.Data.Migrations
                 column: "RoleId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_CompanyInfo_PublicCompanyId",
+                schema: "Sec",
+                table: "CompanyInfo",
+                column: "PublicCompanyId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_InfoFact_EdgarCompanyInfoId",
                 schema: "Sec",
                 table: "InfoFact",
@@ -531,7 +573,11 @@ namespace BaseApp.Data.Migrations
                 schema: "Sec");
 
             migrationBuilder.DropTable(
-                name: "EdgarCompanyInfo",
+                name: "CompanyInfo",
+                schema: "Sec");
+
+            migrationBuilder.DropTable(
+                name: "PublicCompany",
                 schema: "Sec");
         }
     }

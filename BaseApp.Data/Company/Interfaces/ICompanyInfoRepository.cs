@@ -3,10 +3,10 @@ using BaseApp.Data.Repositories.Interfaces;
 
 namespace BaseApp.Data.Company.Interfaces
 {
-    public interface IEdgarCompanyInfoRepository : IGenericRepository<EdgarCompanyInfo>
+    public interface ICompanyInfoRepository : IGenericRepository<CompanyInfo>
     {
         IEnumerable<string> GetCiksToImport();
         Task<IEnumerable<string>> GetAllCikIds();
-        Task<IEnumerable<EdgarCompanyInfo>> GetCompaniesWithDetails(string? startsWith = null);
+        Task<IEnumerable<CompanyInfo>> GetCompaniesWithDetails(string? startsWith = null);
     }
 }

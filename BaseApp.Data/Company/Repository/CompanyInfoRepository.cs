@@ -7,9 +7,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BaseApp.Data.Company.Repository
 {
-    public class EdgarCompanyInfoRepository : GenericRepository<EdgarCompanyInfo>, IEdgarCompanyInfoRepository
+    public class CompanyInfoRepository : GenericRepository<CompanyInfo>, ICompanyInfoRepository
     {
-        public EdgarCompanyInfoRepository(ApplicationDbContext context)
+        public CompanyInfoRepository(ApplicationDbContext context)
             : base(context)
         {
 
@@ -23,7 +23,7 @@ namespace BaseApp.Data.Company.Repository
         }
 
         // Get all companies with details by loading navigation properties
-        public async Task<IEnumerable<EdgarCompanyInfo>> GetCompaniesWithDetails(string? startsWith = null)
+        public async Task<IEnumerable<CompanyInfo>> GetCompaniesWithDetails(string? startsWith = null)
         {
             var query = startsWith == null
                 ? GetAll()

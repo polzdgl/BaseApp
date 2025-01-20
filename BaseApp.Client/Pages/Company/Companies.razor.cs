@@ -113,8 +113,8 @@ namespace BaseApp.Client.Pages.Company
             try
             {
                 // Reset filters and reload all data
-                grid.Reset(false);
-                await GetFundableCompaniesAsync(new LoadDataArgs { Filters = null });
+                grid.Reset(true);
+                await grid.Reload();
             }
             catch (Exception ex)
             {

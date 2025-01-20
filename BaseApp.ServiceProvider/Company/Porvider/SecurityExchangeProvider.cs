@@ -1,10 +1,12 @@
-﻿using BaseApp.Data.Company.Models;
+﻿using BaseApp.Data.Company.Dtos;
+using BaseApp.Data.Company.Models;
 using BaseApp.Data.Config.SecurityExchnage;
 using BaseApp.ServiceProvider.Company.Interfaces;
 using BaseApp.Shared.Enums.Compnay;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System.Runtime.CompilerServices;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace BaseApp.ServiceProvider.Company.Porvider
 {
@@ -13,11 +15,14 @@ namespace BaseApp.ServiceProvider.Company.Porvider
         // Todo: Inject HttpClient with StandardResilency in Program.cs
         private readonly HttpClient _httpClient;
         private readonly SecApiSettings _secApiSettings;
+        private readonly ILogger<SecurityExchangeProvider> _logger;
 
-        public SecurityExchangeProvider(HttpClient httpClient, IOptions<SecApiSettings> secApiSettings)
+        public SecurityExchangeProvider(HttpClient httpClient, IOptions<SecApiSettings> secApiSettings, ILogger<SecurityExchangeProvider> logger)
         {
-            _httpClient = httpClient;
             _secApiSettings = secApiSettings.Value;
+            _logger = logger;
+
+            _httpClient = httpClient;
 
             // Add required headers to HttpClient
             _httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("PostmanRuntime/7.34.0");
@@ -25,7 +30,7 @@ namespace BaseApp.ServiceProvider.Company.Porvider
         }
 
         // Get Company Info from SEC API
-        public async Task<EdgarCompanyInfo> FetchEdgarCompanyInfoAsync(string cik)
+        public async Task<CompanyInfo> FetchEdgarCompanyInfoAsync(string cik)
         {
             // Build request url and make sure cik is 10 characters long
             var url = $"{_secApiSettings.BaseUrl}{_secApiSettings.EdgarCompanyInfoUrl}{cik.PadLeft((int)CikPaddingEnum.PaddingNumber, (char)CikPaddingEnum.PaddingValue)}.json";
@@ -41,7 +46,78 @@ namespace BaseApp.ServiceProvider.Company.Porvider
                 NumberHandling = System.Text.Json.Serialization.JsonNumberHandling.AllowReadingFromString
             };
 
-            return JsonSerializer.Deserialize<EdgarCompanyInfo>(content, options);
+            return JsonSerializer.Deserialize<CompanyInfo>(content, options);
+        }
+
+        // Get all public companies from SEC API / Json file
+        public async Task<List<PublicCompanyDto>> FetchAllPublicCompanies()
+        {
+            string content;
+
+            // Build the URL using config settings.
+            var url = $"{_secApiSettings.CompanyTickers}.json";
+
+            var response = await _httpClient.GetAsync(url);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogWarning(response.Content.ToString(), "API call to fetch public companies failed. Loading local Tickers.json instead.");
+
+                var filePath = Path.Combine(AppContext.BaseDirectory, "StaticData", "Tickers.json");
+                content = await File.ReadAllTextAsync(filePath);
+            }
+            else
+            {
+                content = await response.Content.ReadAsStringAsync();
+            }
+
+            var options = new JsonSerializerOptions
+            {
+                NumberHandling = JsonNumberHandling.AllowReadingFromString,
+                PropertyNameCaseInsensitive = true
+            };
+
+            // Deserialize the JSON into a dictionary.
+            var companies = JsonSerializer.Deserialize<List<PublicCompanyDto>>(content, options);
+
+            return companies;
+        }
+
+        // Get public companies by CIKs from SEC API / Json file
+        public async Task<List<PublicCompanyDto>> FetchPublicCompaniesByCik(IEnumerable<int> ciks)
+        {
+            string content;
+
+            // Build the URL using config settings.
+            var url = $"{_secApiSettings.CompanyTickers}.json";
+
+            var response = await _httpClient.GetAsync(url);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogWarning(response.Content.ToString(), "API call to fetch public companies failed. Loading local Tickers.json instead.");
+
+                var filePath = Path.Combine(AppContext.BaseDirectory, "StaticData", "Tickers.json");
+                content = await File.ReadAllTextAsync(filePath);
+            }
+            else
+            {
+                content = await response.Content.ReadAsStringAsync();
+            }
+
+            var options = new JsonSerializerOptions
+            {
+                NumberHandling = JsonNumberHandling.AllowReadingFromString,
+                PropertyNameCaseInsensitive = true
+            };
+
+            // Deserialize the JSON into a dictionary.
+            var companies = JsonSerializer.Deserialize<List<PublicCompanyDto>>(content, options)
+                .Where(c => ciks.Contains(c.Cik)) ?? new List<PublicCompanyDto>();
+
+            var filteredCompanies = companies.Where(c => ciks.Contains(c.Cik));
+
+            return companies.ToList();
         }
     }
 }

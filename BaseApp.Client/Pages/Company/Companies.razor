@@ -14,7 +14,8 @@
 @if (!IsMarketDataLoaded && !IsLoading)
 {
     <RadzenButton Text="Import Market Data" ButtonStyle="ButtonStyle.Primary" Click="@(() => ImportMarketData())" />
-}
+@*     <RadzenButton Text="Import Market Data" ButtonStyle="ButtonStyle.Primary" Click="@(() => AddNewCompany())" />
+ *@}
 <br />
 <br />
 
@@ -27,14 +28,14 @@
 else
 {
     <RadzenDataGrid @ref="grid" AllowFiltering="true" AllowColumnResize="true"
-                    FilterMode="FilterMode.Simple" AllowSorting="false"
+                    FilterMode="FilterMode.Simple" PageSize="5" AllowPaging="true" AllowSorting="true"
                     Data="@fundableCompanies" ColumnWidth="300px"
-                    FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                    FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" TItem="FundableCompanyDto"
                     LogicalFilterOperator="LogicalFilterOperator.And"
                     LoadData="GetFundableCompaniesAsync">
         <Columns>
             <RadzenDataGridColumn TItem="FundableCompanyDto" Property="Id" Filterable="false" Title="CIK" Frozen="true" Width="80px" TextAlign="TextAlign.Center" />
-            <RadzenDataGridColumn TItem="FundableCompanyDto" Property="Name" Title="Name" Filterable="true" FilterOperator="FilterOperator.Contains" Width="300px">
+            <RadzenDataGridColumn TItem="FundableCompanyDto" Property="Name" Title="Name" Filterable="true" FilterOperator="FilterOperator.StartsWith" Width="300px">
                 <HeaderTemplate>
                     <div style="display: flex; align-items: center; gap: 30px;">
                         <span>Name</span>

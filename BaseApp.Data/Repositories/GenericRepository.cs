@@ -15,7 +15,12 @@ namespace BaseApp.Data.Repositories
         public GenericRepository(ApplicationDbContext dbContext)
         {
             _dbContext = dbContext;
-            _defaultBulkConfig = new BulkConfig { UseTempDB = true };
+            _defaultBulkConfig = new BulkConfig 
+            { 
+                UseTempDB = true,
+                SetOutputIdentity = true,
+                PreserveInsertOrder = true,
+            };
         }
 
         #region CREATE
@@ -62,14 +67,36 @@ namespace BaseApp.Data.Repositories
 
         public virtual bool BulkCreateAll(IList<T> entityList, BulkConfig? bulkConfig = null)
         {
-            _dbContext.BulkInsert(entityList, bulkConfig ?? _defaultBulkConfig);
-            return true;
+            using var transaction = _dbContext.Database.BeginTransaction();
+            try
+            {
+                _dbContext.BulkInsert(entityList, bulkConfig ?? _defaultBulkConfig);
+                transaction.Commit();
+                return true;
+            }
+            catch
+            {
+                transaction.Rollback();
+                // throw error to surface the exception
+                throw;  
+            }
         }
 
         public virtual async Task<bool> BulkCreateAllAsync(IList<T> entityList, BulkConfig? bulkConfig = null)
         {
-            await _dbContext.BulkInsertAsync(entityList, bulkConfig ?? _defaultBulkConfig);
-            return true;
+            using var transaction = _dbContext.Database.BeginTransaction();
+            try
+            {
+                await _dbContext.BulkInsertAsync(entityList, bulkConfig ?? _defaultBulkConfig);
+                transaction.Commit();
+                return true;
+            }
+            catch
+            {
+                transaction.Rollback();
+                // throw error to surface the exception
+                throw;
+            }
         }
 
         #endregion
@@ -237,14 +264,36 @@ namespace BaseApp.Data.Repositories
 
         public virtual bool BulkUpdateAll(IList<T> entityList, BulkConfig? bulkConfig = null)
         {
-            _dbContext.BulkUpdate(entityList, bulkConfig ?? _defaultBulkConfig);
-            return true;
+            using var transaction = _dbContext.Database.BeginTransaction();
+            try
+            {
+                _dbContext.BulkUpdate(entityList, bulkConfig ?? _defaultBulkConfig);
+                transaction.Commit();
+                return true;
+            }
+            catch
+            {
+                transaction.Rollback();
+                // throw error to surface the exception
+                throw;
+            }
         }
 
         public virtual async Task<bool> BulkUpdateAllAsync(IList<T> entityList, BulkConfig? bulkConfig = null)
         {
-            await _dbContext.BulkUpdateAsync(entityList, bulkConfig ?? _defaultBulkConfig);
-            return true;
+            using var transaction = _dbContext.Database.BeginTransaction();
+            try
+            {
+                await _dbContext.BulkUpdateAsync(entityList, bulkConfig ?? _defaultBulkConfig);
+                transaction.Commit();
+                return true;
+            }
+            catch
+            {
+                transaction.Rollback();
+                // throw error to surface the exception
+                throw;
+            }
         }
 
         #endregion
@@ -293,14 +342,36 @@ namespace BaseApp.Data.Repositories
 
         public virtual bool BulkDeleteAll(IList<T> entityList, BulkConfig? bulkConfig = null)
         {
-            _dbContext.BulkDelete(entityList, bulkConfig ?? _defaultBulkConfig);
-            return true;
+            using var transaction = _dbContext.Database.BeginTransaction();
+            try
+            {
+                _dbContext.BulkDelete(entityList, bulkConfig ?? _defaultBulkConfig);
+                transaction.Commit();
+                return true;
+            }
+            catch
+            {
+                transaction.Rollback();
+                // throw error to surface the exception
+                throw;
+            }
         }
 
         public virtual async Task<bool> BulkDeleteAllAsync(IList<T> entityList, BulkConfig? bulkConfig = null)
         {
-            await _dbContext.BulkDeleteAsync(entityList, bulkConfig ?? _defaultBulkConfig);
-            return true;
+            using var transaction = _dbContext.Database.BeginTransaction();
+            try
+            {
+                await _dbContext.BulkDeleteAsync(entityList, bulkConfig ?? _defaultBulkConfig);
+                transaction.Commit();
+                return true;
+            }
+            catch
+            {
+                transaction.Rollback();
+                // throw error to surface the exception
+                throw;
+            }
         }
 
         #endregion

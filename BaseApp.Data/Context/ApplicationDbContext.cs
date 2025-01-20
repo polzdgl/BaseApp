@@ -33,7 +33,7 @@ namespace BaseApp.Data.Context
         public DbSet<ApplicationUserRole> ApplicationUserRole { get; set; }
 
         // Security Exchange tables
-        public DbSet<EdgarCompanyInfo> EdgarCompanyInfo { get; set; }
+        public DbSet<CompanyInfo> CompanyInfo { get; set; }
         public DbSet<InfoFact> InfoFact { get; set; }
         public DbSet<InfoFactUsGaap> InfoFactUsGaap { get; set; }
         public DbSet<InfoFactUsGaapNetIncomeLoss> InfoFactUsGaapNetIncomeLoss { get; set; }
@@ -193,14 +193,14 @@ namespace BaseApp.Data.Context
             });
             #endregion
 
-            #region SecurityExchange - EdgarCompanyInfo Related Tables
+            #region SecurityExchange - CompanyInfo Related Tables
             // EdgarCompanyInfo
-            modelBuilder.Entity<EdgarCompanyInfo>(entity =>
+            modelBuilder.Entity<CompanyInfo>(entity =>
             {
-                entity.ToTable("EdgarCompanyInfo", schema: "Sec");
+                entity.ToTable("CompanyInfo", schema: "Sec");
 
                 // Primary Key
-                entity.HasKey(e => e.Cik).HasName("PK_EdgarCompanyInfo");
+                entity.HasKey(e => e.Cik).HasName("PK_CompanyInfo");
 
                 // Properties
                 entity.Property(e => e.Cik)
@@ -214,7 +214,7 @@ namespace BaseApp.Data.Context
                 // Relationship with InfoFacts
                 entity.HasOne(e => e.InfoFact)
                       .WithOne()
-                      .HasForeignKey<InfoFact>(f => f.EdgarCompanyInfoId)
+                      .HasForeignKey<InfoFact>(f => f.CompanyInfoId)
                       .OnDelete(DeleteBehavior.Cascade);
             });
 

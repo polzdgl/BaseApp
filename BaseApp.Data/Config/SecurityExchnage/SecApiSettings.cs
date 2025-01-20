@@ -10,7 +10,9 @@ namespace BaseApp.Data.Config.SecurityExchnage
     {
         public string BaseUrl { get; set; }
         public string EdgarCompanyInfoUrl { get; set; }
+        public string EdgarCompanyFilingsUrl { get; set; }
+        public string EdgarCompanyFilingDetailUrl { get; set; }
+        public string EdgarCompanyFilingDetailHtmlUrl { get; set; }
+        public string CompanyTickers { get; set; }
     }
 }
-
-

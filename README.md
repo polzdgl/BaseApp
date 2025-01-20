@@ -102,7 +102,7 @@ Unit tests are implemented using xUnit with mocking provided by NSubstitute. To 
 
 - **Run this command to create new Migration**:
 ```bash
-dotnet ef migrations add InitialData --project BaseApp.Data --startup-project BaseApp.Server`
+dotnet ef migrations add InitialData --project BaseApp.Data --startup-project BaseApp.Server
 ```
 - **Run this command to run EF Core Migration**:
  ```bash

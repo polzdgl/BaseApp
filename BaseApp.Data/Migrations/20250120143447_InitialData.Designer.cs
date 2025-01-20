@@ -4,6 +4,7 @@ using BaseApp.Data.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BaseApp.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250120143447_InitialData")]
+    partial class InitialData
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -56,14 +59,14 @@ namespace BaseApp.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("CompanyInfoId")
+                    b.Property<string>("EdgarCompanyInfoId")
                         .IsRequired()
                         .HasColumnType("CHAR(10)");
 
                     b.HasKey("Id")
                         .HasName("PK_InfoFact");
 
-                    b.HasIndex("CompanyInfoId")
+                    b.HasIndex("EdgarCompanyInfoId")
                         .IsUnique();
 
                     b.ToTable("InfoFact", "Sec");
@@ -608,7 +611,7 @@ namespace BaseApp.Data.Migrations
                 {
                     b.HasOne("BaseApp.Data.Company.Models.CompanyInfo", null)
                         .WithOne("InfoFact")
-                        .HasForeignKey("BaseApp.Data.Company.Models.InfoFact", "CompanyInfoId")
+                        .HasForeignKey("BaseApp.Data.Company.Models.InfoFact", "EdgarCompanyInfoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

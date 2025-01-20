@@ -52,7 +52,7 @@ namespace BaseApp.ServiceProvider.Company.Manager
         public async Task<CikImportResult> ImportMarketDataAsync()
         {
             // Get all CIKs to import data for
-            IEnumerable<string> ciksToImport = this.Repository.EdgarCompanyInfoRepository.GetCiksToImport();
+            IEnumerable<string> ciksToImport = this.Repository.CompanyInfoRepository.GetCiksToImport();
 
             // Get all CIKs from the SEC API and save to database
             CikImportResult cikImportResult = await this.ImportCompnanyDataAsync(ciksToImport);
@@ -71,13 +71,13 @@ namespace BaseApp.ServiceProvider.Company.Manager
         public async Task<CikImportResult> ImportCompnanyDataAsync(IEnumerable<string> ciks)
         {
             CikImportResult cikImportResult = new CikImportResult();
-            List<EdgarCompanyInfo> companies = new List<EdgarCompanyInfo>();
+            List<CompanyInfo> companies = new List<CompanyInfo>();
 
             // Format to make all ciks 10 digits
             ciks = ciks.Select(cik => cik.Trim().PadLeft((int)CikPaddingEnum.PaddingNumber, (char)CikPaddingEnum.PaddingValue)).Distinct();
 
             // Get CIKs that dont exist in the database
-            var existingCiks = await Repository.EdgarCompanyInfoRepository.GetAllCikIds();
+            var existingCiks = await Repository.CompanyInfoRepository.GetAllCikIds();
 
             var newCiks = ciks.Except(existingCiks);
 
@@ -90,7 +90,7 @@ namespace BaseApp.ServiceProvider.Company.Manager
                     var data = await _securityExchangeProvider.FetchEdgarCompanyInfoAsync(cik);
 
                     // Filter relevant data
-                    var company = new EdgarCompanyInfo
+                    var company = new CompanyInfo
                     {
                         Cik = data.Cik,
                         EntityName = data.EntityName,
@@ -125,7 +125,7 @@ namespace BaseApp.ServiceProvider.Company.Manager
             }
 
             // Save to database
-            await Repository.EdgarCompanyInfoRepository.CreateAllAsync(companies);
+            await Repository.CompanyInfoRepository.CreateAllAsync(companies);
 
             // If some failed, we can set a different message
             if (cikImportResult.FailedCiks.Any())
@@ -145,7 +145,7 @@ namespace BaseApp.ServiceProvider.Company.Manager
         {
             var fundableCompanies = new List<FundableCompanyDto>();
 
-            var companies = await Repository.EdgarCompanyInfoRepository.GetCompaniesWithDetails(startsWith);
+            var companies = await Repository.CompanyInfoRepository.GetCompaniesWithDetails(startsWith);
 
             if (companies.Any())
             {
