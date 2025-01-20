@@ -8,6 +8,7 @@ using BaseApp.Shared.Enums.Compnay;
 using BaseApp.Shared.Extentions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
 
 namespace BaseApp.ServiceProvider.Company.Manager
 {
@@ -26,13 +27,13 @@ namespace BaseApp.ServiceProvider.Company.Manager
         }
 
         // Target years for calculating the standard fundable amount
-        private readonly HashSet<int> TargetYears = new HashSet<int> 
-        { 
-            (int)RequiredYear.Y2018, 
-            (int)RequiredYear.Y2019, 
-            (int)RequiredYear.Y2020, 
-            (int)RequiredYear.Y2021, 
-            (int)RequiredYear.Y2022 
+        private readonly HashSet<int> TargetYears = new HashSet<int>
+        {
+            (int)RequiredYear.Y2018,
+            (int)RequiredYear.Y2019,
+            (int)RequiredYear.Y2020,
+            (int)RequiredYear.Y2021,
+            (int)RequiredYear.Y2022
         };
 
         public IRepositoryFactory Repository
@@ -51,8 +52,11 @@ namespace BaseApp.ServiceProvider.Company.Manager
         // Import Initial Market Data from SEC API with given CIKs
         public async Task<CikImportResult> ImportMarketDataAsync()
         {
+            // Get all the public companies from SEC API / Json Data
+            await this.ImportPublicCompanies();
+
             // Get all CIKs to import data for
-            IEnumerable<string> ciksToImport = this.Repository.CompanyInfoRepository.GetCiksToImport();
+            IEnumerable<string> ciksToImport = await this.Repository.CompanyInfoRepository.GetCiksToImportAsync();
 
             // Get all CIKs from the SEC API and save to database
             CikImportResult cikImportResult = await this.ImportCompnanyDataAsync(ciksToImport);
@@ -65,6 +69,26 @@ namespace BaseApp.ServiceProvider.Company.Manager
             }
 
             return cikImportResult;
+        }
+
+        // Import all the company data from SEC API / Json file
+        public async Task ImportPublicCompanies()
+        {
+            // Get all the public companies from SEC API / Json Data
+            List<PublicCompany> publicCompanies = await this._securityExchangeProvider.FetchAllPublicCompanies();
+
+            // Get existing Companies
+            List<int> existingCompaniesCik = await Repository.PublicCompanyRepository.GetAll().Select(c => c.Cik).ToListAsync();
+
+            // Filter out companies that already exist in the database
+            IEnumerable<PublicCompany> newCompanies = publicCompanies.Where(c => !existingCompaniesCik.Contains(c.Cik));
+
+            // Save new companies to the database
+            if (newCompanies.Any())
+            {
+                // Using bulk insert to save all companies at once, and no save changes required
+                await Repository.PublicCompanyRepository.BulkCreateAllAsync(newCompanies.ToList());
+            }
         }
 
         // Import Company Data from SEC API with given CIKs
@@ -104,7 +128,7 @@ namespace BaseApp.ServiceProvider.Company.Manager
                                     {
                                         InfoFactUsGaapIncomeLossUnitsUsd = data.InfoFact?.InfoFactUsGaap?.InfoFactUsGaapNetIncomeLoss?
                                         .InfoFactUsGaapIncomeLossUnits?.InfoFactUsGaapIncomeLossUnitsUsd?
-                                        .Where(usd => usd.Form == FormEnum.Form10K.GetDescription() 
+                                        .Where(usd => usd.Form == FormEnum.Form10K.GetDescription()
                                         && (usd.Frame?.StartsWith(FrameEnum.YearlyInfo.GetDescription()) ?? false))
                                         .ToArray() ?? Array.Empty<InfoFactUsGaapIncomeLossUnitsUsd>()
                                     }
@@ -125,7 +149,7 @@ namespace BaseApp.ServiceProvider.Company.Manager
             }
 
             // Save to database
-            await Repository.CompanyInfoRepository.CreateAllAsync(companies);
+            await Repository.CompanyInfoRepository.BulkCreateAllAsync(companies);
 
             // If some failed, we can set a different message
             if (cikImportResult.FailedCiks.Any())
@@ -204,8 +228,8 @@ namespace BaseApp.ServiceProvider.Company.Manager
                 var highestIncome = yearlyData.Max(d => d.Val);
 
                 // Apply different rates based on income threshold
-                decimal rate = highestIncome >= FundingRateConst.TenBillionThreshold? 
-                    FundingRateConst.LargeIncomeMultiplier : 
+                decimal rate = highestIncome >= FundingRateConst.TenBillionThreshold ?
+                    FundingRateConst.LargeIncomeMultiplier :
                     FundingRateConst.SmallerIncomeMultiplier;
 
                 return highestIncome * rate;

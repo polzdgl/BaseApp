@@ -1,5 +1,4 @@
-﻿using BaseApp.Data.Company.Dtos;
-using BaseApp.Data.Company.Models;
+﻿using BaseApp.Data.Company.Models;
 using BaseApp.Data.Config.SecurityExchnage;
 using BaseApp.ServiceProvider.Company.Interfaces;
 using BaseApp.Shared.Enums.Compnay;
@@ -50,7 +49,7 @@ namespace BaseApp.ServiceProvider.Company.Porvider
         }
 
         // Get all public companies from SEC API / Json file
-        public async Task<List<PublicCompanyDto>> FetchAllPublicCompanies()
+        public async Task<List<PublicCompany>> FetchAllPublicCompanies()
         {
             string content;
 
@@ -78,13 +77,15 @@ namespace BaseApp.ServiceProvider.Company.Porvider
             };
 
             // Deserialize the JSON into a dictionary.
-            var companies = JsonSerializer.Deserialize<List<PublicCompanyDto>>(content, options);
+            var companiesDict = JsonSerializer.Deserialize<Dictionary<string, PublicCompany>>(content, options);
+
+            var companies = companiesDict?.Values.ToList() ?? new List<PublicCompany>();
 
             return companies;
         }
 
         // Get public companies by CIKs from SEC API / Json file
-        public async Task<List<PublicCompanyDto>> FetchPublicCompaniesByCik(IEnumerable<int> ciks)
+        public async Task<List<PublicCompany>> FetchPublicCompaniesByCik(IEnumerable<int> ciks)
         {
             string content;
 
@@ -112,8 +113,8 @@ namespace BaseApp.ServiceProvider.Company.Porvider
             };
 
             // Deserialize the JSON into a dictionary.
-            var companies = JsonSerializer.Deserialize<List<PublicCompanyDto>>(content, options)
-                .Where(c => ciks.Contains(c.Cik)) ?? new List<PublicCompanyDto>();
+            var companies = JsonSerializer.Deserialize<List<PublicCompany>>(content, options)
+                .Where(c => ciks.Contains(c.Cik)) ?? new List<PublicCompany>();
 
             var filteredCompanies = companies.Where(c => ciks.Contains(c.Cik));
 

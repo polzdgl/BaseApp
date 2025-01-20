@@ -88,12 +88,12 @@ namespace BaseApp.Data.Repositories
             try
             {
                 await _dbContext.BulkInsertAsync(entityList, bulkConfig ?? _defaultBulkConfig);
-                transaction.Commit();
+                await transaction.CommitAsync();
                 return true;
             }
             catch
             {
-                transaction.Rollback();
+                await transaction.RollbackAsync();
                 // throw error to surface the exception
                 throw;
             }
@@ -285,12 +285,12 @@ namespace BaseApp.Data.Repositories
             try
             {
                 await _dbContext.BulkUpdateAsync(entityList, bulkConfig ?? _defaultBulkConfig);
-                transaction.Commit();
+                await transaction.CommitAsync();
                 return true;
             }
             catch
             {
-                transaction.Rollback();
+                await transaction.RollbackAsync();
                 // throw error to surface the exception
                 throw;
             }
@@ -363,12 +363,12 @@ namespace BaseApp.Data.Repositories
             try
             {
                 await _dbContext.BulkDeleteAsync(entityList, bulkConfig ?? _defaultBulkConfig);
-                transaction.Commit();
+                await transaction.CommitAsync();
                 return true;
             }
             catch
             {
-                transaction.Rollback();
+                await transaction.RollbackAsync();
                 // throw error to surface the exception
                 throw;
             }

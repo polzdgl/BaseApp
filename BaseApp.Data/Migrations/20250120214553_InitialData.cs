@@ -68,6 +68,19 @@ namespace BaseApp.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "CompanyInfo",
+                schema: "Sec",
+                columns: table => new
+                {
+                    Cik = table.Column<string>(type: "CHAR(10)", nullable: false),
+                    EntityName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CompanyInfo", x => x.Cik);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Log",
                 schema: "App",
                 columns: table => new
@@ -116,7 +129,7 @@ namespace BaseApp.Data.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
-                    Ticker = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Ticker = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
                     Cik = table.Column<string>(type: "CHAR(10)", nullable: false),
                     Sedar = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Isin = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -261,41 +274,20 @@ namespace BaseApp.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "CompanyInfo",
-                schema: "Sec",
-                columns: table => new
-                {
-                    Cik = table.Column<string>(type: "CHAR(10)", nullable: false),
-                    PublicCompanyId = table.Column<int>(type: "int", nullable: false),
-                    EntityName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_CompanyInfo", x => x.Cik);
-                    table.ForeignKey(
-                        name: "FK_CompanyInfo_PublicCompany_PublicCompanyId",
-                        column: x => x.PublicCompanyId,
-                        principalSchema: "Sec",
-                        principalTable: "PublicCompany",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "InfoFact",
                 schema: "Sec",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    EdgarCompanyInfoId = table.Column<string>(type: "CHAR(10)", nullable: false)
+                    CompanyInfoId = table.Column<string>(type: "CHAR(10)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_InfoFact", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_InfoFact_CompanyInfo_EdgarCompanyInfoId",
-                        column: x => x.EdgarCompanyInfoId,
+                        name: "FK_InfoFact_CompanyInfo_CompanyInfoId",
+                        column: x => x.CompanyInfoId,
                         principalSchema: "Sec",
                         principalTable: "CompanyInfo",
                         principalColumn: "Cik",
@@ -436,17 +428,10 @@ namespace BaseApp.Data.Migrations
                 column: "RoleId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CompanyInfo_PublicCompanyId",
-                schema: "Sec",
-                table: "CompanyInfo",
-                column: "PublicCompanyId",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_InfoFact_EdgarCompanyInfoId",
+                name: "IX_InfoFact_CompanyInfoId",
                 schema: "Sec",
                 table: "InfoFact",
-                column: "EdgarCompanyInfoId",
+                column: "CompanyInfoId",
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -549,6 +534,10 @@ namespace BaseApp.Data.Migrations
                 schema: "Sec");
 
             migrationBuilder.DropTable(
+                name: "PublicCompany",
+                schema: "Sec");
+
+            migrationBuilder.DropTable(
                 name: "ApplicationRole",
                 schema: "User");
 
@@ -574,10 +563,6 @@ namespace BaseApp.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "CompanyInfo",
-                schema: "Sec");
-
-            migrationBuilder.DropTable(
-                name: "PublicCompany",
                 schema: "Sec");
         }
     }

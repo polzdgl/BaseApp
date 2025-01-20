@@ -5,7 +5,7 @@ namespace BaseApp.Data.Company.Interfaces
 {
     public interface ICompanyInfoRepository : IGenericRepository<CompanyInfo>
     {
-        IEnumerable<string> GetCiksToImport();
+        Task<IEnumerable<string>> GetCiksToImportAsync();
         Task<IEnumerable<string>> GetAllCikIds();
         Task<IEnumerable<CompanyInfo>> GetCompaniesWithDetails(string? startsWith = null);
     }

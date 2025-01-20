@@ -33,6 +33,7 @@ namespace BaseApp.Data.Context
         public DbSet<ApplicationUserRole> ApplicationUserRole { get; set; }
 
         // Security Exchange tables
+        public DbSet<PublicCompany> PublicCompany { get; set; }
         public DbSet<CompanyInfo> CompanyInfo { get; set; }
         public DbSet<InfoFact> InfoFact { get; set; }
         public DbSet<InfoFactUsGaap> InfoFactUsGaap { get; set; }
@@ -194,7 +195,29 @@ namespace BaseApp.Data.Context
             #endregion
 
             #region SecurityExchange - CompanyInfo Related Tables
-            // EdgarCompanyInfo
+            // Public Company
+            modelBuilder.Entity<PublicCompany>(entity =>
+            {
+                entity.ToTable("PublicCompany", schema: "Sec");
+
+                // Primary Key
+                entity.HasKey(e => e.Id).HasName("PK_PublicCompany");
+
+                // Properties
+                entity.Property(e => e.Cik)
+                      .IsRequired()
+                      .HasColumnType("CHAR(10)"); // CIK is fixed length (10 digits)
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(256);
+
+                entity.Property(e => e.Ticker)
+                      .IsRequired()
+                      .HasMaxLength(10);
+            });
+
+            // CompanyInfo
             modelBuilder.Entity<CompanyInfo>(entity =>
             {
                 entity.ToTable("CompanyInfo", schema: "Sec");

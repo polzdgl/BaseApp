@@ -11,6 +11,7 @@ namespace BaseApp.Data.Repositories
     {
         private IUserRepository _userRepository;
         private ICompanyInfoRepository _securityExchangeRepository;
+        private IPublicCompanyRepository _publicCompanyRepository;
 
         public ApplicationDbContext Context { get; set; } = context;
 
@@ -37,6 +38,18 @@ namespace BaseApp.Data.Repositories
                 }
 
                 return this._securityExchangeRepository;
+            }
+        }
+
+        public IPublicCompanyRepository PublicCompanyRepository
+        {
+            get
+            {
+                if (this._publicCompanyRepository == null)
+                {
+                    this._publicCompanyRepository = new PublicCompanyRepository(this.Context);
+                }
+                return this._publicCompanyRepository;
             }
         }
     }

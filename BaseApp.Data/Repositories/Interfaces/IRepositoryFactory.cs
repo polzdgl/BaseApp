@@ -11,5 +11,7 @@ namespace BaseApp.Data.Repositories.Interfaces
         IUserRepository UserRepository { get; }
 
         ICompanyInfoRepository CompanyInfoRepository { get; }
+
+        IPublicCompanyRepository PublicCompanyRepository { get; }
     }
 }

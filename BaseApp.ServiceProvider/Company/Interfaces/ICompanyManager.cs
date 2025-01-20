@@ -13,5 +13,6 @@ namespace BaseApp.ServiceProvider.Company.Interfaces
         decimal CalculateSpecialFundableAmount(decimal standardAmount, string name, decimal income2021, decimal income2022);
         Task CreateMarketDataLoadRecord();
         Task<bool> IsMarketDataLoadedAsync();
+        Task ImportPublicCompanies();
     }
 }

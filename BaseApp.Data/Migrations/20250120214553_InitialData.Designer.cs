@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BaseApp.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250120150850_InitialData2")]
-    partial class InitialData2
+    [Migration("20250120214553_InitialData")]
+    partial class InitialData
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -39,14 +39,8 @@ namespace BaseApp.Data.Migrations
                         .HasColumnType("nvarchar(256)")
                         .HasAnnotation("Relational:JsonPropertyName", "entityName");
 
-                    b.Property<int>("PublicCompanyId")
-                        .HasColumnType("int");
-
                     b.HasKey("Cik")
                         .HasName("PK_CompanyInfo");
-
-                    b.HasIndex("PublicCompanyId")
-                        .IsUnique();
 
                     b.ToTable("CompanyInfo", "Sec");
                 });
@@ -245,7 +239,8 @@ namespace BaseApp.Data.Migrations
 
                     b.Property<string>("Ticker")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)")
                         .HasAnnotation("Relational:JsonPropertyName", "ticker");
 
                     b.Property<string>("Website")
@@ -598,15 +593,6 @@ namespace BaseApp.Data.Migrations
                     b.ToTable("ApplicationUserToken  ", "User");
                 });
 
-            modelBuilder.Entity("BaseApp.Data.Company.Models.CompanyInfo", b =>
-                {
-                    b.HasOne("BaseApp.Data.Company.Models.PublicCompany", null)
-                        .WithOne("CompanyInfo")
-                        .HasForeignKey("BaseApp.Data.Company.Models.CompanyInfo", "PublicCompanyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("BaseApp.Data.Company.Models.InfoFact", b =>
                 {
                     b.HasOne("BaseApp.Data.Company.Models.CompanyInfo", null)
@@ -729,12 +715,6 @@ namespace BaseApp.Data.Migrations
             modelBuilder.Entity("BaseApp.Data.Company.Models.InfoFactUsGaapNetIncomeLoss", b =>
                 {
                     b.Navigation("InfoFactUsGaapIncomeLossUnits")
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("BaseApp.Data.Company.Models.PublicCompany", b =>
-                {
-                    b.Navigation("CompanyInfo")
                         .IsRequired();
                 });
 #pragma warning restore 612, 618
