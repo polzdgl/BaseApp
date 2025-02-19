@@ -1,5 +1,6 @@
 ﻿using BaseApp.Data.Company.Dtos;
 using BaseApp.ServiceProvider.Company.Interfaces;
+using BaseApp.Shared.Dtos;
 using System.Net.Http.Json;
 
 namespace BaseApp.Client.ServiceClients.Company
@@ -12,15 +13,15 @@ namespace BaseApp.Client.ServiceClients.Company
             this._httpClient = httpClient;
         }
 
-        public async Task<IEnumerable<FundableCompanyDto>> GetCompaniesAsync(string nameFilter = null, CancellationToken cancellationToken = default)
+        public async Task<PaginatedResult<FundableCompanyDto>> GetCompaniesAsync(int page, int pageSize, string nameFilter = null, CancellationToken cancellationToken = default)
         {
             try
             {
                 string queryString = string.IsNullOrWhiteSpace(nameFilter) ? "" : $"?startsWith={Uri.EscapeDataString(nameFilter)}";
 
-                var response = await _httpClient.GetFromJsonAsync<IEnumerable<FundableCompanyDto>>($"/api/company/companies{queryString}", cancellationToken);
+                var response = await _httpClient.GetFromJsonAsync<PaginatedResult<FundableCompanyDto>>($"/api/company/companies?page={page}&pageSize={pageSize}&filter{queryString}", cancellationToken);
 
-                return response ?? Enumerable.Empty<FundableCompanyDto>();
+                return response ?? new PaginatedResult<FundableCompanyDto>();
             }
             catch (Exception ex)
             {

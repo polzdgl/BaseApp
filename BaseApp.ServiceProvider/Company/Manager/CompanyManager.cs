@@ -2,10 +2,13 @@
 using BaseApp.Data.Company.Models;
 using BaseApp.Data.Repositories;
 using BaseApp.Data.Repositories.Interfaces;
+using BaseApp.Data.User.Dtos;
 using BaseApp.ServiceProvider.Company.Interfaces;
 using BaseApp.Shared.Const.Company;
+using BaseApp.Shared.Dtos;
 using BaseApp.Shared.Enums.Compnay;
 using BaseApp.Shared.Extentions;
+using Microsoft.AspNet.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
@@ -120,7 +123,7 @@ namespace BaseApp.ServiceProvider.Company.Manager
                     // Filter relevant data
                     var company = new CompanyInfo
                     {
-                        Cik = data.Cik == 0 
+                        Cik = data.Cik == 0
                         ? throw new InvalidDataException($"CIK is invalid for EntityName:{data.EntityName}, CIK: {cik}")
                         : data.Cik,
                         EntityName = string.IsNullOrEmpty(data.EntityName)
@@ -144,7 +147,7 @@ namespace BaseApp.ServiceProvider.Company.Manager
                                         InfoFactUsGaapIncomeLossUnitsUsd = data.InfoFact?.InfoFactUsGaap?.InfoFactUsGaapNetIncomeLoss?
                                         .InfoFactUsGaapIncomeLossUnits?.InfoFactUsGaapIncomeLossUnitsUsd?
                                         .Where(usd => usd.Form != null && (usd.Frame?.StartsWith(FrameConst.YearlyInfo) ?? false))
-                                        .ToArray()?? Array.Empty<InfoFactUsGaapIncomeLossUnitsUsd>()
+                                        .ToArray() ?? Array.Empty<InfoFactUsGaapIncomeLossUnitsUsd>()
                                     }
                                 }
                             }
@@ -184,37 +187,55 @@ namespace BaseApp.ServiceProvider.Company.Manager
         }
 
         // Get Fundable Companies
-        public async Task<List<FundableCompanyDto>> GetCompaniesAsync(string? startsWith = null)
+        public async Task<PaginatedResult<FundableCompanyDto>> GetCompaniesAsync(int page, int pageSize, string? startsWith = null)
         {
+            _logger.LogInformation($"Getting Companies for page {page} with page size {pageSize}. Filer: {startsWith ?? "None"}");
+
             var fundableCompanies = new List<FundableCompanyDto>();
 
-            var companies = await Repository.CompanyInfoRepository.GetCompaniesWithDetails(startsWith);
+            var totalCount = await Repository.CompanyInfoRepository.CountAsync(); // Get total user count
 
-            if (companies.Any())
+            var companies = await Repository.CompanyInfoRepository.GetCompaniesWithDetails(page, pageSize, startsWith);
+
+            if (companies == null || !companies.Any())
             {
-                foreach (var company in companies)
+                return new PaginatedResult<FundableCompanyDto>
                 {
-                    var incomeData = company?.InfoFact?.InfoFactUsGaap?.InfoFactUsGaapNetIncomeLoss?.InfoFactUsGaapIncomeLossUnits?.InfoFactUsGaapIncomeLossUnitsUsd;
-                    var incomeDataList = incomeData ?? new List<InfoFactUsGaapIncomeLossUnitsUsd>();
-
-                    var standardAmount = this.CalculateStandardFundableAmount(incomeDataList);
-
-                    var income2021 = incomeDataList.FirstOrDefault(d => d.Frame == FrameConst.Year2021)?.Val ?? (int)FundableAmountEnum.StandardFundableAmount;
-                    var income2022 = incomeDataList.FirstOrDefault(d => d.Frame == FrameConst.Year2022)?.Val ?? (int)FundableAmountEnum.StandardFundableAmount;
-
-                    var specialAmount = this.CalculateSpecialFundableAmount(standardAmount, company?.EntityName ?? "", income2021, income2022);
-
-                    fundableCompanies.Add(new FundableCompanyDto
-                    {
-                        Id = company.Cik,
-                        Name = company.EntityName,
-                        StandardFundableAmount = standardAmount,
-                        SpecialFundableAmount = specialAmount
-                    });
-                }
+                    Items = Enumerable.Empty<FundableCompanyDto>(),
+                    TotalCount = 0,
+                    Page = page,
+                    PageSize = pageSize
+                };
             }
 
-            return fundableCompanies.OrderBy(c => c.Name).ToList();
+            foreach (var company in companies)
+            {
+                var incomeData = company?.InfoFact?.InfoFactUsGaap?.InfoFactUsGaapNetIncomeLoss?.InfoFactUsGaapIncomeLossUnits?.InfoFactUsGaapIncomeLossUnitsUsd;
+                var incomeDataList = incomeData ?? new List<InfoFactUsGaapIncomeLossUnitsUsd>();
+
+                var standardAmount = this.CalculateStandardFundableAmount(incomeDataList);
+
+                var income2021 = incomeDataList.FirstOrDefault(d => d.Frame == FrameConst.Year2021)?.Val ?? (int)FundableAmountEnum.StandardFundableAmount;
+                var income2022 = incomeDataList.FirstOrDefault(d => d.Frame == FrameConst.Year2022)?.Val ?? (int)FundableAmountEnum.StandardFundableAmount;
+
+                var specialAmount = this.CalculateSpecialFundableAmount(standardAmount, company?.EntityName ?? "", income2021, income2022);
+
+                fundableCompanies.Add(new FundableCompanyDto
+                {
+                    Id = company.Cik,
+                    Name = company.EntityName,
+                    StandardFundableAmount = standardAmount,
+                    SpecialFundableAmount = specialAmount
+                });
+            }
+
+            return new PaginatedResult<FundableCompanyDto>
+            {
+                Items = fundableCompanies.OrderBy(c => c.Name),
+                TotalCount = totalCount,
+                Page = page,
+                PageSize = pageSize
+            };
         }
 
         // Calculate Standard Fundable Amount

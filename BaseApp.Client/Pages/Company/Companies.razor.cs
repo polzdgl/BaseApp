@@ -14,21 +14,28 @@ namespace BaseApp.Client.Pages.Company
 
         private bool IsLoading = true;
         private bool IsMarketDataLoaded = false;
+        private int TotalRecords = 0;
+        private int PageSize = 50;
         RadzenDataGrid<FundableCompanyDto> grid;
 
-        private IEnumerable<FundableCompanyDto> fundableCompanies = new List<FundableCompanyDto>();
-
+        private IEnumerable<FundableCompanyDto>? fundableCompanies = new List<FundableCompanyDto>();
 
         protected override async Task OnInitializedAsync()
         {
             // Check if Market Data is loaded
-            await CheckMarketDataLoadStatus();
+            //await CheckMarketDataLoadStatus();
 
-            if (IsMarketDataLoaded)
+            //if (IsMarketDataLoaded)
+            //{
+            //    // If Market Data is loaded, data is available, get Company lists
+            LoadDataArgs loadDataArgs = new LoadDataArgs
             {
-                // If Market Data is loaded, data is available, get Company lists
-                await GetFundableCompaniesAsync();
-            }
+                Skip = 0,
+                Top = PageSize
+            };
+
+            await GetFundableCompaniesAsync(loadDataArgs);
+            //}
         }
 
         // Check if Data is Imported from the SEC EgdarConpany API, and update the status for IsMarketDataLoaded
@@ -58,17 +65,33 @@ namespace BaseApp.Client.Pages.Company
             {
                 IsLoading = true;
 
+                // Calculate page index based on Radzen's `Skip` and `Top` properties
+                var pageIndex = args.Skip / args.Top + 1;
+                var pageSize = args.Top;
+
                 // Extract the filter value for "Name"
                 string nameFilter = args?.Filters?
                     .FirstOrDefault(f => f.Property == nameof(FundableCompanyDto.Name))?
                     .FilterValue?.ToString();
 
                 // Call the API provider with the filter value
-                fundableCompanies = await CompanyClient.GetCompaniesAsync(nameFilter);
+                var result = await CompanyClient.GetCompaniesAsync((int)pageIndex, (int)pageSize.Value, nameFilter);
+
+                if (result != null)
+                {
+                    fundableCompanies = result.Items ?? new List<FundableCompanyDto>();
+                    TotalRecords = result.TotalCount;
+                }
+                else
+                {
+                    fundableCompanies = new List<FundableCompanyDto>();
+                    TotalRecords = 0;
+                }
+
             }
             catch (Exception ex)
             {
-                ShowNotification("Error", "An error occurred while trying to retrieve Companies!", NotificationSeverity.Error);
+                ShowNotification("Error", ex.Message, NotificationSeverity.Error);
             }
             finally
             {

@@ -1,6 +1,7 @@
 ﻿using BaseApp.Data.Company.Dtos;
 using BaseApp.Data.Company.Models;
 using BaseApp.ServiceProvider.Company.Interfaces;
+using BaseApp.Shared.Dtos;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
@@ -96,15 +97,18 @@ namespace BaseApp.Server.Controllers
         }
 
         [HttpGet("companies", Name = "GetCompaniesAsync")]
-        [ProducesResponseType(typeof(List<FundableCompanyDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(PaginatedResult<FundableCompanyDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetCompaniesAsync([FromQuery] string startsWith = null)
+        public async Task<IActionResult> GetCompaniesAsync([FromQuery] int page = 1, [FromQuery] int pageSize = 50, [FromQuery] string startsWith = null)
         {
             try
             {
                 _logger.LogInformation("Getting Company data: {name}", startsWith.IsNullOrEmpty() ? "for All" : $"starts with: {startsWith}");
 
-                List<FundableCompanyDto> companies = await _companyManager.GetCompaniesAsync(startsWith);
+                //List<FundableCompanyDto> companies = await _companyManager.GetCompaniesAsync(startsWith);
+                
+                PaginatedResult<FundableCompanyDto> companies = await _companyManager.GetCompaniesAsync(page, pageSize, startsWith);
+
                 return Ok(companies);
             }
             catch (Exception ex)

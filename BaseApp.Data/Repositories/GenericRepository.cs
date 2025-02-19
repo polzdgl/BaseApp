@@ -196,6 +196,13 @@ namespace BaseApp.Data.Repositories
             return await _dbContext.Set<T>().CountAsync();
         }
 
+        public virtual IQueryable<T> GetPagedQueryable(int page, int pageSize)
+        {
+            return _dbContext.Set<T>()
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize);
+        }
+
         public virtual async Task<IEnumerable<T>> GetPagedAsync(int page, int pageSize)
         {
             return await _dbContext.Set<T>()

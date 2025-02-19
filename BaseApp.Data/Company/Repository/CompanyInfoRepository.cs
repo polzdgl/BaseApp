@@ -23,10 +23,10 @@ namespace BaseApp.Data.Company.Repository
         }
 
         // Get all companies with details by loading navigation properties
-        public async Task<IEnumerable<CompanyInfo>> GetCompaniesWithDetails(string? startsWith = null)
+        public async Task<IEnumerable<CompanyInfo>> GetCompaniesWithDetails(int page, int pageSize, string? startsWith = null)
         {
             var query = startsWith == null
-                ? GetAll()
+                ? GetPagedQueryable(page, pageSize)
                 : GetByCondition(x => x.EntityName.StartsWith(startsWith));
 
             return await query

@@ -47,6 +47,8 @@ namespace BaseApp.Data.Repositories.Interfaces
 
         Task<int> CountAsync();
 
+        IQueryable<T> GetPagedQueryable(int page, int pageSize);
+
         Task<IEnumerable<T>> GetPagedAsync(int page, int pageSize);
 
         #endregion
