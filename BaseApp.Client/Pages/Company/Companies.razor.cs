@@ -18,24 +18,24 @@ namespace BaseApp.Client.Pages.Company
         private int PageSize = 50;
         RadzenDataGrid<FundableCompanyDto> grid;
 
-        private IEnumerable<FundableCompanyDto>? fundableCompanies = new List<FundableCompanyDto>();
+        private IEnumerable<FundableCompanyDto> fundableCompanies = new List<FundableCompanyDto>();
 
         protected override async Task OnInitializedAsync()
         {
             // Check if Market Data is loaded
-            //await CheckMarketDataLoadStatus();
+            await CheckMarketDataLoadStatus();
 
-            //if (IsMarketDataLoaded)
-            //{
-            //    // If Market Data is loaded, data is available, get Company lists
-            LoadDataArgs loadDataArgs = new LoadDataArgs
+            if (IsMarketDataLoaded)
             {
-                Skip = 0,
-                Top = PageSize
-            };
+                // If Market Data is loaded, data is available, get Company lists
+                LoadDataArgs loadDataArgs = new LoadDataArgs
+                {
+                    Skip = 0,
+                    Top = PageSize
+                };
 
-            await GetFundableCompaniesAsync(loadDataArgs);
-            //}
+                fundableCompanies = await GetFundableCompaniesAsync(loadDataArgs);
+            }
         }
 
         // Check if Data is Imported from the SEC EgdarConpany API, and update the status for IsMarketDataLoaded
@@ -56,10 +56,43 @@ namespace BaseApp.Client.Pages.Company
             }
         }
 
+        private async Task<IEnumerable<FundableCompanyDto>> GetFundableCompaniesAsync(LoadDataArgs args = null)
+        {
+            try
+            {
+                IsLoading = true;
+
+                // Calculate page index based on Radzen's `Skip` and `Top` properties
+                var pageIndex = args.Skip / args.Top + 1;
+                var pageSize = args.Top;
+
+                // Call the API provider with the filter value
+                var result = await CompanyClient.GetCompaniesAsync((int)pageIndex, (int)pageSize.Value, string.Empty);
+
+                if (result == null)
+                {
+                    TotalRecords = 0;
+                    return new List<FundableCompanyDto>();
+                }
+                                    
+                TotalRecords = result.TotalCount;
+                return result.Items ?? new List<FundableCompanyDto>();
+            }
+            catch (Exception ex)
+            {
+                ShowNotification("Error", ex.Message, NotificationSeverity.Error);
+                return new List<FundableCompanyDto>();
+            }
+            finally
+            {
+                IsLoading = false;
+            }
+        }
+
         // Get Companies from the Backend API/Database
         // LoadDataArgs is used to pass filters and other parameters to the API
         // Filtering is handled by the BackendApi 
-        private async Task GetFundableCompaniesAsync(LoadDataArgs args = null)
+        private async Task LoadDataAsync(LoadDataArgs args = null)
         {
             try
             {
@@ -116,7 +149,7 @@ namespace BaseApp.Client.Pages.Company
                 if (IsMarketDataLoaded)
                 {
                     // Load fundable companies if the market data is now loaded
-                    await GetFundableCompaniesAsync(new LoadDataArgs { });
+                    await GetFundableCompaniesAsync();
                 }
             }
             catch (Exception ex)

@@ -231,7 +231,7 @@ namespace BaseApp.ServiceProvider.Company.Manager
 
             return new PaginatedResult<FundableCompanyDto>
             {
-                Items = fundableCompanies.OrderBy(c => c.Name),
+                Items = fundableCompanies,
                 TotalCount = totalCount,
                 Page = page,
                 PageSize = pageSize

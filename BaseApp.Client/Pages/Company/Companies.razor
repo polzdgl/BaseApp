@@ -48,7 +48,7 @@ else
         </Columns>
     </RadzenDataGrid> *@
 
-    <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true" AllowAlternatingRows="false"
+@*     <RadzenDataGrid AllowFiltering="true" AllowColumnResize="true" AllowAlternatingRows="false"
                     FilterMode="FilterMode.Advanced" AllowSorting="true" AllowPaging="true"
                     PageSize="@PageSize" Count="@TotalRecords" ShowPagingSummary="true"   
                     Data="@fundableCompanies" LogicalFilterOperator="LogicalFilterOperator.Or"
@@ -67,21 +67,23 @@ else
             <RadzenDataGridColumn TItem="FundableCompanyDto" Property="StandardFundableAmount" Filterable="false" Title="Standard Fundable Amount" FormatString="{0:C4}" Width="160px" />
             <RadzenDataGridColumn TItem="FundableCompanyDto" Property="SpecialFundableAmount" Filterable="false" Title="Special Fundable Amount" FormatString="{0:C4}" Width="160px" />
         </Columns>
-    </RadzenDataGrid>
-@* 
-    <RadzenDataGrid style="height: 335px" @ref="grid" IsLoading=@IsLoading Count="@TotalRecords" Data="@fundableCompanies" LoadData="@GetFundableCompaniesAsync" AllowSorting="true" AllowFiltering="true" AllowPaging="true" PageSize="4" PagerHorizontalAlign="HorizontalAlign.Center" ColumnWidth="200px">
-        <Columns>
-            <RadzenDataGridColumn TItem="FundableCompanyDto" Property="Id" Filterable="false" Title="CIK" Frozen="true" Width="80px" TextAlign="TextAlign.Center" />
-            <RadzenDataGridColumn TItem="FundableCompanyDto" Property="Name" Title="Name" Filterable="true" FilterOperator="FilterOperator.StartsWith" Width="300px">
-                <HeaderTemplate>
-                    <div style="display: flex; align-items: center; gap: 30px;">
-                        <span>Name</span>
-                        <RadzenButton Text="Clear Filters" ButtonStyle="ButtonStyle.Info" Click="ClearFilters" Size="ButtonSize.Small" />
-                    </div>
-                </HeaderTemplate>
-            </RadzenDataGridColumn>
-            <RadzenDataGridColumn TItem="FundableCompanyDto" Property="StandardFundableAmount" Filterable="false" Title="Standard Fundable Amount" FormatString="{0:C4}" Width="160px" />
-            <RadzenDataGridColumn TItem="FundableCompanyDto" Property="SpecialFundableAmount" Filterable="false" Title="Special Fundable Amount" FormatString="{0:C4}" Width="160px" />
-        </Columns>
     </RadzenDataGrid> *@
+
+  @*   <RadzenDataGrid AllowFiltering="false" AllowColumnResize="true" AllowAlternatingRows="false"
+                    FilterMode="FilterMode.Advanced" AllowSorting="false" PageSize="@PageSize" AllowPaging="true"
+                    PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
+                    Data="@fundableCompanies" LogicalFilterOperator="LogicalFilterOperator.Or"
+                    TItem="FundableCompanyDto" Count="@TotalRecords" LoadData="GetFundableCompaniesAsync" SelectionMode="DataGridSelectionMode.Single"> *@
+
+    <RadzenDataGrid AllowFiltering="false" AllowColumnResize="true" AllowAlternatingRows="false"
+                    FilterMode="FilterMode.Advanced" AllowSorting="false" AllowPaging="true" PageSize="@PageSize" Count="@TotalRecords"
+                    Data="@fundableCompanies" LoadData="@LoadDataAsync" LogicalFilterOperator="LogicalFilterOperator.Or" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
+                    ColumnWidth="300px"  SelectionMode="DataGridSelectionMode.Single">
+        <Columns>
+            <RadzenDataGridColumn TItem="FundableCompanyDto" Property="@nameof(FundableCompanyDto.Id)" Filterable="true" Title="CIK" Frozen="true" Width="80px" TextAlign="TextAlign.Center" />
+            <RadzenDataGridColumn TItem="FundableCompanyDto" Property="@nameof(FundableCompanyDto.Name)" Title="Name" Frozen="true" Width="160px" />
+            <RadzenDataGridColumn TItem="FundableCompanyDto" Property="@nameof(FundableCompanyDto.StandardFundableAmount)" Title="Standard Fundable Amount" Width="160px" />
+            <RadzenDataGridColumn TItem="FundableCompanyDto" Property="@nameof(FundableCompanyDto.SpecialFundableAmount)" Title="Special Fundable Amount" Width="160px" />
+        </Columns>
+    </RadzenDataGrid>
 }
