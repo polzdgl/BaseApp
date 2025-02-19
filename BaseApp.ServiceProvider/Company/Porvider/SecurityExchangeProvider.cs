@@ -42,7 +42,7 @@ namespace BaseApp.ServiceProvider.Company.Porvider
 
             var options = new JsonSerializerOptions
             {
-                NumberHandling = System.Text.Json.Serialization.JsonNumberHandling.AllowReadingFromString
+                NumberHandling = JsonNumberHandling.AllowReadingFromString
             };
 
             return JsonSerializer.Deserialize<CompanyInfo>(content, options);

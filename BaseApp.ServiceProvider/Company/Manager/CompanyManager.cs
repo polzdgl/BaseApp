@@ -9,6 +9,7 @@ using BaseApp.Shared.Extentions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
+using System.Data.Entity.Core.Mapping;
 
 namespace BaseApp.ServiceProvider.Company.Manager
 {
@@ -105,19 +106,26 @@ namespace BaseApp.ServiceProvider.Company.Manager
 
             var newCiks = ciks.Except(existingCiks);
 
+            int currentIndex = 1;
+            int totalCount = newCiks.Count();
+
             foreach (var cik in newCiks)
             {
                 try
                 {
-                    _logger.LogInformation("Loading Company data for CIK: {cik}", cik);
+                    _logger.LogInformation("Iteration: {currentIndex}/{totalCount}. Loading Company data for CIK: {cik}", currentIndex, totalCount, cik);
 
                     var data = await _securityExchangeProvider.FetchEdgarCompanyInfoAsync(cik);
 
                     // Filter relevant data
                     var company = new CompanyInfo
                     {
-                        Cik = data.Cik,
-                        EntityName = data.EntityName ?? throw new InvalidDataException($"Entity Name is empty for CIK:{cik}"),
+                        Cik = data.Cik == 0 
+                        ? throw new InvalidDataException($"CIK is invalid for EntityName:{data.EntityName}, CIK: {cik}")
+                        : data.Cik,
+                        EntityName = string.IsNullOrEmpty(data.EntityName)
+                        ? throw new InvalidDataException($"Entity Name is empty for CIK:{cik}")
+                        : data.EntityName,
                         InfoFact = new InfoFact
                         {
                             InfoFactUsGaap = new InfoFactUsGaap
@@ -126,11 +134,17 @@ namespace BaseApp.ServiceProvider.Company.Manager
                                 {
                                     InfoFactUsGaapIncomeLossUnits = new InfoFactUsGaapIncomeLossUnits
                                     {
+                                        //InfoFactUsGaapIncomeLossUnitsUsd = data.InfoFact?.InfoFactUsGaap?.InfoFactUsGaapNetIncomeLoss?
+                                        //.InfoFactUsGaapIncomeLossUnits?.InfoFactUsGaapIncomeLossUnitsUsd?
+                                        //.Where(usd => (usd.Form == FormEnum.Form10K.GetDescription() || usd.Form == FormEnum.Form10Q.GetDescription())
+                                        //&& (usd.Frame?.StartsWith(FrameEnum.YearlyInfo.GetDescription()) ?? false))
+                                        //.ToArray() ?? Array.Empty<InfoFactUsGaapIncomeLossUnitsUsd>()
+
+                                        // Get Everything
                                         InfoFactUsGaapIncomeLossUnitsUsd = data.InfoFact?.InfoFactUsGaap?.InfoFactUsGaapNetIncomeLoss?
                                         .InfoFactUsGaapIncomeLossUnits?.InfoFactUsGaapIncomeLossUnitsUsd?
-                                        .Where(usd => usd.Form == FormEnum.Form10K.GetDescription()
-                                        && (usd.Frame?.StartsWith(FrameEnum.YearlyInfo.GetDescription()) ?? false))
-                                        .ToArray() ?? Array.Empty<InfoFactUsGaapIncomeLossUnitsUsd>()
+                                        .Where(usd => usd.Form != null && (usd.Frame?.StartsWith(FrameEnum.YearlyInfo.GetDescription()) ?? false))
+                                        .ToArray()?? Array.Empty<InfoFactUsGaapIncomeLossUnitsUsd>()
                                     }
                                 }
                             }
@@ -146,10 +160,15 @@ namespace BaseApp.ServiceProvider.Company.Manager
                     cikImportResult.FailedCiks.Add(cik);
                     continue;
                 }
+                finally
+                {
+                    // Increment index counter
+                    currentIndex++;
+                }
             }
 
             // Save to database
-            await Repository.CompanyInfoRepository.BulkCreateAllAsync(companies);
+            await Repository.CompanyInfoRepository.CreateAllAsync(companies);
 
             // If some failed, we can set a different message
             if (cikImportResult.FailedCiks.Any())
