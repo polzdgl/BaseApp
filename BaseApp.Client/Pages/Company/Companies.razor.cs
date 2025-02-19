@@ -14,6 +14,7 @@ namespace BaseApp.Client.Pages.Company
 
         private bool IsLoading = true;
         private bool IsMarketDataLoaded = false;
+        private int PageSize = 25;
         RadzenDataGrid<FundableCompanyDto> grid;
 
         private IEnumerable<FundableCompanyDto> fundableCompanies = new List<FundableCompanyDto>();
@@ -120,6 +121,16 @@ namespace BaseApp.Client.Pages.Company
             {
                 Console.WriteLine($"Error clearing filters: {ex.Message}");
             }
+        }
+
+        // Show loading on the UI
+        async Task ShowLoading()
+        {
+            IsLoading = true;
+
+            await Task.Yield();
+
+            IsLoading = false;
         }
 
         // Show a notification message
