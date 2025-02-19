@@ -7,6 +7,5 @@
         public const decimal SmallerIncomeMultiplier = 0.2151m;
         public const decimal CompanyNameWithVowelMultiplier = 0.15m;
         public const decimal CompanyNameWithDecreasingIncomeMultiplier = -0.25m;
-
     }
 }

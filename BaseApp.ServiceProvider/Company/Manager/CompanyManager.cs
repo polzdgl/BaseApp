@@ -143,7 +143,7 @@ namespace BaseApp.ServiceProvider.Company.Manager
                                         // Get Everything
                                         InfoFactUsGaapIncomeLossUnitsUsd = data.InfoFact?.InfoFactUsGaap?.InfoFactUsGaapNetIncomeLoss?
                                         .InfoFactUsGaapIncomeLossUnits?.InfoFactUsGaapIncomeLossUnitsUsd?
-                                        .Where(usd => usd.Form != null && (usd.Frame?.StartsWith(FrameEnum.YearlyInfo.GetDescription()) ?? false))
+                                        .Where(usd => usd.Form != null && (usd.Frame?.StartsWith(FrameConst.YearlyInfo) ?? false))
                                         .ToArray()?? Array.Empty<InfoFactUsGaapIncomeLossUnitsUsd>()
                                     }
                                 }
@@ -199,8 +199,8 @@ namespace BaseApp.ServiceProvider.Company.Manager
 
                     var standardAmount = this.CalculateStandardFundableAmount(incomeDataList);
 
-                    var income2021 = incomeDataList.FirstOrDefault(d => d.Frame == FrameEnum.Year2021.GetDescription())?.Val ?? (int)FundableAmountEnum.StandardFundableAmount;
-                    var income2022 = incomeDataList.FirstOrDefault(d => d.Frame == FrameEnum.Year2022.GetDescription())?.Val ?? (int)FundableAmountEnum.StandardFundableAmount;
+                    var income2021 = incomeDataList.FirstOrDefault(d => d.Frame == FrameConst.Year2021)?.Val ?? (int)FundableAmountEnum.StandardFundableAmount;
+                    var income2022 = incomeDataList.FirstOrDefault(d => d.Frame == FrameConst.Year2022)?.Val ?? (int)FundableAmountEnum.StandardFundableAmount;
 
                     var specialAmount = this.CalculateSpecialFundableAmount(standardAmount, company?.EntityName ?? "", income2021, income2022);
 
@@ -237,8 +237,8 @@ namespace BaseApp.ServiceProvider.Company.Manager
                 };
 
                 // Check if income is positive for specific years
-                if (!yearlyData.Any(d => d.Frame.StartsWith(FrameEnum.Year2021.GetDescription()) && d.Val > (int)IncomeEnum.PositiveIncome) ||
-                    !yearlyData.Any(d => d.Frame.StartsWith(FrameEnum.Year2022.GetDescription()) && d.Val > (int)IncomeEnum.PositiveIncome))
+                if (!yearlyData.Any(d => d.Frame.StartsWith(FrameConst.Year2021) && d.Val > (int)IncomeEnum.PositiveIncome) ||
+                    !yearlyData.Any(d => d.Frame.StartsWith(FrameConst.Year2022) && d.Val > (int)IncomeEnum.PositiveIncome))
                 {
                     return (int)FundableAmountEnum.StandardFundableAmount;
                 }
@@ -274,7 +274,7 @@ namespace BaseApp.ServiceProvider.Company.Manager
             var specialAmount = standardAmount;
 
             // Check if the name is not null or empty, and starts with a vowel
-            if (!string.IsNullOrEmpty(name) && CompanyNameEnum.Vowels.GetDescription().Contains(char.ToUpper(name[0])))
+            if (!string.IsNullOrEmpty(name) && CompanyNameConst.Vowels.Contains(char.ToUpper(name[0])))
             {
                 specialAmount += standardAmount * FundingRateConst.CompanyNameWithVowelMultiplier;
             }
