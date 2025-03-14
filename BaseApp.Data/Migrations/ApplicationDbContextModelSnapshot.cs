@@ -18,7 +18,7 @@ namespace BaseApp.Data.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("App")
-                .HasAnnotation("ProductVersion", "9.0.0")
+                .HasAnnotation("ProductVersion", "9.0.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -117,6 +117,23 @@ namespace BaseApp.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<DateOnly>("EndDate")
+                        .HasColumnType("date")
+                        .HasAnnotation("Relational:JsonPropertyName", "end");
+
+                    b.Property<DateOnly>("FiledAt")
+                        .HasColumnType("date")
+                        .HasAnnotation("Relational:JsonPropertyName", "filed");
+
+                    b.Property<string>("FiscalPeriod")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasAnnotation("Relational:JsonPropertyName", "fp");
+
+                    b.Property<int>("FiscalYear")
+                        .HasColumnType("int")
+                        .HasAnnotation("Relational:JsonPropertyName", "fy");
+
                     b.Property<string>("Form")
                         .IsRequired()
                         .HasMaxLength(10)
@@ -131,6 +148,10 @@ namespace BaseApp.Data.Migrations
 
                     b.Property<int>("InfoFactUsGaapIncomeLossUnitsId")
                         .HasColumnType("int");
+
+                    b.Property<DateOnly>("StartDate")
+                        .HasColumnType("date")
+                        .HasAnnotation("Relational:JsonPropertyName", "start");
 
                     b.Property<decimal>("Val")
                         .HasColumnType("decimal(18, 2)")
@@ -154,8 +175,18 @@ namespace BaseApp.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasAnnotation("Relational:JsonPropertyName", "description");
+
                     b.Property<int>("InfoFactUsGaapId")
                         .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasAnnotation("Relational:JsonPropertyName", "label");
 
                     b.HasKey("Id")
                         .HasName("PK_InfoFactUsGaapNetIncomeLoss");

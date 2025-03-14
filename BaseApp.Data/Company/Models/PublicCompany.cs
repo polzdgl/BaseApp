@@ -6,11 +6,21 @@ namespace BaseApp.Data.Company.Models
     {
         public int Id { get; set; }
 
+        private string _name { get; set; }
+        private string _ticker { get; set; }
+
         [JsonPropertyName("title")]
-        public string Name { get; set; }
+        public string Name
+        {
+            get => _name;
+            set => _name = value.ToLowerInvariant();
+        }
 
         [JsonPropertyName("ticker")]
-        public string Ticker { get; set; }
+        public string Ticker { 
+            get => _ticker; 
+            set => _ticker = value.ToUpperInvariant(); 
+        }
 
         [JsonPropertyName("cik_str")]
         public int Cik { get; set; }

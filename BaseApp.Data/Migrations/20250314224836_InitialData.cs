@@ -322,7 +322,9 @@ namespace BaseApp.Data.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    InfoFactUsGaapId = table.Column<int>(type: "int", nullable: false)
+                    InfoFactUsGaapId = table.Column<int>(type: "int", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -365,9 +367,14 @@ namespace BaseApp.Data.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     InfoFactUsGaapIncomeLossUnitsId = table.Column<int>(type: "int", nullable: false),
+                    StartDate = table.Column<DateOnly>(type: "date", nullable: false),
+                    EndDate = table.Column<DateOnly>(type: "date", nullable: false),
+                    Val = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    FiscalYear = table.Column<int>(type: "int", nullable: false),
+                    FiscalPeriod = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    FiledAt = table.Column<DateOnly>(type: "date", nullable: false),
                     Form = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
-                    Frame = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
-                    Val = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
+                    Frame = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false)
                 },
                 constraints: table =>
                 {
