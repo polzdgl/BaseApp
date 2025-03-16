@@ -2,6 +2,7 @@
 using BaseApp.Data.Config.SecurityExchnage;
 using BaseApp.ServiceProvider.Company.Interfaces;
 using BaseApp.Shared.Enums.Compnay;
+using BaseApp.Shared.Validations;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Text.Json;
@@ -32,7 +33,7 @@ namespace BaseApp.ServiceProvider.Company.Porvider
         public async Task<CompanyInfo> FetchEdgarCompanyInfoAsync(string cik)
         {
             // Build request url and make sure cik is 10 characters long
-            var url = $"{_secApiSettings.BaseUrl}{_secApiSettings.EdgarCompanyInfoUrl}{cik.PadLeft((int)CikPaddingEnum.PaddingNumber, (char)CikPaddingEnum.PaddingValue)}.json";
+            var url = $"{_secApiSettings.BaseUrl}{_secApiSettings.EdgarCompanyInfoUrl}{cik.ToPaddedCik()}.json";
 
             var response = await _httpClient.GetAsync(url);
 

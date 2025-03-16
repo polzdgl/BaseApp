@@ -4,6 +4,7 @@ using BaseApp.Data.Context;
 using BaseApp.Data.Repositories;
 using BaseApp.Shared.Enums.Compnay;
 using Microsoft.EntityFrameworkCore;
+using BaseApp.Shared.Validations;
 
 namespace BaseApp.Data.Company.Repository
 {
@@ -18,8 +19,7 @@ namespace BaseApp.Data.Company.Repository
         // Get all CIKs that need to be imported, and format them to be 10 characters long
         public async Task<IEnumerable<string>> GetAllCikIds()
         {
-            return await GetAll().Select(x => x.Cik.ToString().Trim()
-            .PadLeft((int)CikPaddingEnum.PaddingNumber, (char)CikPaddingEnum.PaddingValue)).ToListAsync();
+            return await GetAll().Select(x => x.Cik.ToPaddedCik()).ToListAsync();
         }
 
         // Get all companies with details by loading navigation properties
@@ -43,12 +43,12 @@ namespace BaseApp.Data.Company.Repository
         {
             // Query PublicCompany CIKs sequentially.
             var publicCiks = await _dbContext.PublicCompany
-                .Select(pc => pc.Cik.ToString().Trim().PadLeft((int)CikPaddingEnum.PaddingNumber, '0'))
+                .Select(pc => pc.Cik.ToPaddedCik())
                 .ToListAsync();
 
             // Then query CompanyInfo CIKs sequentially.
             var importedCiks = await _dbContext.CompanyInfo
-                .Select(ci => ci.Cik.ToString().Trim().PadLeft((int)CikPaddingEnum.PaddingNumber, '0'))
+                .Select(ci => ci.Cik.ToPaddedCik())
                 .ToListAsync();
 
             // Return all CIKs present in PublicCompany but not in CompanyInfo.

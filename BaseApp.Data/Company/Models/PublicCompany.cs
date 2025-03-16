@@ -6,21 +6,11 @@ namespace BaseApp.Data.Company.Models
     {
         public int Id { get; set; }
 
-        private string _name { get; set; }
-        private string _ticker { get; set; }
-
         [JsonPropertyName("title")]
-        public string Name
-        {
-            get => _name;
-            set => _name = value.ToLowerInvariant();
-        }
+        public string Name { get; set; }
 
         [JsonPropertyName("ticker")]
-        public string Ticker { 
-            get => _ticker; 
-            set => _ticker = value.ToUpperInvariant(); 
-        }
+        public string Ticker { get; set; }
 
         [JsonPropertyName("cik_str")]
         public int Cik { get; set; }
@@ -36,5 +26,11 @@ namespace BaseApp.Data.Company.Models
         public string? Website { get; set; }
         public string? Exchange { get; set; }
         public string? Currency { get; set; }
+
+        // Flag to check if the market data is loaded for this Securiry
+        public bool? IsMarketDataLoaded { get; set; }
+
+        // Date when the market data was last updated
+        public DateTime? LastUpdated { get; set; }
     }
 }

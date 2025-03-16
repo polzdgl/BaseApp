@@ -5,11 +5,9 @@ using BaseApp.Data.Repositories.Interfaces;
 using BaseApp.ServiceProvider.Company.Interfaces;
 using BaseApp.Shared.Const.Company;
 using BaseApp.Shared.Enums.Compnay;
-using BaseApp.Shared.Extentions;
+using BaseApp.Shared.Validations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
-using System.Data.Entity.Core.Mapping;
 
 namespace BaseApp.ServiceProvider.Company.Manager
 {
@@ -99,12 +97,12 @@ namespace BaseApp.ServiceProvider.Company.Manager
             List<CompanyInfo> companies = new List<CompanyInfo>();
 
             // Format to make all ciks 10 digits
-            ciks = ciks.Select(cik => cik.Trim().PadLeft((int)CikPaddingEnum.PaddingNumber, (char)CikPaddingEnum.PaddingValue)).Distinct();
+            var paddedCiks = ciks.Select(cik => cik.ToPaddedCik()).Distinct();
 
             // Get CIKs that dont exist in the database
             var existingCiks = await Repository.CompanyInfoRepository.GetAllCikIds();
 
-            var newCiks = ciks.Except(existingCiks);
+            var newCiks = paddedCiks.Except(existingCiks);
 
             int currentIndex = 1;
             int totalCount = newCiks.Count();
@@ -120,12 +118,14 @@ namespace BaseApp.ServiceProvider.Company.Manager
                     // Filter relevant data
                     var company = new CompanyInfo
                     {
-                        Cik = data.Cik == 0 
+                        Cik = data.Cik == 0
                         ? throw new InvalidDataException($"CIK is invalid for EntityName:{data.EntityName}, CIK: {cik}")
                         : data.Cik,
+
                         EntityName = string.IsNullOrEmpty(data.EntityName)
                         ? throw new InvalidDataException($"Entity Name is empty for CIK:{cik}")
                         : data.EntityName,
+
                         InfoFact = new InfoFact
                         {
                             InfoFactUsGaap = new InfoFactUsGaap
@@ -143,8 +143,8 @@ namespace BaseApp.ServiceProvider.Company.Manager
                                         // Get Everything
                                         InfoFactUsGaapIncomeLossUnitsUsd = data.InfoFact?.InfoFactUsGaap?.InfoFactUsGaapNetIncomeLoss?
                                         .InfoFactUsGaapIncomeLossUnits?.InfoFactUsGaapIncomeLossUnitsUsd?
-                                        .Where(usd => usd.Form != null && (usd.Frame?.StartsWith(FrameConst.YearlyInfo) ?? false))
-                                        .ToArray()?? Array.Empty<InfoFactUsGaapIncomeLossUnitsUsd>()
+                                        .Where(usd => usd.Form != null && usd.Frame != null)
+                                        .ToArray() ?? Array.Empty<InfoFactUsGaapIncomeLossUnitsUsd>()
                                     }
                                 }
                             }
@@ -169,6 +169,31 @@ namespace BaseApp.ServiceProvider.Company.Manager
 
             // Save to database
             await Repository.CompanyInfoRepository.CreateAllAsync(companies);
+
+            // Update Public Company table with the failed CIKs
+            HashSet<int> ciksHashSet = new HashSet<int>(ciks.Select(cik => int.Parse(cik)));
+            List<PublicCompany> publicCompanies = await Repository.PublicCompanyRepository.GetByConditionAsync(pc => ciksHashSet.Contains(pc.Cik));
+
+            HashSet<string> failedCiks = [.. cikImportResult.FailedCiks];
+
+            publicCompanies.ForEach(pc =>
+            {
+                // Update Market Data Loaded status for this Security
+                if (failedCiks.Contains(pc.Cik.ToPaddedCik()))
+                {
+                    pc.IsMarketDataLoaded = false;
+                }
+                else
+                {
+                    pc.IsMarketDataLoaded = true;
+                }
+
+                // Update Last Updated date
+                pc.LastUpdated = DateTime.UtcNow;
+            });
+
+            // Bulk update all public companies
+            await Repository.PublicCompanyRepository.BulkUpdateAllAsync(publicCompanies);
 
             // If some failed, we can set a different message
             if (cikImportResult.FailedCiks.Any())
@@ -234,7 +259,8 @@ namespace BaseApp.ServiceProvider.Company.Manager
                 {
                     // Return Standard Fundable Amount
                     return (int)FundableAmountEnum.StandardFundableAmount;
-                };
+                }
+                ;
 
                 // Check if income is positive for specific years
                 if (!yearlyData.Any(d => d.Frame.StartsWith(FrameConst.Year2021) && d.Val > (int)IncomeEnum.PositiveIncome) ||

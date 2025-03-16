@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BaseApp.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250314224836_InitialData")]
-    partial class InitialData
+    [Migration("20250316013839_AddNewColumns")]
+    partial class AddNewColumns
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -21,7 +21,7 @@ namespace BaseApp.Data.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("App")
-                .HasAnnotation("ProductVersion", "9.0.2")
+                .HasAnnotation("ProductVersion", "9.0.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -120,20 +120,19 @@ namespace BaseApp.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateOnly>("EndDate")
+                    b.Property<DateOnly?>("EndDate")
                         .HasColumnType("date")
                         .HasAnnotation("Relational:JsonPropertyName", "end");
 
-                    b.Property<DateOnly>("FiledAt")
+                    b.Property<DateOnly?>("FiledAt")
                         .HasColumnType("date")
                         .HasAnnotation("Relational:JsonPropertyName", "filed");
 
                     b.Property<string>("FiscalPeriod")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)")
                         .HasAnnotation("Relational:JsonPropertyName", "fp");
 
-                    b.Property<int>("FiscalYear")
+                    b.Property<int?>("FiscalYear")
                         .HasColumnType("int")
                         .HasAnnotation("Relational:JsonPropertyName", "fy");
 
@@ -152,7 +151,7 @@ namespace BaseApp.Data.Migrations
                     b.Property<int>("InfoFactUsGaapIncomeLossUnitsId")
                         .HasColumnType("int");
 
-                    b.Property<DateOnly>("StartDate")
+                    b.Property<DateOnly?>("StartDate")
                         .HasColumnType("date")
                         .HasAnnotation("Relational:JsonPropertyName", "start");
 
@@ -178,18 +177,8 @@ namespace BaseApp.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasAnnotation("Relational:JsonPropertyName", "description");
-
                     b.Property<int>("InfoFactUsGaapId")
                         .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasAnnotation("Relational:JsonPropertyName", "label");
 
                     b.HasKey("Id")
                         .HasName("PK_InfoFactUsGaapNetIncomeLoss");
@@ -250,8 +239,14 @@ namespace BaseApp.Data.Migrations
                     b.Property<string>("Industry")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool?>("IsMarketDataLoaded")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Isin")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastUpdated")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
                         .IsRequired()

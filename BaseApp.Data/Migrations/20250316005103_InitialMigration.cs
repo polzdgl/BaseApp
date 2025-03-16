@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BaseApp.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialData : Migration
+    public partial class InitialMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -322,9 +322,7 @@ namespace BaseApp.Data.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    InfoFactUsGaapId = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    InfoFactUsGaapId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -367,12 +365,12 @@ namespace BaseApp.Data.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     InfoFactUsGaapIncomeLossUnitsId = table.Column<int>(type: "int", nullable: false),
-                    StartDate = table.Column<DateOnly>(type: "date", nullable: false),
-                    EndDate = table.Column<DateOnly>(type: "date", nullable: false),
+                    StartDate = table.Column<DateOnly>(type: "date", nullable: true),
+                    EndDate = table.Column<DateOnly>(type: "date", nullable: true),
                     Val = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    FiscalYear = table.Column<int>(type: "int", nullable: false),
-                    FiscalPeriod = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    FiledAt = table.Column<DateOnly>(type: "date", nullable: false),
+                    FiscalYear = table.Column<int>(type: "int", nullable: true),
+                    FiscalPeriod = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    FiledAt = table.Column<DateOnly>(type: "date", nullable: true),
                     Form = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
                     Frame = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false)
                 },
