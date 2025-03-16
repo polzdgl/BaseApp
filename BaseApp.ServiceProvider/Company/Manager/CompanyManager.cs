@@ -94,7 +94,6 @@ namespace BaseApp.ServiceProvider.Company.Manager
         public async Task<CikImportResult> ImportCompnanyDataAsync(IEnumerable<string> ciks)
         {
             CikImportResult cikImportResult = new CikImportResult();
-            List<CompanyInfo> companies = new List<CompanyInfo>();
 
             // Format to make all ciks 10 digits
             var paddedCiks = ciks.Select(cik => cik.ToPaddedCik()).Distinct();
@@ -106,69 +105,76 @@ namespace BaseApp.ServiceProvider.Company.Manager
 
             int currentIndex = 1;
             int totalCount = newCiks.Count();
+            const int batchSize = 1000;
 
-            foreach (var cik in newCiks)
+            for (int i = 0; i < totalCount; i += batchSize)
             {
-                try
+                List<CompanyInfo> companies = new List<CompanyInfo>();
+                var batch = newCiks.Skip(i).Take(batchSize);
+
+                foreach (var cik in batch)
                 {
-                    _logger.LogInformation("Iteration: {currentIndex}/{totalCount}. Loading Company data for CIK: {cik}", currentIndex, totalCount, cik);
-
-                    var data = await _securityExchangeProvider.FetchEdgarCompanyInfoAsync(cik);
-
-                    // Filter relevant data
-                    var company = new CompanyInfo
+                    try
                     {
-                        Cik = data.Cik == 0
-                        ? throw new InvalidDataException($"CIK is invalid for EntityName:{data.EntityName}, CIK: {cik}")
-                        : data.Cik,
+                        _logger.LogInformation("Iteration: {currentIndex}/{totalCount}. Loading Company data for CIK: {cik}", currentIndex, totalCount, cik);
 
-                        EntityName = string.IsNullOrEmpty(data.EntityName)
-                        ? throw new InvalidDataException($"Entity Name is empty for CIK:{cik}")
-                        : data.EntityName,
+                        var data = await _securityExchangeProvider.FetchEdgarCompanyInfoAsync(cik);
 
-                        InfoFact = new InfoFact
+                        // Filter relevant data
+                        var company = new CompanyInfo
                         {
-                            InfoFactUsGaap = new InfoFactUsGaap
-                            {
-                                InfoFactUsGaapNetIncomeLoss = new InfoFactUsGaapNetIncomeLoss
-                                {
-                                    InfoFactUsGaapIncomeLossUnits = new InfoFactUsGaapIncomeLossUnits
-                                    {
-                                        //InfoFactUsGaapIncomeLossUnitsUsd = data.InfoFact?.InfoFactUsGaap?.InfoFactUsGaapNetIncomeLoss?
-                                        //.InfoFactUsGaapIncomeLossUnits?.InfoFactUsGaapIncomeLossUnitsUsd?
-                                        //.Where(usd => (usd.Form == FormEnum.Form10K.GetDescription() || usd.Form == FormEnum.Form10Q.GetDescription())
-                                        //&& (usd.Frame?.StartsWith(FrameEnum.YearlyInfo.GetDescription()) ?? false))
-                                        //.ToArray() ?? Array.Empty<InfoFactUsGaapIncomeLossUnitsUsd>()
+                            Cik = data.Cik == 0
+                            ? throw new InvalidDataException($"CIK is invalid for EntityName:{data.EntityName}, CIK: {cik}")
+                            : data.Cik,
 
-                                        // Get Everything
-                                        InfoFactUsGaapIncomeLossUnitsUsd = data.InfoFact?.InfoFactUsGaap?.InfoFactUsGaapNetIncomeLoss?
-                                        .InfoFactUsGaapIncomeLossUnits?.InfoFactUsGaapIncomeLossUnitsUsd?
-                                        .Where(usd => usd.Form != null && usd.Frame != null)
-                                        .ToArray() ?? Array.Empty<InfoFactUsGaapIncomeLossUnitsUsd>()
+                            EntityName = string.IsNullOrEmpty(data.EntityName)
+                            ? throw new InvalidDataException($"Entity Name is empty for CIK:{cik}")
+                            : data.EntityName,
+
+                            InfoFact = new InfoFact
+                            {
+                                InfoFactUsGaap = new InfoFactUsGaap
+                                {
+                                    InfoFactUsGaapNetIncomeLoss = new InfoFactUsGaapNetIncomeLoss
+                                    {
+                                        InfoFactUsGaapIncomeLossUnits = new InfoFactUsGaapIncomeLossUnits
+                                        {
+                                            //InfoFactUsGaapIncomeLossUnitsUsd = data.InfoFact?.InfoFactUsGaap?.InfoFactUsGaapNetIncomeLoss?
+                                            //.InfoFactUsGaapIncomeLossUnits?.InfoFactUsGaapIncomeLossUnitsUsd?
+                                            //.Where(usd => (usd.Form == FormEnum.Form10K.GetDescription() || usd.Form == FormEnum.Form10Q.GetDescription())
+                                            //&& (usd.Frame?.StartsWith(FrameEnum.YearlyInfo.GetDescription()) ?? false))
+                                            //.ToArray() ?? Array.Empty<InfoFactUsGaapIncomeLossUnitsUsd>()
+
+                                            // Get Everything
+                                            InfoFactUsGaapIncomeLossUnitsUsd = data.InfoFact?.InfoFactUsGaap?.InfoFactUsGaapNetIncomeLoss?
+                                            .InfoFactUsGaapIncomeLossUnits?.InfoFactUsGaapIncomeLossUnitsUsd?
+                                            .Where(usd => usd.Form != null && usd.Frame != null)
+                                            .ToArray() ?? Array.Empty<InfoFactUsGaapIncomeLossUnitsUsd>()
+                                        }
                                     }
                                 }
                             }
-                        }
-                    };
-                    companies.Add(company);
-                    cikImportResult.SucceededCiks.Add(cik);
+                        };
+                        companies.Add(company);
+                        cikImportResult.SucceededCiks.Add(cik);
+                    }
+                    catch (Exception ex)
+                    {
+                        // Log error and continue with next CIK
+                        _logger.LogError(ex, $"Failed to retrieve company information for CIK ID: {cik}");
+                        cikImportResult.FailedCiks.Add(cik);
+                        continue;
+                    }
+                    finally
+                    {
+                        // Increment index counter
+                        currentIndex++;
+                    }
                 }
-                catch (Exception ex)
-                {
-                    // Log error and continue with next CIK
-                    _logger.LogError(ex, $"Failed to retrieve company information for CIK ID: {cik}");
-                    cikImportResult.FailedCiks.Add(cik);
-                    continue;
-                }
-                finally
-                {
-                    // Increment index counter
-                    currentIndex++;
-                }
-            }
 
-            // Save to database
-            await Repository.CompanyInfoRepository.CreateAllAsync(companies);
+                // Save to database
+                await Repository.CompanyInfoRepository.CreateAllAsync(companies);
+            }
 
             // Update Public Company table with the failed CIKs
             HashSet<int> ciksHashSet = new HashSet<int>(ciks.Select(cik => int.Parse(cik)));
