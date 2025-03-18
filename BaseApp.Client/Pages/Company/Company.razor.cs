@@ -15,9 +15,8 @@ namespace BaseApp.Client.Pages.Company
         [Inject] private ICompanyClient CompanyClient { get; set; } = default!;
 
         private CompanyDetailsDto? CompanyDetails { get; set; }
-        private IEnumerable<CompanyFinancialsDto>? CompanyFinancialDetails = new List<CompanyFinancialsDto>();
 
-        private bool IsLoading = true;
+        private bool IsLoading = false;
         RadzenDataGrid<CompanyFinancialsDto> grid;
 
         protected override async Task OnInitializedAsync()
@@ -37,7 +36,6 @@ namespace BaseApp.Client.Pages.Company
             {
                 IsLoading = true;
                 CompanyDetails = await CompanyClient.GetCompanyDetailsAsync(Id);
-                CompanyFinancialDetails = CompanyDetails.CompanyFinancials;
             }
             catch (Exception ex)
             {

@@ -46,7 +46,7 @@
 <RadzenDataGrid @ref="grid" AllowFiltering="true" AllowColumnResize="true" AllowAlternatingRows="false"
                 FilterMode="FilterMode.Advanced" AllowSorting="true" AllowPaging="true"
                 PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
-                Data="@CompanyFinancialDetails" TItem= "CompanyFinancialsDto" LogicalFilterOperator="LogicalFilterOperator.Or"
+                Data="@CompanyDetails.CompanyFinancials" TItem="CompanyFinancialsDto" LogicalFilterOperator="LogicalFilterOperator.Or"
                 SelectionMode="DataGridSelectionMode.Single">
     <Columns>
         <RadzenDataGridColumn TItem="CompanyFinancialsDto" Property="@nameof(CompanyFinancialsDto.InfoFactUsGaapIncomeLossUnitsUsdId)" Filterable="true" Title="Id" Frozen="true" Width="160px" TextAlign="TextAlign.Center" />
