@@ -6,57 +6,61 @@
 
 <RadzenRow>
     <RadzenColumn Size="12">
-        <RadzenText Text="Company Details" TextStyle="TextStyle.H3" TagName="TagName.H1" />
+        <RadzenCard class="rz-my-12 rz-mx-auto" Style="max-width: 420px">
+            <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Start" Gap="1rem" class="rz-p-4">
+                @* <RadzenImage Path="@order?.Employee?.Photo" Style="width: 100px; height: 100px; border-radius: 50%;" /> *@
+                <RadzenStack Gap="0">
+                    <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">Name</RadzenText>
+                    <RadzenText TextStyle="TextStyle.Body1"><b>@CompanyDetails?.Name</b></RadzenText>
+                    <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-4 rz-mb-0">Symbol</RadzenText>
+                    <RadzenText TextStyle="TextStyle.Body1"><b>@CompanyDetails?.Ticker</b></RadzenText>
+                </RadzenStack>
+            </RadzenStack>
+            <RadzenCard class="rz-background-color-primary-light rz-shadow-0 rz-border-radius-0 rz-p-8" style="margin: 1rem calc(-1 * var(--rz-card-padding));">
+                <RadzenText TextStyle="TextStyle.H6" class="rz-color-on-primary-light"><strong>Stock Information</strong></RadzenText>
+                <RadzenRow RowGap="0">
+                    <RadzenColumn SizeSM="4">
+                        <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-4 rz-mb-0">CIK</RadzenText>
+                        <RadzenText TextStyle="TextStyle.Body1"><b>@CompanyDetails?.Cik</b></RadzenText>
+                        <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-4 rz-mb-0">Exchange</RadzenText>
+                        <RadzenText TextStyle="TextStyle.Body1"><b>@CompanyDetails?.Exchange</b></RadzenText>
+                    </RadzenColumn>
+                    <RadzenColumn SizeSM="8">
+                        <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-4 rz-mb-0">Sector</RadzenText>
+                        <RadzenText TextStyle="TextStyle.Body1"><b>@CompanyDetails?.Sector</b></RadzenText>
+                        <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-4 rz-mb-0">Industry</RadzenText>
+                        <RadzenText TextStyle="TextStyle.Body1"><b>@CompanyDetails?.Industry</b></RadzenText>
+                    </RadzenColumn>
+                </RadzenRow>
+            </RadzenCard>
+            <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" Gap="0">
+                <RadzenButton Variant="Variant.Text" class="rz-text-secondary-color" Text="Cancel" />
+                <RadzenButton Variant="Variant.Text" Text="Send" />
+            </RadzenStack>
+        </RadzenCard>
     </RadzenColumn>
 </RadzenRow>
 
-<RadzenCard class="rz-my-12 rz-mx-auto" Style="max-width: 420px">
-    <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Start" Gap="1rem" class="rz-p-4">
-        @*                     <RadzenImage Path="@order?.Employee?.Photo" Style="width: 100px; height: 100px; border-radius: 50%;" />
- *@                    <RadzenStack Gap="0">
-            <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">Name</RadzenText>
-            <RadzenText TextStyle="TextStyle.Body1"><b>@CompanyDetails?.Name</b></RadzenText>
-            <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-4 rz-mb-0">Symbol</RadzenText>
-            <RadzenText TextStyle="TextStyle.Body1"><b>@CompanyDetails?.Ticker</b></RadzenText>
-        </RadzenStack>
-    </RadzenStack>
-    <RadzenCard class="rz-background-color-primary-light rz-shadow-0 rz-border-radius-0 rz-p-8" style="margin: 1rem calc(-1 * var(--rz-card-padding));">
-        <RadzenText TextStyle="TextStyle.H6" class="rz-color-on-primary-light"><strong>Stock Information</strong></RadzenText>
-        <RadzenRow RowGap="0">
-            <RadzenColumn SizeSM="4">
-                <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-4 rz-mb-0">CIK</RadzenText>
-                <RadzenText TextStyle="TextStyle.Body1"><b>@CompanyDetails?.Cik</b></RadzenText>
-                <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-4 rz-mb-0">Exchange</RadzenText>
-                <RadzenText TextStyle="TextStyle.Body1"><b>@CompanyDetails?.Exchange</b></RadzenText>
-            </RadzenColumn>
-            <RadzenColumn SizeSM="8">
-                <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-4 rz-mb-0">Sector</RadzenText>
-                <RadzenText TextStyle="TextStyle.Body1"><b>@CompanyDetails?.Sector</b></RadzenText>
-                <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-4 rz-mb-0">Industry</RadzenText>
-                <RadzenText TextStyle="TextStyle.Body1"><b>@CompanyDetails?.Industry</b></RadzenText>
-            </RadzenColumn>
-        </RadzenRow>
-    </RadzenCard>
-    <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" Gap="0">
-        <RadzenButton Variant="Variant.Text" class="rz-text-secondary-color" Text="Cancel" />
-        <RadzenButton Variant="Variant.Text" Text="Send" />
-    </RadzenStack>
-</RadzenCard>
-
-<RadzenDataGrid @ref="grid" AllowFiltering="true" AllowColumnResize="true" AllowAlternatingRows="false"
-                FilterMode="FilterMode.Advanced" AllowSorting="true" AllowPaging="true"
-                PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
-                Data="@CompanyDetails.CompanyFinancials" TItem="CompanyFinancialsDto" LogicalFilterOperator="LogicalFilterOperator.Or"
-                SelectionMode="DataGridSelectionMode.Single">
-    <Columns>
-        <RadzenDataGridColumn TItem="CompanyFinancialsDto" Property="@nameof(CompanyFinancialsDto.InfoFactUsGaapIncomeLossUnitsUsdId)" Filterable="true" Title="Id" Frozen="true" Width="160px" TextAlign="TextAlign.Center" />
-        <RadzenDataGridColumn TItem="CompanyFinancialsDto" Property="@nameof(CompanyFinancialsDto.StartDate)" Filterable="true" Title="Start Date" Frozen="true" Width="160px" TextAlign="TextAlign.Center" />
-        <RadzenDataGridColumn TItem="CompanyFinancialsDto" Property="@nameof(CompanyFinancialsDto.EndDate)" Filterable="true" Title="End Date" Frozen="true" Width="160px" TextAlign="TextAlign.Center" />
-        <RadzenDataGridColumn TItem="CompanyFinancialsDto" Property="@nameof(CompanyFinancialsDto.Value)" Filterable="true" Title="Value" Frozen="true" Width="160px" FormatString="{0:C4}" TextAlign="TextAlign.Center" />
-        <RadzenDataGridColumn TItem="CompanyFinancialsDto" Property="@nameof(CompanyFinancialsDto.FiscalYear)" Filterable="true" Title="Fiscal Year" Frozen="true" Width="160px" TextAlign="TextAlign.Center" />
-        <RadzenDataGridColumn TItem="CompanyFinancialsDto" Property="@nameof(CompanyFinancialsDto.FiscalPeriod)" Filterable="true" Title="Fiscan Period" Frozen="true" Width="160px" TextAlign="TextAlign.Center" />
-        <RadzenDataGridColumn TItem="CompanyFinancialsDto" Property="@nameof(CompanyFinancialsDto.FiledAt)" Filterable="true" Title="Filed At" Frozen="true" Width="160px" TextAlign="TextAlign.Center" />
-        <RadzenDataGridColumn TItem="CompanyFinancialsDto" Property="@nameof(CompanyFinancialsDto.Form)" Filterable="true" Title="Form" Frozen="true" Width="160px" TextAlign="TextAlign.Center" />
-        <RadzenDataGridColumn TItem="CompanyFinancialsDto" Property="@nameof(CompanyFinancialsDto.Frame)" Filterable="true" Title="Frame" Frozen="true" Width="160px" TextAlign="TextAlign.Center" />
-    </Columns>
-</RadzenDataGrid>
+<RadzenRow>
+    <RadzenColumn Size="12">
+        <RadzenCard class="rz-my-12 rz-mx-auto" Style="max-width: 100%; padding: 1rem;">
+            <RadzenDataGrid @ref="grid" AllowFiltering="true" AllowColumnResize="true" AllowAlternatingRows="false"
+                            FilterMode="FilterMode.Simple" AllowSorting="true" AllowPaging="true"
+                            PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
+                            Data="@CompanyDetails.CompanyFinancials" TItem="CompanyFinancialsDto" LogicalFilterOperator="LogicalFilterOperator.Or"
+                            SelectionMode="DataGridSelectionMode.Single" Style="width: 100%;">
+                <Columns>
+                    <RadzenDataGridColumn TItem="CompanyFinancialsDto" Property="@nameof(CompanyFinancialsDto.InfoFactUsGaapIncomeLossUnitsUsdId)" Filterable="true" Title="Id" Width="80px" TextAlign="TextAlign.Center" />
+                    <RadzenDataGridColumn TItem="CompanyFinancialsDto" Property="@nameof(CompanyFinancialsDto.StartDate)" Filterable="true" Title="Start Date" Width="160px" TextAlign="TextAlign.Left" />
+                    <RadzenDataGridColumn TItem="CompanyFinancialsDto" Property="@nameof(CompanyFinancialsDto.EndDate)" Filterable="true" Title="End Date" Width="160px" TextAlign="TextAlign.Left" />
+                    <RadzenDataGridColumn TItem="CompanyFinancialsDto" Property="@nameof(CompanyFinancialsDto.Value)" Filterable="true" Title="Value" Width="160px" FormatString="{0:C4}" TextAlign="TextAlign.Center" />
+                    <RadzenDataGridColumn TItem="CompanyFinancialsDto" Property="@nameof(CompanyFinancialsDto.FiscalYear)" Filterable="true" Title="Fiscal Year" Width="160px" TextAlign="TextAlign.Center" />
+                    <RadzenDataGridColumn TItem="CompanyFinancialsDto" Property="@nameof(CompanyFinancialsDto.FiscalPeriod)" Filterable="true" Title="Fiscal Period" Width="160px" TextAlign="TextAlign.Center" />
+                    <RadzenDataGridColumn TItem="CompanyFinancialsDto" Property="@nameof(CompanyFinancialsDto.FiledAt)" Filterable="true" Title="Filed At" Width="160px" TextAlign="TextAlign.Left" />
+                    <RadzenDataGridColumn TItem="CompanyFinancialsDto" Property="@nameof(CompanyFinancialsDto.Form)" Filterable="true" Title="Form" Width="160px" TextAlign="TextAlign.Center" />
+                    <RadzenDataGridColumn TItem="CompanyFinancialsDto" Property="@nameof(CompanyFinancialsDto.Frame)" Filterable="true" Title="Frame" Width="160px" TextAlign="TextAlign.Center" />
+                </Columns>
+            </RadzenDataGrid>
+        </RadzenCard>
+    </RadzenColumn>
+</RadzenRow>
