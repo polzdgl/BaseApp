@@ -43,6 +43,13 @@ else
             </RadzenDataGridColumn>
             <RadzenDataGridColumn TItem="FundableCompanyDto" Property="StandardFundableAmount" Filterable="false" Title="Standard Fundable Amount" FormatString="{0:C4}" Width="160px" />
             <RadzenDataGridColumn TItem="FundableCompanyDto" Property="SpecialFundableAmount" Filterable="false" Title="Special Fundable Amount" FormatString="{0:C4}" Width="160px" />
+
+            <RadzenDataGridColumn Title="" Width="200px" Filterable="false" Sortable="false">
+                <Template Context="company">
+                    <RadzenButton Text="View" ButtonStyle="ButtonStyle.Info" Click="@(() => NavigateToDetails(company.Id))" />
+                    <RadzenButton Text="Update" ButtonStyle="ButtonStyle.Primary" Click="@(() => ShowUpdatePopup(company.Id, company.Name))" />
+                </Template>
+            </RadzenDataGridColumn>
         </Columns>
     </RadzenDataGrid>
 }

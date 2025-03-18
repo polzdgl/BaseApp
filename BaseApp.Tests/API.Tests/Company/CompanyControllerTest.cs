@@ -2,6 +2,7 @@
 using BaseApp.Data.Company.Models;
 using BaseApp.Server.Controllers;
 using BaseApp.ServiceProvider.Company.Interfaces;
+using BaseApp.Shared.Validations;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -14,14 +15,16 @@ namespace BaseApp.Tests.API.Tests.Companies
         private readonly ICompanyManager _mockCompanyManager;
         private readonly ILogger<CompanyController> _mockLogger;
         private readonly CompanyController _mockController;
+        private readonly InputValidation _inputValidation;
 
         public CompanyControllerTests()
         {
             _mockCompanyManager = Substitute.For<ICompanyManager>();
             _mockLogger = Substitute.For<ILogger<CompanyController>>();
+            _inputValidation = Substitute.For<InputValidation>();
 
             // Initialize the controller with the mocked dependencies
-            _mockController = new CompanyController(_mockLogger, _mockCompanyManager);
+            _mockController = new CompanyController(_mockLogger, _mockCompanyManager, _inputValidation);
         }
 
         [Fact]

@@ -1,5 +1,7 @@
-﻿using BaseApp.Data.Company.Dtos;
+﻿using BaseApp.Client.ServiceClients.User;
+using BaseApp.Data.Company.Dtos;
 using BaseApp.ServiceProvider.Company.Interfaces;
+using BaseApp.Shared.ErrorHandling;
 using Microsoft.AspNetCore.Components;
 using Radzen;
 using Radzen.Blazor;
@@ -121,6 +123,45 @@ namespace BaseApp.Client.Pages.Company
             {
                 Console.WriteLine($"Error clearing filters: {ex.Message}");
             }
+        }
+
+        // This method is called when the user clicks on the edit button
+        private void NavigateToDetails(int cik)
+        {
+            NavigationManager.NavigateTo($"/company/{cik}");
+        }
+
+        // This method is called when the user clicks on the delete button
+        // This method shows a confirmation popup before deleting the user
+        private void ShowUpdatePopup(int cik, string CompanyName)
+        {
+            //SelectedUserId = userId;
+            //DeleteConfirmationPopup.Message = $"Are you sure you want to delete the user '{userName}'?";
+            //DeleteConfirmationPopup.OpenPopup();
+        }
+
+        // This method is called when the user confirms the deletion
+        private async Task UpdateCompany()
+        {
+            //try
+            //{
+            //    var response = await UserClient.DeleteUserAsync(SelectedUserId);
+
+            //    if (response.IsSuccessStatusCode)
+            //    {
+            //        ShowNotification("Success", "User deleted successfully.", NotificationSeverity.Success);
+            //        await RefreshUserList();
+            //    }
+            //    else
+            //    {
+            //        var errorMessage = await ErrorHandler.ExtractErrorMessageAsync(response);
+            //        ShowNotification("Error", errorMessage, NotificationSeverity.Error);
+            //    }
+            //}
+            //catch (Exception ex)
+            //{
+            //    ShowNotification("Error", ex.Message, NotificationSeverity.Error);
+            //}
         }
 
         // Show loading on the UI

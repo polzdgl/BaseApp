@@ -57,5 +57,10 @@ namespace BaseApp.Client.ServiceClients.Company
                 throw new ApplicationException("An unexpected error occurred trying to get Market Data load status!", ex);
             }
         }
+
+        public async Task<CompanyDetailsDto> GetCompanyDetailsAsync(string id, CancellationToken cancellationToken = default)
+        {
+           return await _httpClient.GetFromJsonAsync<CompanyDetailsDto>($"/api/company/{id}");
+        }
     }
 }

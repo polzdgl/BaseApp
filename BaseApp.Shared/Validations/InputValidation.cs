@@ -39,6 +39,19 @@ namespace BaseApp.Shared.Validations
             return false;
         }
 
+        // Validate if a value is numeric & maximum 10 digits long
+        public bool ValidateCik(string value, out string validationErrorMessage)
+        {
+            if (long.TryParse(value, out long cik) && cik > 0 && cik < 10000000000)
+            {
+                validationErrorMessage = string.Empty;
+                return true;
+            }
+
+            validationErrorMessage = "The value must be a valid CIk ID";
+            return false;
+        }
+
         // Validate ID (greater than 0)
         public bool ValidateId(string value, out string validationErrorMessage)
         {

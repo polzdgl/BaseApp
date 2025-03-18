@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace BaseApp.Shared.Validations
 {
-    public static class CikValidator
+    public static class CikFormatter
     {
         public static string ToPaddedCik(this string input)
         {

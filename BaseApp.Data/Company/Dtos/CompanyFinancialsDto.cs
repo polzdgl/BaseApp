@@ -1,39 +1,27 @@
-﻿using System.Text.Json.Serialization;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Text.Json.Serialization;
+using System.Threading.Tasks;
 
-namespace BaseApp.Data.Company.Models
+namespace BaseApp.Data.Company.Dtos
 {
-    public class InfoFactUsGaapIncomeLossUnitsUsd
+    public class CompanyFinancialsDto
     {
-        public int Id { get; set; }
+        public int InfoFactUsGaapIncomeLossUnitsUsdId { get; set; }
 
-        public int InfoFactUsGaapIncomeLossUnitsId { get; set; }
-
-        [JsonPropertyName("start")]
         public DateOnly? StartDate { get; set; }
-
-        [JsonPropertyName("end")]
         public DateOnly? EndDate { get; set; }
-
-        /// <summary>
-        /// The income/loss amount.
-        /// </summary>
-        [JsonPropertyName("val")]
-        public decimal Val { get; set; }
-
-        [JsonPropertyName("fy")]
+        public decimal Value { get; set; }
         public int? FiscalYear { get; set; }
-
-        [JsonPropertyName("fp")]
         public string? FiscalPeriod { get; set; }
-
-        [JsonPropertyName("filed")]
         public DateOnly? FiledAt { get; set; }
 
         /// <summary>
         /// Possibilities include 10-Q, 10-K,8-K, 20-F, 40-F, 6-K, and
         /// their variants.YOU ARE INTERESTED ONLY IN 10-K DATA!
         /// </summary>
-        [JsonPropertyName("form")]
         public string Form { get; set; }
 
         /// <summary>
@@ -41,7 +29,6 @@ namespace BaseApp.Data.Company.Models
         /// number.For example: CY2021.YOU ARE INTERESTED ONLY IN YEARLY INFORMATION
         /// WHICH FOLLOWS THIS FORMAT!
         /// </summary>
-        [JsonPropertyName("frame")]
         public string Frame { get; set; }
     }
 }
