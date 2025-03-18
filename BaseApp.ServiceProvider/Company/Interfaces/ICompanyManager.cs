@@ -14,5 +14,6 @@ namespace BaseApp.ServiceProvider.Company.Interfaces
         Task CreateMarketDataLoadRecord();
         Task<bool> IsMarketDataLoadedAsync();
         Task ImportPublicCompanies();
+        Task<CompanyDetailsDto> GetCompanyDetailsAsync(string cik);
     }
 }

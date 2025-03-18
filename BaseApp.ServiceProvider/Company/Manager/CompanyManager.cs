@@ -340,5 +340,37 @@ namespace BaseApp.ServiceProvider.Company.Manager
         {
             return await Repository.Context.MarketDataLoadRecord.AnyAsync();
         }
+
+        public async Task<CompanyDetailsDto> GetCompanyDetailsAsync(string cik)
+        {
+            // Get Company Details by CIK
+            PublicCompany? publicCompany = await this.Repository.PublicCompanyRepository.FirstOrDefaultAsync(pc => pc.Cik == int.Parse(cik));
+
+            // Get Comany Details with Financials
+            CompanyInfo? companyDetails = await this.Repository.CompanyInfoRepository.GetCompanyWithDetailsByCik(int.Parse(cik));
+
+            return new CompanyDetailsDto()
+            {
+                Name = publicCompany?.Name,
+                Ticker = publicCompany?.Ticker,
+                Cik = companyDetails?.Cik ?? 0,
+                Exchange = publicCompany?.Exchange,
+                Sector = publicCompany?.Sector,
+                Industry = publicCompany?.Industry,
+                CompanyFinancials = companyDetails?.InfoFact?.InfoFactUsGaap?.InfoFactUsGaapNetIncomeLoss?.InfoFactUsGaapIncomeLossUnits?.InfoFactUsGaapIncomeLossUnitsUsd?
+                    .Select(x => new CompanyFinancialsDto
+                    {
+                        InfoFactUsGaapIncomeLossUnitsUsdId = x.InfoFactUsGaapIncomeLossUnitsId,
+                        StartDate = x.StartDate,
+                        EndDate = x.EndDate,
+                        FiscalPeriod = x.FiscalPeriod,
+                        FiscalYear = x.FiscalYear,
+                        FiledAt = x.FiledAt,
+                        Frame = x.Frame,
+                        Form = x.Form,
+                        Value = x.Val
+                    }).ToList()
+            };
+        }
     }
 }

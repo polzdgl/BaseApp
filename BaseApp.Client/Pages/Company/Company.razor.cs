@@ -17,6 +17,7 @@ namespace BaseApp.Client.Pages.Company
         private CompanyDetailsDto? CompanyDetails { get; set; }
 
         private bool IsLoading = false;
+        private int PageSize = 100;
         RadzenDataGrid<CompanyFinancialsDto> grid;
 
         protected override async Task OnInitializedAsync()

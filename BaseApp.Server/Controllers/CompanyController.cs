@@ -118,86 +118,31 @@ namespace BaseApp.Server.Controllers
             }
         }
 
-        [HttpGet("{id}", Name = "GetCompanyByIdAsync")]
+        [HttpGet("{cik}", Name = "GetCompanyByIdAsync")]
         [ProducesResponseType(typeof(CompanyFinancialsDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetCompanyByIdAsync(string id)
+        public async Task<IActionResult> GetCompanyByIdAsync(string cik)
         {
             try
             {
-                if (!_inputValidation.ValidateCik(id, out var cikValidator))
+                if (!_inputValidation.ValidateCik(cik, out var cikValidator))
                 {
-                    _logger.LogWarning("Invalid Id: {id}. Errors: {erorrMessage}", id, cikValidator);
-                    return Problem(detail: $"Invalid Id: {id}. Errors: {cikValidator}", statusCode: StatusCodes.Status400BadRequest);
+                    _logger.LogWarning("Invalid Id: {id}. Errors: {erorrMessage}", cik, cikValidator);
+                    return Problem(detail: $"Invalid Id: {cik}. Errors: {cikValidator}", statusCode: StatusCodes.Status400BadRequest);
                 }
 
-                _logger.LogInformation("Getting UserId:{id}", id);
+                _logger.LogInformation("Getting UserId:{id}", cik);
 
-                //UserDto user = await _companyManager.GetCompanyDetailsAsync(id);
-
-                // Mock data
-                CompanyDetailsDto companyDetails = new CompanyDetailsDto
-                {
-                    Name = "Apple Inc.",
-                    Ticker = "AAPL",
-                    Cik = 320193,
-                    Industry = "Computer Hardware",
-                    Sector = "Technology",
-                    Description = "Apple Inc. designs, manufactures, and markets smartphones, personal computers, tablets, wearables, and accessories worldwide.",
-                    Website = "http://www.apple.com",
-                    Exchange = "NASDAQ",
-                    Currency = "USD",
-                    LastUpdated = DateTime.Now,
-
-                    CompanyFinancials = new List<CompanyFinancialsDto>
-                    {
-                        new CompanyFinancialsDto
-                        {
-                            InfoFactUsGaapIncomeLossUnitsUsdId = 1,
-                            StartDate =  new DateOnly(2020, 1, 1),
-                            EndDate = new DateOnly(2021, 1, 1),
-                            Value = 274515000000,
-                            FiscalPeriod = "FY",
-                            FiscalYear = 2021,
-                            FiledAt =  new DateOnly(2020, 1, 1),
-                            Form = "10-K",
-                            Frame = "CY2021"
-                        },
-                        new CompanyFinancialsDto
-                        {
-                            InfoFactUsGaapIncomeLossUnitsUsdId = 2,
-                            StartDate =  new DateOnly(2019, 1, 1),
-                            EndDate = new DateOnly(2020, 1, 1),
-                            Value = 260174000000,
-                            FiscalPeriod = "FY",
-                            FiscalYear = 2020,
-                            FiledAt =  new DateOnly(2019, 1, 1),
-                            Form = "10-K",
-                            Frame = "CY2020"
-                        },
-                        new CompanyFinancialsDto
-                        {
-                            InfoFactUsGaapIncomeLossUnitsUsdId = 3,
-                            StartDate =  new DateOnly(2018, 1, 1),
-                            EndDate = new DateOnly(2019, 1, 1),
-                            Value = 265595000000,
-                            FiscalPeriod = "FY",
-                            FiscalYear = 2019,
-                            FiledAt =  new DateOnly(2018, 1, 1),
-                            Form = "10-K",
-                            Frame = "CY2019"
-                        }
-                    }
-                };
-
+                CompanyDetailsDto companyDetails = await _companyManager.GetCompanyDetailsAsync(cik);
+             
                 return companyDetails is not null ? Ok(companyDetails) :
-                    Problem(detail: $"Company ID: {id} was not found!", statusCode: StatusCodes.Status404NotFound);
+                    Problem(detail: $"Company ID: {cik} was not found!", statusCode: StatusCodes.Status404NotFound);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"An unexpected error occurred while getting UserId: {id}");
+                _logger.LogError(ex, $"An unexpected error occurred while getting UserId: {cik}");
                 return Problem(detail: ex.Message.ToString(), statusCode: StatusCodes.Status500InternalServerError);
             }
         }

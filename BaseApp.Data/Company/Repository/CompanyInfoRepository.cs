@@ -29,6 +29,21 @@ namespace BaseApp.Data.Company.Repository
                 ? GetAll()
                 : GetByCondition(x => x.EntityName.StartsWith(startsWith));
 
+            return await LoadCompanyDetails(query);
+        }
+
+        public async Task<CompanyInfo?> GetCompanyWithDetailsByCik(int cik)
+        {
+            var query = GetByCondition(x => x.Cik == cik);
+
+            var result = await LoadCompanyDetails(query);
+
+            return result.FirstOrDefault();
+        }
+
+        // Load navigation properties for CompanyInfo, takes query as parap with filter
+        private async Task<IEnumerable<CompanyInfo>> LoadCompanyDetails(IQueryable<CompanyInfo> query)
+        {
             return await query
                 .Include(x => x.InfoFact)
                 .ThenInclude(x => x.InfoFactUsGaap)

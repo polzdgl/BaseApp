@@ -45,8 +45,8 @@
     <RadzenColumn Size="12">
         <RadzenCard class="rz-my-12 rz-mx-auto" Style="max-width: 100%; padding: 1rem;">
             <RadzenDataGrid @ref="grid" AllowFiltering="true" AllowColumnResize="true" AllowAlternatingRows="false"
-                            FilterMode="FilterMode.Simple" AllowSorting="true" AllowPaging="true"
-                            PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
+                            FilterMode="FilterMode.Simple" AllowSorting="true" AllowPaging="true" 
+                            PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true" PageSize="@PageSize"
                             Data="@CompanyDetails.CompanyFinancials" TItem="CompanyFinancialsDto" LogicalFilterOperator="LogicalFilterOperator.Or"
                             SelectionMode="DataGridSelectionMode.Single" Style="width: 100%;">
                 <Columns>
